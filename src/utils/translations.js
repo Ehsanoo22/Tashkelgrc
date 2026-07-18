@@ -135,6 +135,17 @@ export const translations = {
         }
       ]
     },
+    testimonials: {
+      label: "Client Voices",
+      title: "What They Say.",
+      items: [
+        { name: "Ahmed Al-Sayed", role: "Lead Architect", review: "Tashkel delivered breathtaking GFRC elements for our mosque project. The precision and durability are unmatched in the region." },
+        { name: "Omar Youssef", role: "Project Manager", review: "The 3D molds they fabricated saved us weeks of work. Their CNC capabilities allow for limitless design possibilities." },
+        { name: "Hassan Tariq", role: "Developer", review: "Their attention to detail and craftsmanship on our commercial facade was spectacular. Highly recommend their services." },
+        { name: "Kareem Nabil", role: "Consulting Engineer", review: "The structural integrity of Tashkel's GFRC panels is exceptional. They are truly the masters of concrete fabrication." },
+        { name: "Sami Al-Haddad", role: "Interior Designer", review: "We commissioned a custom Mashrabiya lattice. The finish was perfectly smooth, and the installation was seamless." }
+      ]
+    },
     about: {
       label: "Our Ethos",
       title: "From Damascus\nto the World.",
@@ -317,6 +328,17 @@ export const translations = {
           title: "حرية لا محدودة",
           desc: "صب شبكات دقيقة للغاية أو ألواح منحنية مزدوجة بانسيابية مع دقة سطحية لا مثيل لها."
         }
+      ]
+    },
+    testimonials: {
+      label: "آراء العملاء",
+      title: "ماذا يقولون عنا.",
+      items: [
+        { name: "أحمد السيد", role: "مهندس معماري", review: "قدمت شركة تشكّل عناصر GFRC مذهلة لمشروع المسجد الخاص بنا. الدقة والمتانة لا مثيل لها في المنطقة." },
+        { name: "عمر يوسف", role: "مدير مشروع", review: "القوالب ثلاثية الأبعاد التي قاموا بتصنيعها وفرت علينا أسابيع من العمل. إمكانياتهم في الـ CNC تسمح بإمكانيات تصميم لا حدود لها." },
+        { name: "حسن طارق", role: "مطور عقاري", review: "كان اهتمامهم بالتفاصيل والحرفية في واجهتنا التجارية مذهلاً. أوصي بشدة بخدماتهم." },
+        { name: "كريم نبيل", role: "مهندس استشاري", review: "السلامة الهيكلية لألواح GFRC من تشكّل استثنائية. هم حقاً سادة تشكيل الخرسانة." },
+        { name: "سامي الحداد", role: "مصمم داخلي", review: "طلبنا شبكة مشربية مخصصة. كان التشطيب ناعماً تماماً، وعملية التركيب كانت سلسة للغاية." }
       ]
     },
     about: {

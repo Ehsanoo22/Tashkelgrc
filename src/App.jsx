@@ -5,6 +5,7 @@ import ProcessSection from './components/ProcessSection';
 import WorkGallery from './components/WorkGallery';
 import GFRCSection from './components/GFRCSection';
 import About from './components/About';
+import Testimonials from './components/Testimonials';
 import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
 import FloatingWhatsApp from './components/FloatingWhatsApp';
@@ -29,6 +30,7 @@ function App() {
       <GFRCSection t={t} lang={lang} />
       <WorkGallery t={t} lang={lang} />
       <About t={t} lang={lang} />
+      <Testimonials t={t} lang={lang} />
       <ContactSection t={t} lang={lang} />
       <Footer t={t} lang={lang} />
 
