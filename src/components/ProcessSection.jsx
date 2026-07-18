@@ -14,13 +14,6 @@ export default function ProcessSection({ t, lang }) {
   return (
     <section id="process" ref={containerRef} className="py-32 bg-white relative overflow-hidden">
       
-      {/* Decorative Islamic Pattern */}
-      <img 
-        src="/assets/islamic_pattern.jpg" 
-        alt="" 
-        className="absolute top-0 right-0 rtl:right-auto rtl:left-0 w-64 md:w-[500px] opacity-[0.08] pointer-events-none z-0 object-cover object-top right-0"
-      />
-
       <div className="max-w-4xl mx-auto px-6 md:px-10 relative z-10">
         
         <div className="text-center mb-24">
