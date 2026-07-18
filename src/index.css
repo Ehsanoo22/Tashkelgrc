@@ -1,0 +1,174 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Tajawal:wght@300;400;500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-brand-dark:   #1d1d1f;
+  --color-brand-warm:   #8b7355;
+  --color-brand-light:  #f5f5f7;
+
+  --color-stone-50:  #fafaf9;
+  --color-stone-100: #f5f4f0;
+  --color-stone-200: #e8e8ed;
+  --color-stone-800: #5a4637;
+  --color-stone-900: #1d1d1f;
+
+  --font-sans:   'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-arabic: 'Tajawal', sans-serif;
+
+  --font-size-2xs: 0.6875rem;
+
+  --animate-sweep: sweep 2s cubic-bezier(0.32, 0.72, 0, 1) infinite;
+}
+
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+  }
+
+  body {
+    background-color: #ffffff;
+    color: #1d1d1f;
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.6;
+  }
+
+  body[dir="rtl"] {
+    font-family: var(--font-arabic);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+  }
+
+  ::selection {
+    background-color: #1d1d1f;
+    color: #ffffff;
+  }
+}
+
+/* ============================================
+   SCROLLBAR
+   ============================================ */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d2d2d7; }
+::-webkit-scrollbar-thumb:hover { background: #8b7355; }
+
+/* ============================================
+   APPLE-STYLE INTERACTIONS
+   ============================================ */
+button, a {
+  transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+}
+button:active, a:active {
+  transform: scale(0.96);
+}
+
+/* ============================================
+   HERO BUTTON (GLOWING SWEEP)
+   ============================================ */
+.btn-cinematic {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 40px;
+  background-color: #1d1d1f;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  border-radius: 100px;
+  overflow: hidden;
+  text-transform: uppercase;
+}
+.btn-cinematic::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 50%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: all 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+  transform: skewX(-20deg);
+}
+.btn-cinematic:hover::before {
+  left: 150%;
+  transition: left 0.8s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* ============================================
+   NAVBAR PILL
+   ============================================ */
+.nav-pill {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+}
+.dark-nav-pill {
+  background: rgba(29, 29, 31, 0.65);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================
+   FLOATING LABELS FORM
+   ============================================ */
+.input-group {
+  position: relative;
+  width: 100%;
+}
+.input-group input, .input-group textarea {
+  width: 100%;
+  padding: 24px 0 8px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #d2d2d7;
+  font-size: 1.1rem;
+  color: #1d1d1f;
+  outline: none;
+  transition: border-color 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.input-group input:focus, .input-group textarea:focus {
+  border-bottom-color: #1d1d1f;
+}
+.input-group label {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  font-size: 1.1rem;
+  color: #8e8e93;
+  pointer-events: none;
+  transition: all 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.input-group input:focus ~ label,
+.input-group input:valid ~ label,
+.input-group textarea:focus ~ label,
+.input-group textarea:valid ~ label {
+  top: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #1d1d1f;
+}
+
+/* ============================================
+   RTL OVERRIDES
+   ============================================ */
+[dir="rtl"] .input-group label {
+  left: auto;
+  right: 0;
+}
