@@ -142,9 +142,10 @@ export function Waves({
 
     // Touch handler
     const onTouchMove = (e) => {
-        e.preventDefault()
-        const touch = e.touches[0]
-        updateMousePosition(touch.clientX, touch.clientY)
+        // Disabled to allow native page scroll on mobile
+        // e.preventDefault()
+        // const touch = e.touches[0]
+        // updateMousePosition(touch.clientX, touch.clientY)
     }
 
     // Update mouse position

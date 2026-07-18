@@ -26,34 +26,34 @@ export default function ProcessSection({ t, lang }) {
 
         <div className="relative">
           {/* Background line track */}
-          <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-[2px] bg-stone-100 -translate-x-1/2" />
+          <div className="absolute left-6 rtl:left-auto rtl:right-6 md:left-1/2 rtl:md:left-auto rtl:md:right-1/2 top-0 bottom-0 w-[2px] bg-stone-100 -translate-x-1/2 rtl:translate-x-1/2" />
           
           {/* Animated Glowing Line */}
           <motion.div 
             style={{ scaleY, originY: 0 }}
-            className="absolute left-6 md:left-1/2 top-0 bottom-0 w-[2px] bg-brand-dark -translate-x-1/2 shadow-[0_0_15px_rgba(29,29,31,0.5)] z-10"
+            className="absolute left-6 rtl:left-auto rtl:right-6 md:left-1/2 rtl:md:left-auto rtl:md:right-1/2 top-0 bottom-0 w-[2px] bg-brand-dark -translate-x-1/2 rtl:translate-x-1/2 shadow-[0_0_15px_rgba(29,29,31,0.5)] z-10"
           />
 
-          <div className="space-y-24 relative z-20">
+          <div className="space-y-12 md:space-y-24 relative z-20">
             {t.process.steps.map((step, index) => {
               const isEven = index % 2 === 0;
               return (
-                <div key={index} className={`flex flex-col md:flex-row items-center justify-between gap-8 md:gap-16 ${isEven ? 'md:flex-row-reverse' : ''}`}>
+                <div key={index} className={`relative flex flex-col md:flex-row md:items-center justify-between gap-6 md:gap-16 ${isEven ? 'md:flex-row-reverse' : ''}`}>
                   
                   <div className="hidden md:block flex-1" />
 
                   {/* Node */}
-                  <div className="relative flex items-center justify-center w-12 h-12 bg-white border-2 border-stone-200 rounded-full z-20 hover-target">
+                  <div className="absolute top-6 md:top-auto left-6 rtl:left-auto rtl:right-6 md:static -translate-x-1/2 rtl:translate-x-1/2 md:translate-x-0 rtl:md:translate-x-0 flex items-center justify-center w-12 h-12 bg-white border-2 border-stone-200 rounded-full z-20 hover-target shrink-0">
                     <span className="text-xs font-bold text-stone-400">{step.id}</span>
                   </div>
 
                   {/* Content */}
                   <motion.div 
-                    initial={{ opacity: 0, x: isEven ? -40 : 40 }}
-                    whileInView={{ opacity: 1, x: 0 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ margin: "-100px", once: true }}
                     transition={{ duration: 0.8, ease: [0.32, 0.72, 0, 1] }}
-                    className="flex-1 bg-stone-50 p-8 rounded-3xl"
+                    className="flex-1 bg-stone-50 p-6 md:p-8 rounded-3xl w-[calc(100%-4rem)] ml-16 rtl:ml-0 rtl:mr-16 md:ml-0 rtl:md:mr-0 md:w-auto"
                   >
                     <h3 className="text-xl font-bold text-brand-dark mb-3">{step.title}</h3>
                     <p className="text-stone-500 leading-relaxed text-sm">{step.desc}</p>
