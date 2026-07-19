@@ -181,6 +181,7 @@ export const translations = {
     },
     footer: {
       tagline: "Sculpting concrete. Crafting heritage.",
+      quote: "At Tashkel, we combine modern technology with artistic craftsmanship to shape buildings that inspire, last, and stand out.",
       copyright: "© 2026 Tashkel GFRC. All rights reserved.",
       address: "Damascus, Syria",
       phone: "+963 933 295 100",
@@ -376,6 +377,7 @@ export const translations = {
     },
     footer: {
       tagline: "نشكّل الخرسانة. نصنع التراث.",
+      quote: "في تشكّل، ندمج التكنولوجيا الحديثة مع الحرفية الفنية لنشكل مباني تلهم وتدوم وتتميز.",
       copyright: "© ٢٠٢٦ تشكّل GFRC. جميع الحقوق محفوظة.",
       address: "دمشق، سوريا",
       phone: "+963 933 295 100",
