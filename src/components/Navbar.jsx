@@ -58,8 +58,8 @@ export default function Navbar({ lang, setLang, t }) {
             />
           </a>
 
-          {/* Desktop Links */}
-          <div className="hidden md:flex items-center gap-8 z-10">
+          {/* Desktop Links - Absolutely centered for perfect alignment with Hero text */}
+          <div className="hidden md:flex items-center justify-center gap-8 z-10 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             {links.map(link => (
               <motion.a
                 key={link.href}
