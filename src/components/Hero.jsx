@@ -32,7 +32,7 @@ export default function Hero({ t, lang }) {
       {/* Content */}
       <motion.div 
         style={{ opacity, y }}
-        className="relative z-10 text-center px-6 flex flex-col items-center w-full max-w-5xl"
+        className="relative z-10 text-center px-6 flex flex-col items-center w-full max-w-5xl mt-24 md:mt-32"
       >
         {/* Text Masking Animation */}
         <div className="flex flex-col items-center mb-6 w-full">
