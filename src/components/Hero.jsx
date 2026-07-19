@@ -16,7 +16,7 @@ export default function Hero({ t, lang }) {
   const isRtl = lang === 'ar';
 
   return (
-    <section ref={heroRef} className="relative h-screen bg-black overflow-hidden flex items-center justify-center">
+    <section ref={heroRef} className="relative h-[100dvh] w-full bg-black overflow-hidden flex items-center justify-center">
       
       {/* Waves Interactive Background */}
       <motion.div style={{ y }} className="absolute inset-0 w-full h-full pointer-events-auto">
