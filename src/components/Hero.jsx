@@ -34,17 +34,8 @@ export default function Hero({ t, lang }) {
         style={{ opacity, y }}
         className="relative z-10 text-center px-6 flex flex-col items-center w-full max-w-5xl"
       >
-        <motion.p 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 2.8 }}
-          className="text-white/60 text-xs font-semibold tracking-[0.2em] uppercase mb-8"
-        >
-          {t.hero.label}
-        </motion.p>
-
         {/* Text Masking Animation */}
-        <div className="flex flex-col items-center mb-8 w-full">
+        <div className="flex flex-col items-center mb-6 w-full">
           {t.hero.title.split('\n').map((line, i) => (
             <div key={i} className="overflow-hidden pb-2">
               <motion.h1
@@ -58,6 +49,15 @@ export default function Hero({ t, lang }) {
             </div>
           ))}
         </div>
+
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 3.2 }}
+          className="text-white/60 text-xs font-semibold tracking-[0.2em] uppercase mb-8"
+        >
+          {t.hero.label}
+        </motion.p>
 
         <motion.p 
           initial={{ opacity: 0, y: 20 }}
