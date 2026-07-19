@@ -76,13 +76,13 @@ export const translations = {
         },
         {
           id: 3,
-          title: "Triple Arch Portal",
-          location: "Palace Entrance",
-          category: "Portals",
-          tags: ["Arched Entry", "Carved Relief"],
-          image: "/assets/cladding_main.jpg",
-          detail: "/assets/cladding_night.jpg",
-          description: "A striking triple-arch gateway with hand-detailed floral and geometric relief carving across its full span."
+          title: "Modern Arch Facade",
+          location: "Corporate Headquarters",
+          category: "Facades",
+          tags: ["Wavy Arches", "Integrated Lighting"],
+          image: "/assets/wave_arch_facade.jpg",
+          detail: "/assets/wave_arch_facade.jpg",
+          description: "A breathtaking contemporary facade featuring illuminated, undulating GFRC waves that seamlessly form grand archways."
         },
         {
           id: 4,
@@ -271,13 +271,13 @@ export const translations = {
         },
         {
           id: 3,
-          title: "بوابة الأقواس",
-          location: "مدخل قصر",
-          category: "بوابات",
-          tags: ["مدخل مقوس", "نقش بارز"],
-          image: "/assets/cladding_main.jpg",
-          detail: "/assets/cladding_night.jpg",
-          description: "بوابة ثلاثية الأقواس بنقش زهري وهندسي مفصل يمتد عبر كامل اتساعها."
+          title: "واجهة الأقواس الحديثة",
+          location: "مقر الشركة",
+          category: "واجهات",
+          tags: ["أقواس مموجة", "إضاءة مدمجة"],
+          image: "/assets/wave_arch_facade.jpg",
+          detail: "/assets/wave_arch_facade.jpg",
+          description: "واجهة عصرية خلابة تتميز بأمواج GFRC المضيئة والمتماوجة التي تشكل بوابات مقوسة ضخمة بسلاسة."
         },
         {
           id: 4,

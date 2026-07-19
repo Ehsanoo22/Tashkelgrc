@@ -9,7 +9,8 @@ export default function WorkGallery({ t, lang }) {
   
   // Move the gallery horizontally based on vertical scroll
   const { scrollYProgress } = useScroll({ target: targetRef });
-  const x = useTransform(scrollYProgress, [0, 1], ["0%", "-85%"]);
+  const scrollTarget = isRtl ? "85%" : "-85%";
+  const x = useTransform(scrollYProgress, [0, 1], ["0%", scrollTarget]);
   const springX = useSpring(x, { stiffness: 100, damping: 30, restDelta: 0.001 });
 
   return (
