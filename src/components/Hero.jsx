@@ -59,11 +59,20 @@ export default function Hero({ t, lang }) {
           {t.hero.label}
         </motion.p>
 
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 3.5, ease: [0.32, 0.72, 0, 1] }}
+          className="text-white/90 text-lg md:text-xl font-medium max-w-3xl leading-relaxed mb-2 tracking-wide"
+        >
+          {t.hero.seoSubheading}
+        </motion.h2>
+
         <motion.p 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 3.8, ease: [0.32, 0.72, 0, 1] }}
-          className="text-white/70 text-lg md:text-xl font-light max-w-2xl leading-relaxed mb-12"
+          className="text-white/60 text-base md:text-lg font-light max-w-2xl leading-relaxed mb-12"
         >
           {t.hero.subtitle}
         </motion.p>

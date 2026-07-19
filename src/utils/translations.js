@@ -9,9 +9,10 @@ export const translations = {
       toggleLang: "العربية"
     },
     hero: {
-      label: "Tashkel GFRC",
+      label: "Tashkel GFRC - Damascus, Syria",
       title: "Architecture.\nRedefined.",
-      subtitle: "Transforming Glass Fiber Reinforced Concrete into breathtaking architectural masterpieces through precision engineering and limitless design.",
+      seoSubheading: "The Leading GRC & GFRC Manufacturer in Damascus, Syria",
+      subtitle: "Transforming Glass Fiber Reinforced Concrete (GRC / GFRC) into breathtaking architectural masterpieces through precision engineering in Syria.",
       ctaPrimary: "Explore Tashkel",
       ctaSecondary: "Watch Film",
       scrollHint: "Scroll to explore"
@@ -205,9 +206,10 @@ export const translations = {
       toggleLang: "English"
     },
     hero: {
-      label: "تشكّل GFRC",
+      label: "تشكّل GFRC - دمشق، سوريا",
       title: "العمارة.\nبمفهوم جديد.",
-      subtitle: "نحوّل الخرسانة المسلحة بالألياف الزجاجية إلى تحف معمارية خلابة من خلال الهندسة الدقيقة والتصميم اللامحدود.",
+      seoSubheading: "الشركة الرائدة في تصنيع GRC و GFRC في دمشق، سوريا",
+      subtitle: "نحوّل الخرسانة المسلحة بالألياف الزجاجية (GRC / GFRC) إلى تحف معمارية خلابة من خلال الهندسة الدقيقة في سوريا.",
       ctaPrimary: "استكشف تشكّل",
       ctaSecondary: "شاهد الفيلم",
       scrollHint: "مرر للاستكشاف"
