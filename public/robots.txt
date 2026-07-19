@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://tashkelgrc.vercel.app/sitemap.xml
+Sitemap: https://www.tashkelgfrc.com/sitemap.xml
