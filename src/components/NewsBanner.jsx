@@ -11,7 +11,7 @@ export default function NewsBanner({ lang }) {
     async function fetchNews() {
       const { data } = await supabase
         .from('site_settings')
-        .select('news_banner_active, news_banner_text_en, news_banner_text_ar, news_banner_link')
+        .select('news_banner_active, news_banner_text_en, news_banner_text_ar, news_banner_link, news_banner_speed')
         .limit(1)
         .single();
         
@@ -61,7 +61,7 @@ export default function NewsBanner({ lang }) {
           transition={{
             repeat: Infinity,
             ease: "linear",
-            duration: 40 // Smooth, slow ticker speed
+            duration: settings.news_banner_speed || 40 // Dynamic speed controller
           }}
           className="flex whitespace-nowrap items-center w-max"
         >

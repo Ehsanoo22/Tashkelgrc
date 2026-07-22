@@ -41,7 +41,8 @@ export default function SiteSettings() {
         news_banner_active: settings.news_banner_active,
         news_banner_text_en: settings.news_banner_text_en,
         news_banner_text_ar: settings.news_banner_text_ar,
-        news_banner_link: settings.news_banner_link
+        news_banner_link: settings.news_banner_link,
+        news_banner_speed: parseInt(settings.news_banner_speed || 40, 10)
       })
       .eq('id', settings.id);
       
@@ -228,6 +229,27 @@ export default function SiteSettings() {
                 className="w-full px-4 py-2 border border-stone-300 rounded-xl focus:ring-brand-warm focus:border-brand-warm text-sm"
                 placeholder="e.g. https://instagram.com/tashkel"
               />
+            </div>
+            <div className="pt-4 border-t border-stone-100">
+              <label className="block text-sm font-medium text-stone-700 mb-1">Animation Speed</label>
+              <p className="text-xs text-stone-500 mb-4">Adjust how fast the banner scrolls (lower number = faster).</p>
+              
+              <div className="flex items-center gap-4">
+                <span className="text-xs text-stone-400 font-medium uppercase tracking-wider">Fast</span>
+                <input
+                  type="range"
+                  min="10"
+                  max="120"
+                  step="5"
+                  value={settings.news_banner_speed || 40}
+                  onChange={(e) => setSettings({...settings, news_banner_speed: e.target.value})}
+                  className="flex-1 h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-brand-warm"
+                />
+                <span className="text-xs text-stone-400 font-medium uppercase tracking-wider">Slow</span>
+              </div>
+              <div className="text-center mt-2 text-xs font-mono text-stone-500">
+                {settings.news_banner_speed || 40} seconds per loop
+              </div>
             </div>
           </div>
         </div>
