@@ -42,7 +42,8 @@ export default function SiteSettings() {
         news_banner_text_en: settings.news_banner_text_en,
         news_banner_text_ar: settings.news_banner_text_ar,
         news_banner_link: settings.news_banner_link,
-        news_banner_speed: parseInt(settings.news_banner_speed || 40, 10)
+        news_banner_speed: parseInt(settings.news_banner_speed || 40, 10),
+        enable_page_loader: settings.enable_page_loader !== false
       })
       .eq('id', settings.id);
       
@@ -94,6 +95,27 @@ export default function SiteSettings() {
                 className="sr-only peer"
                 checked={settings.maintenance_mode}
                 onChange={(e) => setSettings({...settings, maintenance_mode: e.target.checked})}
+              />
+              <div className="w-11 h-6 bg-stone-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-warm/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-stone-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-dark"></div>
+            </label>
+          </div>
+        </div>
+
+        {/* UI & Aesthetics */}
+        <div className="bg-white p-8 rounded-2xl border border-stone-200 shadow-sm space-y-6">
+          <h2 className="text-lg font-semibold border-b border-stone-100 pb-4">UI & Aesthetics</h2>
+          
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-medium text-stone-900">Global Page Loader</h3>
+              <p className="text-sm text-stone-500">Show a minimalist logo animation during page transitions.</p>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input 
+                type="checkbox" 
+                className="sr-only peer"
+                checked={settings.enable_page_loader !== false}
+                onChange={(e) => setSettings({...settings, enable_page_loader: e.target.checked})}
               />
               <div className="w-11 h-6 bg-stone-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-warm/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-stone-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-dark"></div>
             </label>
