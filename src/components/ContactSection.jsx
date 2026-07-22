@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 export default function ContactSection({ t, lang }) {
   const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     service: '',
     name: '',
@@ -26,12 +28,53 @@ export default function ContactSection({ t, lang }) {
   const handleNext = () => setStep(s => Math.min(s + 1, 3));
   const handlePrev = () => setStep(s => Math.max(s - 1, 1));
   
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulate submission
-    setTimeout(() => {
+    setLoading(true);
+    
+    try {
+      // 1. Save to Supabase
+      const { error: dbError } = await supabase.from('leads').insert([{
+        project_type: formData.service,
+        full_name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        estimated_dimensions: formData.details
+      }]);
+
+      if (dbError) throw dbError;
+
+      // 2. Send Email via Resend
+      const resendKey = import.meta.env.VITE_RESEND_API_KEY || import.meta.env.RESEND_API_KEY;
+      if (resendKey) {
+        await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${resendKey}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            from: 'Tashkel Leads <onboarding@resend.dev>',
+            to: ['admin@tashkel.com'],
+            subject: `New Lead: ${formData.name} - ${formData.service}`,
+            html: `
+              <h2>New Lead Submission</h2>
+              <p><strong>Name:</strong> ${formData.name}</p>
+              <p><strong>Email:</strong> ${formData.email}</p>
+              <p><strong>Phone:</strong> ${formData.phone}</p>
+              <p><strong>Project Type:</strong> ${formData.service}</p>
+              <p><strong>Details:</strong><br/>${formData.details}</p>
+            `
+          })
+        });
+      }
+      
       setStep(4); // Success step
-    }, 800);
+    } catch (error) {
+      alert("Failed to submit form: " + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -190,9 +233,10 @@ export default function ContactSection({ t, lang }) {
                     </button>
                     <button 
                       onClick={handleSubmit} 
-                      className="bg-brand-dark text-white px-8 py-3 rounded-full font-bold flex items-center gap-2 hover:bg-brand-warm transition-all"
+                      disabled={loading}
+                      className="bg-brand-dark text-white px-8 py-3 rounded-full font-bold flex items-center gap-2 hover:bg-brand-warm transition-all disabled:opacity-50"
                     >
-                      {t.contact.submit}
+                      {loading ? 'Submitting...' : t.contact.submit}
                     </button>
                   </div>
                 </motion.div>

@@ -1,12 +1,39 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, useSpring, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 export default function WorkGallery({ t, lang }) {
   const targetRef = useRef(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [dynamicProjects, setDynamicProjects] = useState([]);
   const isRtl = lang === 'ar';
+
+  useEffect(() => {
+    async function fetchImages() {
+      const { data } = await supabase.storage.from('gallery').list();
+      if (data) {
+        const validImages = data.filter(file => !file.name.startsWith('.'));
+        const mapped = validImages.map((img, i) => {
+          const { data: { publicUrl } } = supabase.storage.from('gallery').getPublicUrl(img.name);
+          return {
+            id: img.name,
+            image: publicUrl,
+            title: isRtl ? `مشروع مميز ${i+1}` : `Featured Project ${i+1}`,
+            category: isRtl ? 'معرض الصور' : 'Gallery',
+            location: 'Tashkel GFRC',
+            description: isRtl ? 'تصميم وتنفيذ عناصر GFRC مخصصة.' : 'Custom GFRC architectural elements.',
+            tags: ['GFRC', 'Custom']
+          };
+        });
+        setDynamicProjects(mapped);
+      }
+    }
+    fetchImages();
+  }, [isRtl]);
   
+  const projectsToDisplay = dynamicProjects.length > 0 ? dynamicProjects : t.work.projects;
+
   // Move the gallery horizontally based on vertical scroll
   const { scrollYProgress } = useScroll({ target: targetRef });
   const scrollTarget = isRtl ? "85%" : "-85%";
@@ -41,7 +68,7 @@ export default function WorkGallery({ t, lang }) {
 
           {/* Horizontal Track */}
           <motion.div style={{ x: springX }} className="flex gap-12 pl-10 md:pl-24 pr-[20vw] items-center h-[50vh] md:h-[55vh]">
-            {t.work.projects.map((project) => (
+            {projectsToDisplay.map((project) => (
               <div 
                 key={project.id} 
                 className="relative w-[80vw] md:w-[60vw] h-full flex-shrink-0 group hover-target overflow-hidden rounded-[2rem] shadow-2xl"
@@ -100,7 +127,7 @@ export default function WorkGallery({ t, lang }) {
 
               {/* Grid / Card View */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 md:gap-8">
-                {t.work.projects.map((project, i) => (
+                {projectsToDisplay.map((project, i) => (
                   <motion.div 
                     key={project.id} 
                     initial={{ opacity: 0, y: 40 }}

@@ -10,11 +10,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.110.8",
+    "dotenv": "^17.4.2",
     "framer-motion": "^12.42.2",
     "lucide-react": "^0.469.0",
+    "posthog-js": "^1.406.2",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
-    "simplex-noise": "^4.0.3"
+    "react-hook-form": "^7.82.0",
+    "react-router-dom": "^7.18.1",
+    "simplex-noise": "^4.0.3",
+    "ws": "^8.21.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
