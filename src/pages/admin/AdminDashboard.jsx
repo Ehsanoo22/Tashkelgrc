@@ -6,6 +6,7 @@ import LeadsView from './LeadsView';
 import SiteSettings from './SiteSettings';
 import GalleryManager from './GalleryManager';
 import AnalyticsView from './AnalyticsView';
+import PortfolioManager from './PortfolioManager';
 
 export default function AdminDashboard() {
   const [session, setSession] = useState(null);
@@ -42,6 +43,7 @@ export default function AdminDashboard() {
   const navItems = [
     { name: 'Analytics', path: '/tashkeladmin', icon: LayoutDashboard },
     { name: 'Leads', path: '/tashkeladmin/leads', icon: Users },
+    { name: 'Portfolio', path: '/tashkeladmin/portfolio', icon: ImageIcon },
     { name: 'Gallery', path: '/tashkeladmin/gallery', icon: ImageIcon },
     { name: 'Settings', path: '/tashkeladmin/settings', icon: Settings },
   ];
@@ -101,6 +103,7 @@ export default function AdminDashboard() {
           <Routes>
             <Route path="/" element={<AnalyticsView />} />
             <Route path="/leads" element={<LeadsView />} />
+            <Route path="/portfolio" element={<PortfolioManager />} />
             <Route path="/gallery" element={<GalleryManager />} />
             <Route path="/settings" element={<SiteSettings />} />
           </Routes>

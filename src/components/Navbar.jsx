@@ -21,10 +21,13 @@ export default function Navbar({ lang, setLang, t }) {
     setLastY(latest);
   });
 
+  const isRtl = lang === 'ar';
+  
   const links = [
-    { label: t.nav.work, href: '#work' },
-    { label: t.nav.about, href: '#about' },
-    { label: t.nav.gfrc, href: '#gfrc' }
+    { label: isRtl ? 'دراسات الحالة' : 'Case Studies', href: '/projects' },
+    { label: t.nav.work, href: '/#work' },
+    { label: t.nav.about, href: '/#about' },
+    { label: t.nav.gfrc, href: '/#gfrc' }
   ];
 
   return (
@@ -49,7 +52,7 @@ export default function Navbar({ lang, setLang, t }) {
           />
 
           {/* Logo */}
-          <a href="#" className="flex-shrink-0 hover-target z-10" style={{ textDecoration: 'none' }}>
+          <a href="/" className="flex-shrink-0 hover-target z-10" style={{ textDecoration: 'none' }}>
             <img
               src="/assets/logo_new.png"
               alt="Tashkel"
@@ -86,7 +89,7 @@ export default function Navbar({ lang, setLang, t }) {
               {t.nav.toggleLang}
             </motion.button>
             <motion.a 
-              href="#contact" 
+              href="/#contact" 
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="hidden md:inline-flex btn-cinematic px-6 py-2 text-xs"
@@ -150,7 +153,7 @@ export default function Navbar({ lang, setLang, t }) {
               ))}
               
               <motion.a
-                href="#contact"
+                href="/#contact"
                 onClick={() => setIsMobileMenuOpen(false)}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
