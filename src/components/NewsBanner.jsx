@@ -40,7 +40,9 @@ export default function NewsBanner({ lang }) {
   if (!settings || !settings.news_banner_active) return null;
 
   const isRtl = lang === 'ar';
-  const text = isRtl ? settings.news_banner_text_ar : settings.news_banner_text_en;
+  const text = isRtl 
+    ? (settings.news_banner_text_ar || settings.news_banner_text_en) 
+    : (settings.news_banner_text_en || settings.news_banner_text_ar);
   
   if (!text) return null;
 
