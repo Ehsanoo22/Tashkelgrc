@@ -55,7 +55,7 @@ export default function ContactSection({ t, lang }) {
           },
           body: JSON.stringify({
             from: 'Tashkel Leads <onboarding@resend.dev>',
-            to: ['admin@tashkel.com'],
+            to: ['esakkaamini@gmail.com'],
             subject: `New Lead: ${formData.name} - ${formData.service}`,
             html: `
               <h2>New Lead Submission</h2>
