@@ -34,7 +34,7 @@ export default function ProjectsGrid({ lang, setLang }) {
   const fetchProjects = async () => {
     const { data, error } = await supabase
       .from('portfolio_cases')
-      .select('title, slug, category, cover_image_url')
+      .select('title, title_ar, slug, category, category_ar, cover_image_url')
       .eq('is_published', true)
       .order('created_at', { ascending: false });
 
@@ -46,7 +46,7 @@ export default function ProjectsGrid({ lang, setLang }) {
 
   return (
     <div className={`min-h-screen flex flex-col bg-stone-50 ${isRtl ? 'font-arabic' : 'font-sans'}`} dir={isRtl ? 'rtl' : 'ltr'}>
-      <Navbar lang={lang} setLang={setLang} t={t} />
+      <Navbar lang={lang} setLang={setLang} t={t} theme="light" />
 
       <main className="flex-1 pt-40 md:pt-48 pb-24 px-6 md:px-12 max-w-screen-2xl mx-auto w-full">
         <motion.div 
@@ -102,10 +102,10 @@ export default function ProjectsGrid({ lang, setLang }) {
                   
                   <div>
                     <span className="text-[10px] uppercase tracking-[0.2em] text-brand-warm font-bold mb-2 block">
-                      {project.category}
+                      {isRtl ? (project.category_ar || project.category) : project.category}
                     </span>
                     <h2 className="text-xl md:text-2xl font-medium text-brand-dark group-hover:text-brand-warm transition-colors">
-                      {project.title}
+                      {isRtl ? (project.title_ar || project.title) : project.title}
                     </h2>
                   </div>
                 </Link>

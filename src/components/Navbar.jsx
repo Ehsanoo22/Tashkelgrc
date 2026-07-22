@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 
-export default function Navbar({ lang, setLang, t }) {
+export default function Navbar({ lang, setLang, t, theme = 'dark' }) {
   const { scrollY } = useScroll();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
@@ -57,7 +57,7 @@ export default function Navbar({ lang, setLang, t }) {
               src="/assets/logo_new.png"
               alt="Tashkel"
               className="h-10 md:h-14 w-auto object-contain transition-transform duration-500 hover:scale-105"
-              style={{ filter: isScrolled ? 'none' : 'brightness(0) invert(1)' }}
+              style={{ filter: (isScrolled || theme === 'light') ? 'none' : 'brightness(0) invert(1)' }}
             />
           </a>
 
@@ -70,7 +70,7 @@ export default function Navbar({ lang, setLang, t }) {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className={`text-xs font-semibold tracking-widest uppercase hover-target transition-colors duration-300
-                  ${isScrolled ? 'text-brand-dark hover:text-brand-warm' : 'text-white/80 hover:text-white'}`}
+                  ${(isScrolled || theme === 'light') ? 'text-brand-dark hover:text-brand-warm' : 'text-white/80 hover:text-white'}`}
               >
                 {link.label}
               </motion.a>
@@ -84,7 +84,7 @@ export default function Navbar({ lang, setLang, t }) {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className={`text-sm font-bold tracking-widest uppercase transition-colors duration-300
-                ${isScrolled ? 'text-brand-dark hover:text-brand-warm' : 'text-white hover:text-brand-warm'}`}
+                ${(isScrolled || theme === 'light') ? 'text-brand-dark hover:text-brand-warm' : 'text-white hover:text-brand-warm'}`}
             >
               {t.nav.toggleLang}
             </motion.button>
@@ -105,13 +105,13 @@ export default function Navbar({ lang, setLang, t }) {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className={`text-xs font-bold tracking-widest uppercase transition-colors duration-300
-                ${isScrolled ? 'text-brand-dark' : 'text-white'}`}
+                ${(isScrolled || theme === 'light') ? 'text-brand-dark' : 'text-white'}`}
             >
               {lang === 'en' ? 'ع' : 'EN'}
             </motion.button>
             <button 
               onClick={() => setIsMobileMenuOpen(true)}
-              className={`p-2 -mr-2 transition-colors ${isScrolled ? 'text-brand-dark' : 'text-white'}`}
+              className={`p-2 -mr-2 transition-colors ${(isScrolled || theme === 'light') ? 'text-brand-dark' : 'text-white'}`}
             >
               <Menu className="w-6 h-6" />
             </button>

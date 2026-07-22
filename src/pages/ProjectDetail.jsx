@@ -61,97 +61,126 @@ export default function ProjectDetail({ lang, setLang }) {
     );
   }
 
+  const title = isRtl ? (project.title_ar || project.title) : project.title;
+  const category = isRtl ? (project.category_ar || project.category) : project.category;
+  const description = isRtl ? (project.description_ar || project.description) : project.description;
+  const location = isRtl ? (project.location_ar || project.location) : project.location;
+  const finish = isRtl ? (project.surface_finish_ar || project.surface_finish) : project.surface_finish;
+  const structure = isRtl ? (project.structural_backing_ar || project.structural_backing) : project.structural_backing;
+
   return (
     <div className={`min-h-screen flex flex-col bg-white ${isRtl ? 'font-arabic' : 'font-sans'}`} dir={isRtl ? 'rtl' : 'ltr'}>
-      <Navbar lang={lang} setLang={setLang} t={t} />
+      <Navbar lang={lang} setLang={setLang} t={t} theme="dark" />
 
       <main className="flex-1 pb-24">
         
         {/* Pinned Cover Image (Hero) */}
         {project.cover_image_url && (
-          <div className="w-full relative h-[60vh] md:h-[85vh] mb-12 md:mb-24">
+          <div className="w-full relative h-[70vh] md:h-[90vh] mb-12 md:mb-24 flex flex-col justify-end">
             <img 
               src={project.cover_image_url} 
-              alt={project.title}
+              alt={title}
               className="absolute inset-0 w-full h-full object-cover"
             />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+            
+            <div className="relative z-10 px-6 md:px-12 max-w-screen-xl mx-auto w-full pb-16 md:pb-24">
+              <Link 
+                to="/projects" 
+                className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] font-bold text-white/70 hover:text-white transition-colors mb-8"
+              >
+                {isRtl ? <ArrowRight size={14} /> : <ArrowLeft size={14} />}
+                {isRtl ? 'العودة للمشاريع' : 'Back to Projects'}
+              </Link>
+
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+                <span className="text-xs uppercase tracking-[0.2em] text-brand-warm font-bold mb-4 block drop-shadow-md">
+                  {category}
+                </span>
+                <h1 className="text-4xl md:text-5xl lg:text-7xl font-light text-white tracking-tight leading-tight max-w-5xl drop-shadow-lg">
+                  {title}
+                </h1>
+              </motion.div>
+            </div>
           </div>
         )}
 
-        {/* Minimalist Header */}
-        <div className="px-6 md:px-12 max-w-screen-xl mx-auto mb-16 md:mb-24 mt-12 md:mt-0">
-          <Link 
-            to="/projects" 
-            className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] font-bold text-stone-400 hover:text-brand-dark transition-colors mb-12"
-          >
-            {isRtl ? <ArrowRight size={14} /> : <ArrowLeft size={14} />}
-            {isRtl ? 'العودة' : 'Back to Projects'}
-          </Link>
-          
+        {/* 2-Column Content Section */}
+        <div className="px-6 md:px-12 max-w-screen-xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
-            <div className="lg:col-span-7">
-              <span className="text-xs uppercase tracking-[0.2em] text-brand-warm font-bold mb-4 block">
-                {project.category}
-              </span>
-              <h1 className="text-4xl md:text-5xl lg:text-7xl font-light text-brand-dark tracking-tight leading-tight mb-8">
-                {project.title}
-              </h1>
-              {project.description && (
-                <p className="text-stone-500 text-sm md:text-base leading-relaxed max-w-2xl whitespace-pre-wrap">
-                  {project.description}
-                </p>
-              )}
-            </div>
             
-            <div className="lg:col-span-5 flex flex-col justify-end">
-              <div className="grid grid-cols-2 gap-8 border-t border-stone-200 pt-8">
-                {project.location && (
-                  <div>
-                    <span className="block text-[10px] uppercase tracking-wider text-stone-400 font-bold mb-1">{isRtl ? 'الموقع' : 'Location'}</span>
-                    <span className="block text-sm text-brand-dark">{project.location}</span>
-                  </div>
-                )}
-                {project.completion_date && (
-                  <div>
-                    <span className="block text-[10px] uppercase tracking-wider text-stone-400 font-bold mb-1">{isRtl ? 'التاريخ' : 'Date'}</span>
-                    <span className="block text-sm text-brand-dark">{new Date(project.completion_date).getFullYear()}</span>
-                  </div>
-                )}
-                {project.surface_finish && (
-                  <div>
-                    <span className="block text-[10px] uppercase tracking-wider text-stone-400 font-bold mb-1">{isRtl ? 'التشطيب' : 'Finish'}</span>
-                    <span className="block text-sm text-brand-dark">{project.surface_finish}</span>
-                  </div>
-                )}
-                {project.structural_backing && (
-                  <div>
-                    <span className="block text-[10px] uppercase tracking-wider text-stone-400 font-bold mb-1">{isRtl ? 'الهيكل' : 'Structure'}</span>
-                    <span className="block text-sm text-brand-dark">{project.structural_backing}</span>
-                  </div>
-                )}
+            {/* Left Column: Description & Metadata */}
+            <div className="lg:col-span-5 flex flex-col">
+              {description && (
+                <div className="mb-16">
+                  <h3 className="text-sm font-bold tracking-widest uppercase text-brand-dark mb-6 border-b border-stone-200 pb-4">
+                    {isRtl ? 'نظرة عامة على المشروع' : 'Project Overview'}
+                  </h3>
+                  <p className="text-stone-600 text-base md:text-lg leading-relaxed whitespace-pre-wrap text-justify">
+                    {description}
+                  </p>
+                </div>
+              )}
+
+              <div className="bg-stone-50 p-8 rounded-2xl">
+                <h3 className="text-sm font-bold tracking-widest uppercase text-brand-dark mb-8">
+                  {isRtl ? 'مواصفات المشروع' : 'Specifications'}
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                  {location && (
+                    <div>
+                      <span className="block text-[10px] uppercase tracking-[0.2em] text-stone-400 font-bold mb-2">{isRtl ? 'الموقع' : 'Location'}</span>
+                      <span className="block text-sm font-medium text-brand-dark">{location}</span>
+                    </div>
+                  )}
+                  {project.completion_date && (
+                    <div>
+                      <span className="block text-[10px] uppercase tracking-[0.2em] text-stone-400 font-bold mb-2">{isRtl ? 'التاريخ' : 'Date'}</span>
+                      <span className="block text-sm font-medium text-brand-dark">{new Date(project.completion_date).getFullYear()}</span>
+                    </div>
+                  )}
+                  {finish && (
+                    <div>
+                      <span className="block text-[10px] uppercase tracking-[0.2em] text-stone-400 font-bold mb-2">{isRtl ? 'التشطيب' : 'Finish'}</span>
+                      <span className="block text-sm font-medium text-brand-dark">{finish}</span>
+                    </div>
+                  )}
+                  {structure && (
+                    <div>
+                      <span className="block text-[10px] uppercase tracking-[0.2em] text-stone-400 font-bold mb-2">{isRtl ? 'الهيكل' : 'Structure'}</span>
+                      <span className="block text-sm font-medium text-brand-dark">{structure}</span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
+            
+            {/* Right Column: Vertical Gallery */}
+            <div className="lg:col-span-7">
+              {project.gallery_urls && project.gallery_urls.length > 0 && (
+                <div className="flex flex-col gap-8 md:gap-12">
+                  {project.gallery_urls.map((url, index) => (
+                    <motion.div 
+                      key={index} 
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, margin: "-100px" }}
+                      className="w-full rounded-2xl overflow-hidden bg-stone-100 shadow-xl"
+                    >
+                      <img 
+                        src={url} 
+                        alt={`${title} detail ${index + 1}`}
+                        className="w-full h-auto object-cover"
+                        loading="lazy"
+                      />
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+            </div>
+
           </div>
         </div>
-
-
-        {/* Architectural Image Grid */}
-        {project.gallery_urls && project.gallery_urls.length > 0 && (
-          <div className="px-6 md:px-12 max-w-screen-2xl mx-auto">
-            <div className="columns-1 md:columns-2 lg:columns-3 gap-6 md:gap-8 space-y-6 md:space-y-8">
-              {project.gallery_urls.map((url, index) => (
-                <div key={index} className="break-inside-avoid">
-                  <img 
-                    src={url} 
-                    alt={`${project.title} detail ${index + 1}`}
-                    className="w-full bg-stone-100 object-cover"
-                    loading="lazy"
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
         
       </main>
 

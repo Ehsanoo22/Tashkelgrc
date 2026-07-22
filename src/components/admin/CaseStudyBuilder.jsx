@@ -7,11 +7,16 @@ export default function CaseStudyBuilder({ caseStudy, onClose }) {
     title: caseStudy?.title || '',
     slug: caseStudy?.slug || '',
     category: caseStudy?.category || 'Panels',
+    category_ar: caseStudy?.category_ar || 'ألواح',
     location: caseStudy?.location || '',
+    location_ar: caseStudy?.location_ar || '',
     completion_date: caseStudy?.completion_date || '',
     surface_finish: caseStudy?.surface_finish || '',
+    surface_finish_ar: caseStudy?.surface_finish_ar || '',
     structural_backing: caseStudy?.structural_backing || '',
+    structural_backing_ar: caseStudy?.structural_backing_ar || '',
     description: caseStudy?.description || '',
+    description_ar: caseStudy?.description_ar || '',
     cover_image_url: caseStudy?.cover_image_url || '',
     gallery_urls: caseStudy?.gallery_urls || [],
     is_published: caseStudy?.is_published || false
@@ -20,6 +25,7 @@ export default function CaseStudyBuilder({ caseStudy, onClose }) {
   const [isSaving, setIsSaving] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
   const [uploadingGallery, setUploadingGallery] = useState(false);
+  const [activeTab, setActiveTab] = useState('en');
 
   const generateSlug = (text) => {
     return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
@@ -117,14 +123,31 @@ export default function CaseStudyBuilder({ caseStudy, onClose }) {
       <div className="w-full max-w-2xl bg-stone-50 h-full shadow-2xl flex flex-col overflow-hidden animate-slide-in-right">
         
         {/* Header */}
-        <div className="bg-white px-6 py-4 border-b border-stone-200 flex items-center justify-between shrink-0">
-          <div>
-            <h2 className="text-xl font-bold text-stone-900">{caseStudy ? 'Edit Case Study' : 'New Case Study'}</h2>
-            <p className="text-sm text-stone-500">Build your architectural portfolio entry.</p>
+        <div className="bg-white px-6 py-4 border-b border-stone-200 shrink-0">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-xl font-bold text-stone-900">{caseStudy ? 'Edit Case Study' : 'New Case Study'}</h2>
+              <p className="text-sm text-stone-500">Build your architectural portfolio entry.</p>
+            </div>
+            <button onClick={onClose} className="p-2 hover:bg-stone-100 rounded-full transition-colors">
+              <X className="w-5 h-5 text-stone-500" />
+            </button>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-stone-100 rounded-full transition-colors">
-            <X className="w-5 h-5 text-stone-500" />
-          </button>
+          
+          <div className="flex gap-4 border-b border-stone-100 pb-2">
+            <button 
+              onClick={() => setActiveTab('en')}
+              className={`text-sm font-medium px-2 py-1 border-b-2 transition-colors ${activeTab === 'en' ? 'border-brand-dark text-brand-dark' : 'border-transparent text-stone-400 hover:text-stone-600'}`}
+            >
+              English Details
+            </button>
+            <button 
+              onClick={() => setActiveTab('ar')}
+              className={`text-sm font-medium px-2 py-1 border-b-2 transition-colors ${activeTab === 'ar' ? 'border-brand-dark text-brand-dark' : 'border-transparent text-stone-400 hover:text-stone-600'}`}
+            >
+              التفاصيل العربية
+            </button>
+          </div>
         </div>
 
         {/* Form Content */}
@@ -134,25 +157,39 @@ export default function CaseStudyBuilder({ caseStudy, onClose }) {
             <h3 className="font-bold text-stone-800 border-b border-stone-100 pb-2 mb-4">Basic Info</h3>
             
             <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1">Title</label>
-              <input type="text" value={formData.title} onChange={handleTitleChange} className="w-full px-4 py-2 border border-stone-300 rounded-lg text-sm" />
+              <label className="block text-sm font-medium text-stone-700 mb-1">
+                {activeTab === 'en' ? 'Title' : 'العنوان'}
+              </label>
+              {activeTab === 'en' ? (
+                <input type="text" value={formData.title} onChange={handleTitleChange} className="w-full px-4 py-2 border border-stone-300 rounded-lg text-sm" />
+              ) : (
+                <input type="text" dir="rtl" value={formData.title_ar || ''} onChange={e => setFormData({...formData, title_ar: e.target.value})} className="w-full px-4 py-2 border border-stone-300 rounded-lg text-sm" />
+              )}
             </div>
             
-            <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1">Slug (URL)</label>
-              <input type="text" value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} className="w-full px-4 py-2 border border-stone-300 rounded-lg text-sm bg-stone-50" />
-            </div>
+            {activeTab === 'en' && (
+              <div>
+                <label className="block text-sm font-medium text-stone-700 mb-1">Slug (URL)</label>
+                <input type="text" value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} className="w-full px-4 py-2 border border-stone-300 rounded-lg text-sm bg-stone-50" />
+              </div>
+            )}
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-stone-700 mb-1">Category</label>
-                <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full px-4 py-2 border border-stone-300 rounded-lg text-sm">
-                  <option>Panels</option>
-                  <option>Cornices</option>
-                  <option>Arches</option>
-                  <option>Columns</option>
-                  <option>Custom Molds</option>
-                </select>
+                <label className="block text-sm font-medium text-stone-700 mb-1">
+                  {activeTab === 'en' ? 'Category' : 'الفئة'}
+                </label>
+                {activeTab === 'en' ? (
+                  <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full px-4 py-2 border border-stone-300 rounded-lg text-sm">
+                    <option>Panels</option>
+                    <option>Cornices</option>
+                    <option>Arches</option>
+                    <option>Columns</option>
+                    <option>Custom Molds</option>
+                  </select>
+                ) : (
+                  <input type="text" dir="rtl" value={formData.category_ar || ''} onChange={e => setFormData({...formData, category_ar: e.target.value})} className="w-full px-4 py-2 border border-stone-300 rounded-lg text-sm" placeholder="أدخل الفئة" />
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-stone-700 mb-1">Completion Date</label>
@@ -161,8 +198,14 @@ export default function CaseStudyBuilder({ caseStudy, onClose }) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1">Location</label>
-              <input type="text" value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} className="w-full px-4 py-2 border border-stone-300 rounded-lg text-sm" placeholder="e.g. Damascus, Syria" />
+              <label className="block text-sm font-medium text-stone-700 mb-1">
+                {activeTab === 'en' ? 'Location' : 'الموقع'}
+              </label>
+              {activeTab === 'en' ? (
+                <input type="text" value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} className="w-full px-4 py-2 border border-stone-300 rounded-lg text-sm" placeholder="e.g. Damascus, Syria" />
+              ) : (
+                <input type="text" dir="rtl" value={formData.location_ar || ''} onChange={e => setFormData({...formData, location_ar: e.target.value})} className="w-full px-4 py-2 border border-stone-300 rounded-lg text-sm" />
+              )}
             </div>
           </div>
 
@@ -171,18 +214,36 @@ export default function CaseStudyBuilder({ caseStudy, onClose }) {
             
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-stone-700 mb-1">Surface Finish</label>
-                <input type="text" value={formData.surface_finish} onChange={e => setFormData({...formData, surface_finish: e.target.value})} className="w-full px-4 py-2 border border-stone-300 rounded-lg text-sm" placeholder="e.g. Smooth, Sandblasted" />
+                <label className="block text-sm font-medium text-stone-700 mb-1">
+                  {activeTab === 'en' ? 'Surface Finish' : 'التشطيب'}
+                </label>
+                {activeTab === 'en' ? (
+                  <input type="text" value={formData.surface_finish} onChange={e => setFormData({...formData, surface_finish: e.target.value})} className="w-full px-4 py-2 border border-stone-300 rounded-lg text-sm" placeholder="e.g. Smooth, Sandblasted" />
+                ) : (
+                  <input type="text" dir="rtl" value={formData.surface_finish_ar || ''} onChange={e => setFormData({...formData, surface_finish_ar: e.target.value})} className="w-full px-4 py-2 border border-stone-300 rounded-lg text-sm" />
+                )}
               </div>
               <div>
-                <label className="block text-sm font-medium text-stone-700 mb-1">Structural Backing</label>
-                <input type="text" value={formData.structural_backing} onChange={e => setFormData({...formData, structural_backing: e.target.value})} className="w-full px-4 py-2 border border-stone-300 rounded-lg text-sm" placeholder="e.g. Steel Stud Frame" />
+                <label className="block text-sm font-medium text-stone-700 mb-1">
+                  {activeTab === 'en' ? 'Structural Backing' : 'الهيكل'}
+                </label>
+                {activeTab === 'en' ? (
+                  <input type="text" value={formData.structural_backing} onChange={e => setFormData({...formData, structural_backing: e.target.value})} className="w-full px-4 py-2 border border-stone-300 rounded-lg text-sm" placeholder="e.g. Steel Stud Frame" />
+                ) : (
+                  <input type="text" dir="rtl" value={formData.structural_backing_ar || ''} onChange={e => setFormData({...formData, structural_backing_ar: e.target.value})} className="w-full px-4 py-2 border border-stone-300 rounded-lg text-sm" />
+                )}
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1">Description</label>
-              <textarea rows={4} value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full px-4 py-2 border border-stone-300 rounded-lg text-sm"></textarea>
+              <label className="block text-sm font-medium text-stone-700 mb-1">
+                {activeTab === 'en' ? 'Description' : 'الوصف'}
+              </label>
+              {activeTab === 'en' ? (
+                <textarea rows={4} value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full px-4 py-2 border border-stone-300 rounded-lg text-sm"></textarea>
+              ) : (
+                <textarea rows={4} dir="rtl" value={formData.description_ar || ''} onChange={e => setFormData({...formData, description_ar: e.target.value})} className="w-full px-4 py-2 border border-stone-300 rounded-lg text-sm"></textarea>
+              )}
             </div>
           </div>
 
