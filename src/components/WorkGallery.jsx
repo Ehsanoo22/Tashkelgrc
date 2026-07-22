@@ -29,6 +29,7 @@ export default function WorkGallery({ t, lang }) {
           return {
             id: img.name,
             image: publicUrl,
+            sort_order: meta.sort_order || 0,
             title: isRtl ? (meta.title_ar || meta.title_en || 'بدون عنوان') : (meta.title_en || meta.title_ar || 'Untitled'),
             category: isRtl ? (meta.category_ar || meta.category_en || 'معرض الصور') : (meta.category_en || meta.category_ar || 'Gallery'),
             location: isRtl ? (meta.location_ar || meta.location_en || '') : (meta.location_en || meta.location_ar || ''),
@@ -41,6 +42,7 @@ export default function WorkGallery({ t, lang }) {
         return {
           id: img.name,
           image: publicUrl,
+          sort_order: 999,
           title: isRtl ? `مشروع مميز ${i+1}` : `Featured Project ${i+1}`,
           category: isRtl ? 'معرض الصور' : 'Gallery',
           location: 'Tashkel GFRC',
@@ -49,6 +51,7 @@ export default function WorkGallery({ t, lang }) {
         };
       });
       
+      mapped.sort((a, b) => a.sort_order - b.sort_order);
       setDynamicProjects(mapped);
     }
     fetchImages();
@@ -131,22 +134,25 @@ export default function WorkGallery({ t, lang }) {
             className="fixed inset-0 z-[9999] bg-white overflow-y-auto"
             style={{ direction: isRtl ? 'rtl' : 'ltr' }}
           >
-            <div className="max-w-7xl mx-auto px-6 md:px-10 py-16 md:py-24">
-              
-              {/* Modal Header */}
-              <div className="flex justify-between items-center mb-16 border-b border-stone-200 pb-10">
-                <h2 className="text-4xl md:text-6xl font-bold tracking-tighter text-brand-dark">
+            {/* Sticky Header Full Width Background */}
+            <div className="sticky top-0 z-50 bg-white/90 backdrop-blur-lg border-b border-stone-200 px-6 md:px-10 py-4 md:py-6">
+              <div className="max-w-7xl mx-auto flex justify-between items-center">
+                <h2 className="text-3xl md:text-5xl font-bold tracking-tighter text-brand-dark">
                   {t.work.viewAll}
                 </h2>
                 <button 
                   onClick={() => setIsModalOpen(false)} 
-                  className="hover-target p-4 bg-stone-100 hover:bg-stone-200 rounded-full transition-colors flex items-center justify-center"
+                  className="hover-target p-3 md:p-4 bg-stone-100 hover:bg-stone-200 rounded-full transition-colors flex items-center justify-center"
                   aria-label="Close Gallery"
                 >
                   <X className="w-6 h-6 text-brand-dark" />
                 </button>
               </div>
+            </div>
 
+            {/* Grid Container */}
+            <div className="max-w-7xl mx-auto px-6 md:px-10 py-12 md:py-16">
+              
               {/* Grid / Card View */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 md:gap-8">
                 {projectsToDisplay.map((project, i) => (

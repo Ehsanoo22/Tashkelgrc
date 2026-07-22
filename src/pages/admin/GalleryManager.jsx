@@ -38,11 +38,14 @@ export default function GalleryManager() {
         image_name: file.name,
         title_en: '', title_ar: '',
         subtitle_en: '', subtitle_ar: '',
-        tags_en: [], tags_ar: []
+        tags_en: [], tags_ar: [],
+        sort_order: 0
       };
       const { data: { publicUrl } } = supabase.storage.from('gallery').getPublicUrl(file.name);
       return { ...meta, publicUrl };
     });
+
+    merged.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
 
     setImages(merged);
   };
@@ -105,7 +108,8 @@ export default function GalleryManager() {
             : editingMeta.tags_en,
           tags_ar: typeof editingMeta.tags_ar === 'string'
             ? editingMeta.tags_ar.split(',').map(s => s.trim()).filter(Boolean)
-            : editingMeta.tags_ar
+            : editingMeta.tags_ar,
+          sort_order: editingMeta.sort_order ? parseInt(editingMeta.sort_order, 10) : 0
         }, { onConflict: 'image_name' });
         
       if (error) throw error;
@@ -141,8 +145,11 @@ export default function GalleryManager() {
           <div key={img.image_name} className="relative group rounded-xl overflow-hidden shadow-sm border border-stone-200 bg-white flex flex-col">
             <img src={img.publicUrl} alt={img.image_name} className="w-full h-48 object-cover" />
             <div className="p-4 flex-1">
-              <h3 className="font-bold text-lg truncate">{img.title_en || 'Untitled'}</h3>
-              <p className="text-sm text-stone-500 truncate">{img.subtitle_en || 'No subtitle'}</p>
+              <div className="flex justify-between items-start">
+                <h3 className="font-bold text-lg truncate">{img.title_en || 'Untitled'}</h3>
+                <span className="bg-stone-100 text-stone-500 text-xs px-2 py-1 rounded font-medium">#{img.sort_order || 0}</span>
+              </div>
+              <p className="text-sm text-stone-500 truncate mt-1">{img.subtitle_en || 'No subtitle'}</p>
               <div className="mt-3 flex gap-2">
                 <button 
                   onClick={() => setEditingMeta({
@@ -187,7 +194,17 @@ export default function GalleryManager() {
                 <img src={editingMeta.publicUrl} alt="Preview" className="w-full md:w-48 h-48 object-cover rounded-xl border border-stone-200 shadow-sm" />
                 <div className="flex-1 text-sm text-stone-600 flex flex-col justify-center">
                   <p><strong>File Name:</strong> {editingMeta.image_name}</p>
-                  <p className="mt-2 text-stone-500">Update the English and Arabic text for this image. This text will be displayed dynamically in the public gallery.</p>
+                  
+                  <div className="mt-6 mb-2">
+                    <label className="block text-sm font-bold text-brand-dark mb-1">Sort Order</label>
+                    <input 
+                      type="number" 
+                      value={editingMeta.sort_order || 0}
+                      onChange={e => setEditingMeta({...editingMeta, sort_order: e.target.value})}
+                      className="w-32 p-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-brand-dark focus:outline-none"
+                    />
+                    <p className="mt-1 text-xs text-stone-500">Lower numbers appear first.</p>
+                  </div>
                 </div>
               </div>
 
