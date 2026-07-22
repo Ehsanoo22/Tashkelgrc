@@ -31,6 +31,19 @@ export default function ProjectDetail({ lang, setLang }) {
       console.error(error);
     } else {
       setProject(data);
+      
+      // SEO Enhancements
+      document.title = `${data.title} | Tashkel GFRC Case Studies`;
+      
+      let metaDesc = document.querySelector('meta[name="description"]');
+      if (!metaDesc) {
+        metaDesc = document.createElement('meta');
+        metaDesc.name = "description";
+        document.head.appendChild(metaDesc);
+      }
+      metaDesc.content = data.description 
+        ? data.description.substring(0, 160).trim() + "..." 
+        : `Explore the architectural case study for ${data.title}, completed in ${new Date(data.completion_date).getFullYear()}.`;
     }
     setLoading(false);
   };

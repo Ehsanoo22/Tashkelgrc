@@ -15,8 +15,21 @@ export default function ProjectsGrid({ lang, setLang }) {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    
+    // SEO Enhancements
+    document.title = isRtl ? 'دراسات الحالة | تشكيل جي إف آر سي' : 'Case Studies | Tashkel GFRC';
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+      metaDesc = document.createElement('meta');
+      metaDesc.name = "description";
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.content = isRtl 
+      ? 'نظرة متعمقة على مشاريعنا المعمارية البارزة باستخدام تقنية جي إف آر سي.'
+      : 'Explore detailed architectural case studies of our hallmark GFRC projects from concept to execution.';
+
     fetchProjects();
-  }, []);
+  }, [isRtl]);
 
   const fetchProjects = async () => {
     const { data, error } = await supabase

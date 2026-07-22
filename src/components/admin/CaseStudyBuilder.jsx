@@ -74,7 +74,10 @@ export default function CaseStudyBuilder({ caseStudy, onClose }) {
         const { data: { publicUrl } } = supabase.storage.from('gallery').getPublicUrl(filePath);
         uploadedUrls.push(publicUrl);
       }
-      setFormData({ ...formData, gallery_urls: [...formData.gallery_urls, ...uploadedUrls] });
+      setFormData(prev => ({ 
+        ...prev, 
+        gallery_urls: [...(prev.gallery_urls || []), ...uploadedUrls] 
+      }));
     } catch (error) {
       alert('Error uploading images: ' + error.message);
     } finally {
@@ -203,15 +206,15 @@ export default function CaseStudyBuilder({ caseStudy, onClose }) {
             <div className="pt-4 border-t border-stone-100">
               <label className="block text-sm font-medium text-stone-700 mb-1 flex justify-between">
                 <span>Gallery Images</span>
-                <span className="text-stone-400 text-xs">{formData.gallery_urls.length} images</span>
+                <span className="text-stone-400 text-xs">{(formData.gallery_urls || []).length} images</span>
               </label>
               
               <div className="grid grid-cols-4 gap-2 mb-3">
-                {formData.gallery_urls.map((url, i) => (
+                {(formData.gallery_urls || []).map((url, i) => (
                   <div key={i} className="relative group aspect-square">
                     <img src={url} alt={`Gallery ${i}`} className="w-full h-full object-cover rounded-lg border border-stone-200" />
                     <button 
-                      onClick={() => setFormData({ ...formData, gallery_urls: formData.gallery_urls.filter((_, idx) => idx !== i) })}
+                      onClick={() => setFormData({ ...formData, gallery_urls: (formData.gallery_urls || []).filter((_, idx) => idx !== i) })}
                       className="absolute inset-0 bg-black/50 text-white opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-lg"
                     >
                       <Trash2 size={16} />
