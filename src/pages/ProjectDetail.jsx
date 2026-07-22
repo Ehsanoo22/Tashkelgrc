@@ -79,7 +79,7 @@ export default function ProjectDetail({ lang, setLang }) {
           <div className="w-full relative h-[70vh] md:h-[90vh] mb-12 md:mb-24 flex flex-col justify-end">
             <img 
               src={project.cover_image_url} 
-              alt={title}
+              alt={`${title} - ${category} by Tashkel GFRC`}
               className="absolute inset-0 w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
@@ -116,7 +116,7 @@ export default function ProjectDetail({ lang, setLang }) {
                   <h3 className="text-sm font-bold tracking-widest uppercase text-brand-dark mb-6 border-b border-stone-200 pb-4">
                     {isRtl ? 'نظرة عامة على المشروع' : 'Project Overview'}
                   </h3>
-                  <p className="text-stone-600 text-base md:text-lg leading-relaxed whitespace-pre-wrap text-justify">
+                  <p className="text-stone-600 text-base md:text-lg leading-loose whitespace-pre-wrap text-justify tracking-wide">
                     {description}
                   </p>
                 </div>
@@ -169,7 +169,7 @@ export default function ProjectDetail({ lang, setLang }) {
                     >
                       <img 
                         src={url} 
-                        alt={`${title} detail ${index + 1}`}
+                        alt={`${title} - ${category} architectural detail ${index + 1} by Tashkel GFRC`}
                         className="w-full h-auto object-cover"
                         loading="lazy"
                       />
