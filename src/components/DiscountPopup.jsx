@@ -10,17 +10,42 @@ export default function DiscountPopup({ lang }) {
 
   useEffect(() => {
     async function fetchPromo() {
-      const { data } = await supabase.from('site_settings').select('promo_active, promo_text_en, promo_text_ar, promo_discount_code').limit(1).single();
+      const { data } = await supabase.from('site_settings').select('promo_active, promo_text_en, promo_text_ar, promo_discount_code, promo_delay_seconds, instant_popup_trigger').limit(1).single();
       if (data && data.promo_active) {
         setSettings(data);
-        // Show after 5 seconds
+        const delayMs = (data.promo_delay_seconds || 5) * 1000;
+        
         const timer = setTimeout(() => {
           setIsVisible(true);
-        }, 5000);
+        }, delayMs);
         return () => clearTimeout(timer);
       }
     }
     fetchPromo();
+
+    // Listen for instant popup triggers from the dashboard
+    const channel = supabase.channel('popup_trigger')
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'site_settings' },
+        (payload) => {
+          const newData = payload.new;
+          if (newData.promo_active) {
+            setSettings(newData);
+            // If the instant trigger timestamp changed, show it instantly
+            if (newData.instant_popup_trigger) {
+              setIsVisible(true);
+            }
+          } else {
+            setIsVisible(false);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const handleCopy = async () => {

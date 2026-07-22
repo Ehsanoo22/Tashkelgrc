@@ -11,6 +11,7 @@ import Footer from '../components/Footer';
 import FloatingWhatsApp from '../components/FloatingWhatsApp';
 import DiscountPopup from '../components/DiscountPopup';
 import MaintenanceMode from '../components/MaintenanceMode';
+import NewsBanner from '../components/NewsBanner';
 import { translations } from '../utils/translations';
 import { supabase } from '../lib/supabase';
 
@@ -42,6 +43,7 @@ export default function PublicSite({ lang, setLang }) {
     <div className={`relative min-h-screen bg-white text-brand-dark ${lang === 'ar' ? 'font-arabic' : 'font-sans'}`} dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       <Navbar lang={lang} setLang={setLang} t={t} />
       <Hero t={t} lang={lang} />
+      <NewsBanner lang={lang} />
       <ProcessSection t={t} lang={lang} />
       <GFRCSection t={t} lang={lang} />
       <WorkGallery t={t} lang={lang} />
