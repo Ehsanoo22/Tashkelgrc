@@ -11,30 +11,44 @@ export default function WorkGallery({ t, lang }) {
 
   useEffect(() => {
     async function fetchImages() {
-      const { data } = await supabase.storage.from('gallery').list();
-      if (data) {
-        const validImages = data.filter(file => !file.name.startsWith('.'));
-        const mapped = validImages.map((img, i) => {
-          const { data: { publicUrl } } = supabase.storage.from('gallery').getPublicUrl(img.name);
-          
-          const staticMatch = t.work.projects.find(p => p.image.includes(img.name));
-          
-          if (staticMatch) {
-            return { ...staticMatch, image: publicUrl, id: img.name };
-          }
-          
+      // 1. Fetch storage images
+      const { data: storageData } = await supabase.storage.from('gallery').list();
+      if (!storageData) return;
+
+      // 2. Fetch metadata from DB
+      const { data: metaData } = await supabase.from('gallery_metadata').select('*');
+      
+      const validImages = storageData.filter(file => !file.name.startsWith('.'));
+      
+      const mapped = validImages.map((img, i) => {
+        const { data: { publicUrl } } = supabase.storage.from('gallery').getPublicUrl(img.name);
+        const meta = metaData?.find(m => m.image_name === img.name);
+        
+        if (meta) {
           return {
             id: img.name,
             image: publicUrl,
-            title: isRtl ? `مشروع مميز ${i+1}` : `Featured Project ${i+1}`,
-            category: isRtl ? 'معرض الصور' : 'Gallery',
-            location: 'Tashkel GFRC',
-            description: isRtl ? 'تصميم وتنفيذ عناصر GFRC مخصصة.' : 'Custom GFRC architectural elements.',
-            tags: ['GFRC', 'Custom']
+            title: isRtl ? (meta.title_ar || meta.title_en || 'بدون عنوان') : (meta.title_en || meta.title_ar || 'Untitled'),
+            category: isRtl ? (meta.category_ar || meta.category_en || 'معرض الصور') : (meta.category_en || meta.category_ar || 'Gallery'),
+            location: isRtl ? (meta.location_ar || meta.location_en || '') : (meta.location_en || meta.location_ar || ''),
+            description: isRtl ? (meta.subtitle_ar || meta.subtitle_en || '') : (meta.subtitle_en || meta.subtitle_ar || ''),
+            tags: isRtl ? (meta.tags_ar || meta.tags_en || []) : (meta.tags_en || meta.tags_ar || [])
           };
-        });
-        setDynamicProjects(mapped);
-      }
+        }
+        
+        // Fallback for completely unconfigured images
+        return {
+          id: img.name,
+          image: publicUrl,
+          title: isRtl ? `مشروع مميز ${i+1}` : `Featured Project ${i+1}`,
+          category: isRtl ? 'معرض الصور' : 'Gallery',
+          location: 'Tashkel GFRC',
+          description: isRtl ? 'تصميم وتنفيذ عناصر GFRC مخصصة.' : 'Custom GFRC architectural elements.',
+          tags: ['GFRC', 'Custom']
+        };
+      });
+      
+      setDynamicProjects(mapped);
     }
     fetchImages();
   }, [isRtl]);
