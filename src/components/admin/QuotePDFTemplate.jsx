@@ -1,5 +1,5 @@
 import React from 'react';
-import { Page, Text, View, Document, StyleSheet, Font } from '@react-pdf/renderer';
+import { Page, Text, View, Document, StyleSheet, Font, Image } from '@react-pdf/renderer';
 
 // Standard fonts
 Font.register({
@@ -26,6 +26,11 @@ const styles = StyleSheet.create({
   },
   logoSection: {
     flexDirection: 'column',
+    width: '40%',
+  },
+  logoImage: {
+    width: 120,
+    marginBottom: 12,
   },
   companyName: {
     fontSize: 24,
@@ -184,11 +189,11 @@ const styles = StyleSheet.create({
   }
 });
 
-// Helper for formatting currency
-const formatMoney = (amount) => {
+// Helper for formatting currency dynamically
+const formatMoney = (amount, currency = 'USD') => {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'USD',
+    currency: currency,
   }).format(amount || 0);
 };
 
@@ -203,10 +208,14 @@ export default function QuotePDFTemplate({ quoteData }) {
     engineeringFee = 0,
     logisticsFee = 0,
     installationFee = 0,
+    currency = 'USD',
+    taxPercentage = 0,
   } = quoteData;
 
   const itemsTotal = items.reduce((sum, item) => sum + (Number(item.qty) * Number(item.unitPrice)) + Number(item.moldFee), 0);
-  const grandTotal = itemsTotal + Number(engineeringFee) + Number(logisticsFee) + Number(installationFee);
+  const subTotalBeforeTax = itemsTotal + Number(engineeringFee) + Number(logisticsFee) + Number(installationFee);
+  const taxAmount = subTotalBeforeTax * (Number(taxPercentage) / 100);
+  const grandTotal = subTotalBeforeTax + taxAmount;
 
   return (
     <Document>
@@ -214,6 +223,11 @@ export default function QuotePDFTemplate({ quoteData }) {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.logoSection}>
+            {/* The absolute URL ensures react-pdf can fetch it regardless of route */}
+            <Image 
+              src={`${window.location.origin}/assets/logo_new.png`} 
+              style={styles.logoImage} 
+            />
             <Text style={styles.companyName}>TASHKEL GFRC</Text>
             <Text style={styles.companyDetails}>Damascus, Syria</Text>
             <Text style={styles.companyDetails}>+963 944 000 000</Text>
@@ -250,7 +264,7 @@ export default function QuotePDFTemplate({ quoteData }) {
               <View key={index} style={styles.tableRow}>
                 <View style={styles.col1}>
                   <Text style={styles.itemTitle}>{item.category || 'Custom Element'}</Text>
-                  <Text style={styles.itemSpecs}>Dims: {item.length}L x {item.width}W x {item.depth}D</Text>
+                  <Text style={styles.itemSpecs}>Dims: {item.length}m L x {item.width}m W x {item.depth}mm D</Text>
                   <Text style={styles.itemSpecs}>Struct: {item.structural}</Text>
                   <Text style={styles.itemSpecs}>Inserts: {item.inserts} pcs</Text>
                 </View>
@@ -258,14 +272,14 @@ export default function QuotePDFTemplate({ quoteData }) {
                   <Text style={styles.itemSpecs}>Mold: {item.moldComplexity}</Text>
                   <Text style={styles.itemSpecs}>Finish: {item.texture}</Text>
                   <Text style={styles.itemSpecs}>Color: {item.pigment}</Text>
-                  <Text style={styles.itemSpecs}>Mold Fee: {formatMoney(item.moldFee)}</Text>
+                  <Text style={styles.itemSpecs}>Mold Fee: {formatMoney(item.moldFee, currency)}</Text>
                 </View>
                 <View style={styles.col3}>
-                  <Text style={styles.cellText}>{item.qty} {item.metricType}</Text>
-                  <Text style={[styles.itemSpecs, { marginTop: 4 }]}>@ {formatMoney(item.unitPrice)}/{item.metricType}</Text>
+                  <Text style={styles.cellText}>{Number(item.qty)} {item.metricType}</Text>
+                  <Text style={[styles.itemSpecs, { marginTop: 4 }]}>@ {formatMoney(item.unitPrice, currency)}/{item.metricType}</Text>
                 </View>
                 <View style={styles.col4}>
-                  <Text style={[styles.cellText, { fontWeight: 'bold' }]}>{formatMoney(lineTotal)}</Text>
+                  <Text style={[styles.cellText, { fontWeight: 'bold' }]}>{formatMoney(lineTotal, currency)}</Text>
                 </View>
               </View>
             );
@@ -277,33 +291,40 @@ export default function QuotePDFTemplate({ quoteData }) {
           <View style={styles.totalsBox}>
             <View style={styles.totalsRow}>
               <Text style={styles.totalsLabel}>Elements Subtotal</Text>
-              <Text style={styles.totalsValue}>{formatMoney(itemsTotal)}</Text>
+              <Text style={styles.totalsValue}>{formatMoney(itemsTotal, currency)}</Text>
             </View>
             
             {Number(engineeringFee) > 0 && (
               <View style={styles.totalsRow}>
                 <Text style={styles.totalsLabel}>Engineering & Shop Drawings</Text>
-                <Text style={styles.totalsValue}>{formatMoney(engineeringFee)}</Text>
+                <Text style={styles.totalsValue}>{formatMoney(engineeringFee, currency)}</Text>
               </View>
             )}
             
             {Number(logisticsFee) > 0 && (
               <View style={styles.totalsRow}>
                 <Text style={styles.totalsLabel}>Logistics & Freight</Text>
-                <Text style={styles.totalsValue}>{formatMoney(logisticsFee)}</Text>
+                <Text style={styles.totalsValue}>{formatMoney(logisticsFee, currency)}</Text>
               </View>
             )}
             
             {Number(installationFee) > 0 && (
               <View style={styles.totalsRow}>
                 <Text style={styles.totalsLabel}>Installation Services</Text>
-                <Text style={styles.totalsValue}>{formatMoney(installationFee)}</Text>
+                <Text style={styles.totalsValue}>{formatMoney(installationFee, currency)}</Text>
+              </View>
+            )}
+
+            {Number(taxPercentage) > 0 && (
+              <View style={styles.totalsRow}>
+                <Text style={styles.totalsLabel}>Tax/VAT ({taxPercentage}%)</Text>
+                <Text style={styles.totalsValue}>{formatMoney(taxAmount, currency)}</Text>
               </View>
             )}
 
             <View style={styles.grandTotalRow}>
               <Text style={styles.grandTotalLabel}>Grand Total</Text>
-              <Text style={styles.grandTotalValue}>{formatMoney(grandTotal)}</Text>
+              <Text style={styles.grandTotalValue}>{formatMoney(grandTotal, currency)}</Text>
             </View>
           </View>
         </View>

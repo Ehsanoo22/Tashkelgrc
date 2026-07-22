@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
-import { X, Plus, Trash2, Download, Send, Loader2, CheckCircle2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Plus, Trash2, Download, Send, Loader2, CheckCircle2, Save } from 'lucide-react';
 import { PDFDownloadLink, pdf } from '@react-pdf/renderer';
 import QuotePDFTemplate from './QuotePDFTemplate';
+import { supabase } from '../../lib/supabase';
 
 export default function QuoteBuilder({ lead, onClose }) {
-  const [items, setItems] = useState([
-    {
+  const [items, setItems] = useState(() => {
+    if (lead?.quote_data?.items) return lead.quote_data.items;
+    return [{
       category: 'Flat Panel',
       length: '1.2', width: '2.4', depth: '20',
       metricType: 'm²',
@@ -17,15 +19,19 @@ export default function QuoteBuilder({ lead, onClose }) {
       moldFee: '500',
       unitPrice: '150',
       qty: '10'
-    }
-  ]);
+    }];
+  });
 
-  const [engineeringFee, setEngineeringFee] = useState('0');
-  const [logisticsFee, setLogisticsFee] = useState('0');
-  const [installationFee, setInstallationFee] = useState('0');
+  const [engineeringFee, setEngineeringFee] = useState(lead?.quote_data?.engineeringFee || '0');
+  const [logisticsFee, setLogisticsFee] = useState(lead?.quote_data?.logisticsFee || '0');
+  const [installationFee, setInstallationFee] = useState(lead?.quote_data?.installationFee || '0');
+  const [currency, setCurrency] = useState(lead?.quote_data?.currency || 'USD');
+  const [taxPercentage, setTaxPercentage] = useState(lead?.quote_data?.taxPercentage || '0');
 
   const [isSending, setIsSending] = useState(false);
   const [sendSuccess, setSendSuccess] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   const handleAddItem = () => {
     setItems([...items, {
@@ -56,15 +62,39 @@ export default function QuoteBuilder({ lead, onClose }) {
   };
 
   const quoteData = {
-    id: `EST-${new Date().getFullYear()}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
-    date: new Date().toLocaleDateString(),
+    id: lead?.quote_data?.id || `EST-${new Date().getFullYear()}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
+    date: lead?.quote_data?.date || new Date().toLocaleDateString(),
     leadName: lead.full_name,
     leadEmail: lead.email,
     leadPhone: lead.phone,
     items,
     engineeringFee,
     logisticsFee,
-    installationFee
+    installationFee,
+    currency,
+    taxPercentage
+  };
+
+  const handleSaveDraft = async () => {
+    setIsSaving(true);
+    setSaveSuccess(false);
+    
+    try {
+      const { error } = await supabase
+        .from('leads')
+        .update({ quote_data: quoteData })
+        .eq('id', lead.id);
+
+      if (error) throw error;
+      
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
+    } catch (error) {
+      console.error(error);
+      alert("Error saving draft: " + error.message);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleSendEmail = async () => {
@@ -123,7 +153,19 @@ export default function QuoteBuilder({ lead, onClose }) {
         {/* Header */}
         <div className="bg-white px-6 py-4 border-b border-stone-200 flex items-center justify-between shrink-0">
           <div>
-            <h2 className="text-xl font-bold text-stone-900">Generate Quote</h2>
+            <h2 className="text-xl font-bold text-stone-900 flex items-center gap-4">
+              Generate Quote
+              <select 
+                value={currency} 
+                onChange={(e) => setCurrency(e.target.value)}
+                className="text-sm border-stone-200 rounded-lg py-1 px-3 bg-stone-50 font-normal focus:ring-brand-warm focus:border-brand-warm"
+              >
+                <option value="USD">USD ($)</option>
+                <option value="SYP">SYP (SYP)</option>
+                <option value="AED">AED (AED)</option>
+                <option value="MYR">MYR (RM)</option>
+              </select>
+            </h2>
             <p className="text-sm text-stone-500">For: {lead.full_name} ({lead.email})</p>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-stone-100 rounded-full transition-colors">
@@ -214,11 +256,16 @@ export default function QuoteBuilder({ lead, onClose }) {
 
                   <div>
                     <label className="block text-xs font-medium text-stone-700 mb-1">Structural Backing</label>
-                    <select value={item.structural} onChange={e => updateItem(index, 'structural', e.target.value)} className="w-full text-sm border-stone-300 rounded-lg">
-                      <option>Steel Stud Frame</option>
-                      <option>L-bracket direct fix</option>
-                      <option>Unframed (decorative)</option>
-                    </select>
+                    <div className="flex gap-2">
+                      <select value={item.structural} onChange={e => updateItem(index, 'structural', e.target.value)} className="flex-1 text-sm border-stone-300 rounded-lg">
+                        <option>Steel Stud Frame</option>
+                        <option>L-bracket direct fix</option>
+                        <option>Unframed (decorative)</option>
+                      </select>
+                      <div className="w-24">
+                        <input type="number" placeholder="Inserts" value={item.inserts} onChange={e => updateItem(index, 'inserts', e.target.value)} className="w-full text-sm border-stone-300 rounded-lg" title="Fixing Inserts (pcs)" />
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -251,7 +298,7 @@ export default function QuoteBuilder({ lead, onClose }) {
                   <div className="pt-2 mt-2 border-t border-stone-200 flex justify-between items-center">
                     <span className="text-xs font-bold text-stone-500">Subtotal:</span>
                     <span className="font-bold text-brand-dark">
-                      ${((Number(item.qty) * Number(item.unitPrice)) + Number(item.moldFee)).toLocaleString(undefined, {minimumFractionDigits: 2})}
+                      {new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(((Number(item.qty) * Number(item.unitPrice)) + Number(item.moldFee)))}
                     </span>
                   </div>
                 </div>
@@ -296,6 +343,13 @@ export default function QuoteBuilder({ lead, onClose }) {
                   <input type="number" value={installationFee} onChange={e => setInstallationFee(e.target.value)} className="w-full pl-7 text-sm border-stone-300 rounded-lg" />
                 </div>
               </div>
+              <div>
+                <label className="block text-xs font-medium text-stone-700 mb-1">Tax / VAT (%)</label>
+                <div className="relative">
+                  <span className="absolute right-3 top-2 text-stone-400">%</span>
+                  <input type="number" value={taxPercentage} onChange={e => setTaxPercentage(e.target.value)} className="w-full pr-7 text-sm border-stone-300 rounded-lg" />
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -304,13 +358,28 @@ export default function QuoteBuilder({ lead, onClose }) {
         <div className="bg-white px-6 py-4 border-t border-stone-200 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-4">
             <div className="text-xl font-bold text-stone-900">
-              Total: ${ (
-                items.reduce((sum, item) => sum + (Number(item.qty) * Number(item.unitPrice)) + Number(item.moldFee), 0) +
-                Number(engineeringFee) + Number(logisticsFee) + Number(installationFee)
-              ).toLocaleString(undefined, {minimumFractionDigits: 2})}
+              Total: { new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(
+                (items.reduce((sum, item) => sum + (Number(item.qty) * Number(item.unitPrice)) + Number(item.moldFee), 0) +
+                Number(engineeringFee) + Number(logisticsFee) + Number(installationFee)) * (1 + (Number(taxPercentage)/100))
+              )}
             </div>
           </div>
           <div className="flex gap-3">
+            
+            <button
+              onClick={handleSaveDraft}
+              disabled={isSaving}
+              className="px-4 py-2 border border-stone-300 text-stone-700 rounded-lg hover:bg-stone-50 font-medium text-sm flex items-center gap-2 transition-colors disabled:opacity-75"
+            >
+              {isSaving ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : saveSuccess ? (
+                <CheckCircle2 className="w-4 h-4 text-green-500" />
+              ) : (
+                <Save className="w-4 h-4" />
+              )}
+              {isSaving ? 'Saving...' : saveSuccess ? 'Saved!' : 'Save Draft'}
+            </button>
             <PDFDownloadLink
               document={<QuotePDFTemplate quoteData={quoteData} />}
               fileName={`Tashkel_Quote_${quoteData.id}.pdf`}
