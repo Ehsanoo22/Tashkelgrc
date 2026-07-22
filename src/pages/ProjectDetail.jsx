@@ -65,10 +65,21 @@ export default function ProjectDetail({ lang, setLang }) {
     <div className={`min-h-screen flex flex-col bg-white ${isRtl ? 'font-arabic' : 'font-sans'}`} dir={isRtl ? 'rtl' : 'ltr'}>
       <Navbar lang={lang} setLang={setLang} t={t} />
 
-      <main className="flex-1 pt-32 pb-24">
+      <main className="flex-1 pb-24">
         
+        {/* Pinned Cover Image (Hero) */}
+        {project.cover_image_url && (
+          <div className="w-full relative h-[60vh] md:h-[85vh] mb-12 md:mb-24">
+            <img 
+              src={project.cover_image_url} 
+              alt={project.title}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          </div>
+        )}
+
         {/* Minimalist Header */}
-        <div className="px-6 md:px-12 max-w-screen-xl mx-auto mb-16 md:mb-24">
+        <div className="px-6 md:px-12 max-w-screen-xl mx-auto mb-16 md:mb-24 mt-12 md:mt-0">
           <Link 
             to="/projects" 
             className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] font-bold text-stone-400 hover:text-brand-dark transition-colors mb-12"
@@ -123,16 +134,6 @@ export default function ProjectDetail({ lang, setLang }) {
           </div>
         </div>
 
-        {/* Cover Image (Unobstructed) */}
-        {project.cover_image_url && (
-          <div className="w-full mb-16 md:mb-32">
-            <img 
-              src={project.cover_image_url} 
-              alt={project.title}
-              className="w-full h-[60vh] md:h-[85vh] object-cover"
-            />
-          </div>
-        )}
 
         {/* Architectural Image Grid */}
         {project.gallery_urls && project.gallery_urls.length > 0 && (

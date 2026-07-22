@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Save, Upload, Loader2, Image as ImageIcon } from 'lucide-react';
+import { X, Save, Upload, Loader2, Image as ImageIcon, Trash2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
 export default function CaseStudyBuilder({ caseStudy, onClose }) {
@@ -44,10 +44,10 @@ export default function CaseStudyBuilder({ caseStudy, onClose }) {
       const fileName = `${Math.random()}.${fileExt}`;
       const filePath = `covers/${fileName}`;
 
-      const { error: uploadError } = await supabase.storage.from('gallery').upload(filePath, file);
+      const { error: uploadError } = await supabase.storage.from('portfolio').upload(filePath, file);
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage.from('gallery').getPublicUrl(filePath);
+      const { data: { publicUrl } } = supabase.storage.from('portfolio').getPublicUrl(filePath);
       setFormData({ ...formData, cover_image_url: publicUrl });
     } catch (error) {
       alert('Error uploading image: ' + error.message);
@@ -68,10 +68,10 @@ export default function CaseStudyBuilder({ caseStudy, onClose }) {
         const fileName = `${Math.random()}.${fileExt}`;
         const filePath = `gallery/${fileName}`;
 
-        const { error: uploadError } = await supabase.storage.from('gallery').upload(filePath, file);
+        const { error: uploadError } = await supabase.storage.from('portfolio').upload(filePath, file);
         if (uploadError) throw uploadError;
 
-        const { data: { publicUrl } } = supabase.storage.from('gallery').getPublicUrl(filePath);
+        const { data: { publicUrl } } = supabase.storage.from('portfolio').getPublicUrl(filePath);
         uploadedUrls.push(publicUrl);
       }
       setFormData(prev => ({ 
