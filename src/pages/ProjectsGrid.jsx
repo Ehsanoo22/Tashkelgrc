@@ -48,7 +48,7 @@ export default function ProjectsGrid({ lang, setLang }) {
     <div className={`min-h-screen flex flex-col bg-stone-50 ${isRtl ? 'font-arabic' : 'font-sans'}`} dir={isRtl ? 'rtl' : 'ltr'}>
       <Navbar lang={lang} setLang={setLang} t={t} />
 
-      <main className="flex-1 pt-32 pb-24 px-6 md:px-12 max-w-screen-2xl mx-auto w-full">
+      <main className="flex-1 pt-40 md:pt-48 pb-24 px-6 md:px-12 max-w-screen-2xl mx-auto w-full">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
