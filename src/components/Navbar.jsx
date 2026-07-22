@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
+import posthog from 'posthog-js';
 
 export default function Navbar({ lang, setLang, t }) {
   const { scrollY } = useScroll();
@@ -77,7 +78,7 @@ export default function Navbar({ lang, setLang, t }) {
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-6 z-10">
             <motion.button
-              onClick={() => setLang(lang === 'en' ? 'ar' : 'en')}
+              onClick={() => { const next = lang === 'en' ? 'ar' : 'en'; setLang(next); posthog.capture('language_switched', { from: lang, to: next }); }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className={`text-sm font-bold tracking-widest uppercase transition-colors duration-300
@@ -85,11 +86,12 @@ export default function Navbar({ lang, setLang, t }) {
             >
               {t.nav.toggleLang}
             </motion.button>
-            <motion.a 
-              href="#contact" 
+            <motion.a
+              href="#contact"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="hidden md:inline-flex btn-cinematic px-6 py-2 text-xs"
+              onClick={() => posthog.capture('nav_contact_cta_clicked', { location: 'desktop_nav' })}
             >
               {t.nav.cta}
             </motion.a>
@@ -98,7 +100,7 @@ export default function Navbar({ lang, setLang, t }) {
           {/* Mobile Hamburger & Lang */}
           <div className="flex md:hidden items-center gap-4 z-10">
             <motion.button
-              onClick={() => setLang(lang === 'en' ? 'ar' : 'en')}
+              onClick={() => { const next = lang === 'en' ? 'ar' : 'en'; setLang(next); posthog.capture('language_switched', { from: lang, to: next }); }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className={`text-xs font-bold tracking-widest uppercase transition-colors duration-300
@@ -151,7 +153,7 @@ export default function Navbar({ lang, setLang, t }) {
               
               <motion.a
                 href="#contact"
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={() => { setIsMobileMenuOpen(false); posthog.capture('nav_contact_cta_clicked', { location: 'mobile_menu' }); }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3, duration: 0.5 }}

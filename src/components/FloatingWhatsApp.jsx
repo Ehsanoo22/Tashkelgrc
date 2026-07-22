@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import posthog from 'posthog-js';
 
 export default function FloatingWhatsApp() {
   const phoneNumber = '00963933295100';
@@ -81,7 +82,7 @@ export default function FloatingWhatsApp() {
           transform: translate(2px, 2px);
         }
       `}</style>
-      <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="Btn">
+      <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="Btn" onClick={() => posthog.capture('whatsapp_button_clicked')}>
         <div className="sign">
           <svg className="socialSvg whatsappSvg" viewBox="0 0 16 16">
             <path

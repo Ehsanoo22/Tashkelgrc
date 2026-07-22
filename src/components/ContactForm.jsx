@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, CheckCircle, AlertCircle, Phone, Mail, MapPin } from 'lucide-react';
+import posthog from 'posthog-js';
 
 export default function ContactForm({ t, lang }) {
   const [formData, setFormData] = useState({
@@ -19,7 +20,11 @@ export default function ContactForm({ t, lang }) {
   };
 
   const handleTypeSelect = (type) => {
-    setSelectedType(type === selectedType ? '' : type);
+    const next = type === selectedType ? '' : type;
+    setSelectedType(next);
+    if (next) {
+      posthog.capture('contact_type_selected', { project_type: next, language: lang });
+    }
   };
 
   const handleSubmit = (e) => {
@@ -35,6 +40,11 @@ export default function ContactForm({ t, lang }) {
     // Simulate high-converting server proposal submission
     setTimeout(() => {
       setStatus('success');
+      posthog.capture('contact_form_submitted', {
+        project_type: selectedType,
+        has_message: formData.message.trim().length > 0,
+        language: lang,
+      });
       setFormData({ name: '', email: '', phone: '', message: '' });
       setSelectedType('');
     }, 2000);

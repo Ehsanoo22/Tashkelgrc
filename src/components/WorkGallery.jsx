@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { motion, useScroll, useTransform, useSpring, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
+import posthog from 'posthog-js';
 
 export default function WorkGallery({ t, lang }) {
   const targetRef = useRef(null);
@@ -27,8 +28,8 @@ export default function WorkGallery({ t, lang }) {
               <h2 className="text-4xl md:text-6xl font-bold tracking-tighter text-brand-dark">
                 {t.work.title}
               </h2>
-              <button 
-                onClick={() => setIsModalOpen(true)}
+              <button
+                onClick={() => { setIsModalOpen(true); posthog.capture('portfolio_gallery_opened', { project_count: t.work.projects.length, language: lang }); }}
                 className="btn-cinematic hover-target text-xs px-8 py-4 self-start md:self-auto shrink-0"
               >
                 {t.work.viewAll}

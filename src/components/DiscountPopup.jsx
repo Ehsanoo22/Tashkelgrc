@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Percent } from 'lucide-react';
+import posthog from 'posthog-js';
 
 export default function DiscountPopup({ lang }) {
   const [isVisible, setIsVisible] = useState(false);
@@ -11,11 +12,12 @@ export default function DiscountPopup({ lang }) {
     const timer = setTimeout(() => {
       if (!isDismissed) {
         setIsVisible(true);
+        posthog.capture('discount_popup_viewed', { discount_percent: 20, language: lang });
       }
     }, 35000);
 
     return () => clearTimeout(timer);
-  }, [isDismissed]);
+  }, [isDismissed, lang]);
 
   const isRtl = lang === 'ar';
 
@@ -47,7 +49,7 @@ export default function DiscountPopup({ lang }) {
                   {isRtl ? 'عرض خاص' : 'Special Offer'}
                 </span>
               </div>
-              <button onClick={() => setIsDismissed(true)} className="hover:text-brand-warm transition-colors p-1" aria-label="Close">
+              <button onClick={() => { setIsDismissed(true); posthog.capture('discount_popup_dismissed', { language: lang }); }} className="hover:text-brand-warm transition-colors p-1" aria-label="Close">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -62,9 +64,9 @@ export default function DiscountPopup({ lang }) {
                   ? 'تقدم بطلبك عبر الإنترنت الآن واحصل على خصم حصري على مشروعك المعماري القادم.' 
                   : 'Apply online right now and receive an exclusive 20% discount on your next architectural project.'}
               </p>
-              <a 
-                href="#contact" 
-                onClick={() => setIsVisible(false)}
+              <a
+                href="#contact"
+                onClick={() => { setIsVisible(false); posthog.capture('discount_popup_cta_clicked', { discount_percent: 20, language: lang }); }}
                 className="block w-full text-center py-4 bg-brand-dark text-white rounded-xl text-sm font-bold tracking-wide uppercase hover:bg-brand-warm transition-all duration-300 shadow-lg hover:shadow-brand-warm/30 transform active:scale-95"
               >
                 {isRtl ? 'استفد من العرض' : 'Apply Discount Now'}

@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Waves } from './Waves';
+import posthog from 'posthog-js';
 
 // Replace with a high-res architectural 3D render loop or video
 const VIDEO_URL = "https://cdn.pixabay.com/video/2020/07/31/46121-446700854_large.mp4";
@@ -83,7 +84,7 @@ export default function Hero({ t, lang }) {
           transition={{ duration: 0.8, delay: 4.2, ease: [0.32, 0.72, 0, 1] }}
           className="flex gap-6 items-center"
         >
-          <a href="#work" className="btn-cinematic hover-target">
+          <a href="#work" className="btn-cinematic hover-target" onClick={() => posthog.capture('hero_cta_clicked', { language: lang })}>
             {t.hero.ctaPrimary}
           </a>
         </motion.div>
