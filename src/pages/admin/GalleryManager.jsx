@@ -45,7 +45,11 @@ export default function GalleryManager() {
       return { ...meta, publicUrl };
     });
 
-    merged.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+    merged.sort((a, b) => {
+      const orderA = (!a.sort_order || a.sort_order === 0) ? 999 : a.sort_order;
+      const orderB = (!b.sort_order || b.sort_order === 0) ? 999 : b.sort_order;
+      return orderA - orderB;
+    });
 
     setImages(merged);
   };

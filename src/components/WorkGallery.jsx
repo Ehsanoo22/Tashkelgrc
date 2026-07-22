@@ -51,7 +51,11 @@ export default function WorkGallery({ t, lang }) {
         };
       });
       
-      mapped.sort((a, b) => a.sort_order - b.sort_order);
+      mapped.sort((a, b) => {
+        const orderA = (!a.sort_order || a.sort_order === 0) ? 999 : a.sort_order;
+        const orderB = (!b.sort_order || b.sort_order === 0) ? 999 : b.sort_order;
+        return orderA - orderB;
+      });
       setDynamicProjects(mapped);
     }
     fetchImages();
