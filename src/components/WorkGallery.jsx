@@ -16,6 +16,13 @@ export default function WorkGallery({ t, lang }) {
         const validImages = data.filter(file => !file.name.startsWith('.'));
         const mapped = validImages.map((img, i) => {
           const { data: { publicUrl } } = supabase.storage.from('gallery').getPublicUrl(img.name);
+          
+          const staticMatch = t.work.projects.find(p => p.image.includes(img.name));
+          
+          if (staticMatch) {
+            return { ...staticMatch, image: publicUrl, id: img.name };
+          }
+          
           return {
             id: img.name,
             image: publicUrl,
