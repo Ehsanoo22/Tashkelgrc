@@ -41,7 +41,7 @@ export default function Navbar({ lang, setLang, t }) {
         <motion.nav
           layout
           className={`relative pointer-events-auto flex items-center justify-between px-6 md:px-8 py-3 rounded-full transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)]
-            ${isScrolled ? 'nav-pill w-full max-w-[90%] md:w-[800px]' : 'bg-transparent w-full md:w-[90%]'}`}
+            ${isScrolled ? 'nav-pill w-full max-w-[95%] lg:w-[950px]' : 'bg-transparent w-full md:w-[95%]'}`}
         >
           {/* Animated Border Accent on Load */}
           <motion.div
@@ -62,7 +62,7 @@ export default function Navbar({ lang, setLang, t }) {
           </a>
 
           {/* Desktop Links - Absolutely centered for perfect alignment with Hero text */}
-          <div className="hidden md:flex items-center justify-center gap-8 z-10 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          <div className="hidden md:flex items-center justify-center gap-5 lg:gap-8 z-10 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             {links.map(link => (
               <motion.a
                 key={link.href}
