@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
+import QuoteBuilder from '../../components/admin/QuoteBuilder';
 
 export default function LeadsView() {
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedLeadForQuote, setSelectedLeadForQuote] = useState(null);
 
   useEffect(() => {
     fetchLeads();
@@ -37,12 +39,13 @@ export default function LeadsView() {
                 <th className="px-6 py-4 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Contact</th>
                 <th className="px-6 py-4 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Project Type</th>
                 <th className="px-6 py-4 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-4 text-right text-xs font-medium text-stone-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-stone-200">
               {leads.length === 0 ? (
                 <tr>
-                  <td colSpan="5" className="px-6 py-8 text-center text-sm text-stone-500">No leads yet.</td>
+                  <td colSpan="6" className="px-6 py-8 text-center text-sm text-stone-500">No leads yet.</td>
                 </tr>
               ) : (
                 leads.map((lead) => (
@@ -66,6 +69,14 @@ export default function LeadsView() {
                         {lead.status}
                       </span>
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <button 
+                        onClick={() => setSelectedLeadForQuote(lead)}
+                        className="text-brand-warm hover:text-orange-600 transition-colors"
+                      >
+                        Generate Quote
+                      </button>
+                    </td>
                   </tr>
                 ))
               )}
@@ -73,6 +84,13 @@ export default function LeadsView() {
           </table>
         </div>
       </div>
+
+      {selectedLeadForQuote && (
+        <QuoteBuilder 
+          lead={selectedLeadForQuote} 
+          onClose={() => setSelectedLeadForQuote(null)} 
+        />
+      )}
     </div>
   );
 }
