@@ -18,7 +18,8 @@ export default function WorkGallery({ t, lang }) {
       // 2. Fetch metadata from DB
       const { data: metaData } = await supabase.from('gallery_metadata').select('*');
       
-      const validImages = storageData.filter(file => !file.name.startsWith('.'));
+      // Filter out hidden files and folders (folders have id: null)
+      const validImages = storageData.filter(file => !file.name.startsWith('.') && file.id !== null);
       
       const mapped = validImages.map((img, i) => {
         const { data: { publicUrl } } = supabase.storage.from('gallery').getPublicUrl(img.name);

@@ -29,7 +29,8 @@ export default function GalleryManager() {
       return;
     }
 
-    const validImages = storageData.filter(file => !file.name.startsWith('.'));
+    // Filter out hidden files and folders (folders have id: null)
+    const validImages = storageData.filter(file => !file.name.startsWith('.') && file.id !== null);
     
     // Merge
     const merged = validImages.map(file => {
