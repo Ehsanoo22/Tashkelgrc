@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Plus, Trash2, Download, Send, Loader2, CheckCircle2, Save } from 'lucide-react';
 import { PDFDownloadLink, pdf } from '@react-pdf/renderer';
-import QuotePDFTemplate from './QuotePDFTemplate';
+import QuotePDFTemplate from '../shared/QuotePDFTemplate';
 import { supabase } from '../../lib/supabase';
 
 export default function QuoteBuilder({ lead, onClose }) {

@@ -7,7 +7,7 @@ import GFRCSection from '../components/GFRCSection';
 import About from '../components/About';
 import Testimonials from '../components/Testimonials';
 import FAQSection from '../components/FAQSection';
-import ContactSection from '../components/ContactSection';
+import ProjectEstimator from '../components/ProjectEstimator';
 import Footer from '../components/Footer';
 import FloatingWhatsApp from '../components/FloatingWhatsApp';
 import DiscountPopup from '../components/DiscountPopup';
@@ -51,7 +51,7 @@ export default function PublicSite({ lang, setLang }) {
       <About t={t} lang={lang} />
       <Testimonials t={t} lang={lang} />
       <FAQSection t={t} lang={lang} />
-      <ContactSection t={t} lang={lang} />
+      <ProjectEstimator t={t} lang={lang} />
       <Footer t={t} lang={lang} />
 
       <FloatingWhatsApp lang={lang} />
