@@ -153,8 +153,8 @@ export default function ProjectEstimator({ t, lang }) {
         validityDays: calculation.validityDays
       };
 
-      // 3. Save to Supabase
-      const { error: dbError } = await supabase.from('leads').insert([{
+      // 3. Save to Supabase (Leads)
+      const { data: leadData, error: dbError } = await supabase.from('leads').insert([{
         project_type: formData.projectType,
         full_name: formData.name,
         email: formData.email,
@@ -188,9 +188,28 @@ export default function ProjectEstimator({ t, lang }) {
         },
         files: uploadedFileUrls,
         pricing_breakdown: calculation
-      }]);
+      }]).select().single();
 
       if (dbError) console.error("Database save error:", dbError);
+      
+      const leadId = leadData ? leadData.id : null;
+
+      // 4. Save to Quotations Table
+      await supabase.from('quotations').insert([{
+        quote_ref: quoteDataForPDF.id,
+        lead_id: leadId,
+        raw_config: formData,
+        breakdown: calculation.costBreakdown,
+        quote_data: quoteDataForPDF,
+        status: 'Generated'
+      }]);
+
+      // 5. Log Activity
+      await supabase.from('activity_logs').insert([{
+        type: 'New Quote',
+        description: `${formData.name} generated an estimate for ${formData.projectType} (${quoteDataForPDF.id}).`,
+        metadata: { lead_id: leadId, value: calculation.costBreakdown.grandTotal }
+      }]);
 
       // Estimate timeframes based on area
       const areaNum = Number(formData.estimatedArea) || 0;

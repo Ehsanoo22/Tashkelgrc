@@ -8,10 +8,19 @@ import ProjectDetail from './pages/ProjectDetail';
 import FAQPage from './pages/FAQPage';
 import RouteTransitionProvider from './components/RouteTransitionProvider';
 import { supabase } from './lib/supabase';
+import { logPageView } from './lib/analytics';
+import CookieConsent from './components/shared/CookieConsent';
+import { useLocation } from 'react-router-dom';
 
 function App() {
   const [lang, setLang] = useState('en');
   const [enableLoader, setEnableLoader] = useState(true);
+  const location = useLocation();
+
+  useEffect(() => {
+    // Log page view whenever the location changes
+    logPageView(location.pathname);
+  }, [location]);
 
   useEffect(() => {
     // Fetch global settings on app load
@@ -45,6 +54,7 @@ function App() {
         <Route path="/tashkeladmin/login" element={<Login />} />
         <Route path="/tashkeladmin/*" element={<AdminDashboard />} />
       </Routes>
+      <CookieConsent lang={lang} />
     </RouteTransitionProvider>
   );
 }
