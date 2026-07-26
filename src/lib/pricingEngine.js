@@ -1,10 +1,8 @@
-// Premium AI-Powered Pricing Engine
-// This engine calculates an intelligent estimated quotation based on complex architectural parameters.
+// Premium AI-Powered Pricing Engine V2
+// This engine calculates a comprehensive, production-ready quotation based purely on dynamic configuration.
 
-// Utility to convert Arabic numerals to English numerals so JavaScript can parse them
 function parseLocalNumber(str) {
   if (!str) return 0;
-  // Convert string to string in case it's a number type
   let stringValue = str.toString();
   const arabicNumbers = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
   for (let i = 0; i < 10; i++) {
@@ -14,7 +12,11 @@ function parseLocalNumber(str) {
   return isNaN(parsed) ? 0 : parsed;
 }
 
-export function generateEstimate(data, pricingConfig) {
+export function generateEstimate(data, config) {
+  // If config is missing, return safe zeroes to avoid crashing. 
+  // In production, the component shouldn't allow generating without config.
+  if (!config) return { items: [], grandTotal: 0, costBreakdown: {} };
+
   const {
     projectType = 'Custom Project',
     estimatedArea = '0',
@@ -24,104 +26,147 @@ export function generateEstimate(data, pricingConfig) {
     structuralSupport = 'Direct Fix',
     installationRequired = 'Yes',
     engineeringRequired = 'Yes',
+    
+    // New Advanced Parameters
+    drawingsAvailable = 'No',
+    uniqueDesigns = '1',
+    mouldsReused = 'Yes',
+    waterproofing = 'No',
+    fireResistance = 'No',
+    acoustic = 'No',
+    loadBearing = 'No',
+    priority = 'Normal'
   } = data;
 
-  // Fallback to hardcoded defaults if config is missing (e.g. Supabase fetch failed)
-  const BASE_RATES = pricingConfig?.base_rates || {
-    'Facade Cladding': { rate: 120, unit: 'sqm', baseMoldComplexity: 'Low' },
-    'Mashrabiya & Screens': { rate: 250, unit: 'sqm', baseMoldComplexity: 'High' },
-    'Ornamental Relief': { rate: 350, unit: 'sqm', baseMoldComplexity: 'Very High' },
-    'Cornices': { rate: 80, unit: 'lm', baseMoldComplexity: 'Medium' },
-    'Columns': { rate: 150, unit: 'pieces', baseMoldComplexity: 'High' },
-    'Arches': { rate: 200, unit: 'pieces', baseMoldComplexity: 'High' },
-    'Domes': { rate: 800, unit: 'sqm', baseMoldComplexity: 'Extreme' },
-    'Decorative Panels': { rate: 180, unit: 'sqm', baseMoldComplexity: 'Medium' },
-    'Custom Project': { rate: 200, unit: 'sqm', baseMoldComplexity: 'High' },
-  };
-
-  const FINISH_MULTIPLIER = pricingConfig?.finish_multipliers || {
-    'Smooth': 1.0,
-    'Sand': 1.15,
-    'Stone': 1.30,
-    'Custom': 1.50,
-  };
-
-  const COLOR_MULTIPLIER = pricingConfig?.color_multipliers || {
-    'Standard Grey': 1.0,
-    'White': 1.15,
-    'Pigmented': 1.25,
-    'Custom': 1.40,
-  };
-
-  const STRUCTURAL_MULTIPLIER = pricingConfig?.structural_multipliers || {
-    'Direct Fix': 1.0,
-    'Steel Stud': 1.35,
-    'Custom': 1.50,
-  };
-
-  const FIXED_FEES = pricingConfig?.fixed_fees || {
-    engineeringBase: 1500,
-    engineeringPerUnit: 5,
-    installBaseRate: 50,
-    installSteelStudRate: 80,
-    logisticsPerUnit: 15,
-    logisticsMinimum: 500
-  };
-
-  // Convert area string (could be Arabic numerals) to standard JS Number
-  const area = parseLocalNumber(estimatedArea);
-
-  // Safety fallback in case project type is unrecognized
-  const safeProjectType = BASE_RATES[projectType] ? projectType : 'Custom Project';
-  const typeConfig = BASE_RATES[safeProjectType];
-  const actualMetricType = metricType || typeConfig.unit;
+  const area = Math.max(parseLocalNumber(estimatedArea), 0);
+  const uniqueMouldCount = Math.max(parseLocalNumber(uniqueDesigns), 1);
   
-  // Calculate Unit Price
-  let unitPrice = typeConfig.rate;
-  unitPrice *= (FINISH_MULTIPLIER[finish] || 1.0);
-  unitPrice *= (COLOR_MULTIPLIER[color] || 1.0);
-  unitPrice *= (STRUCTURAL_MULTIPLIER[structuralSupport] || 1.0);
+  // Extract configurations
+  const BASE_RATES = config.base_rates || {};
+  const FINISH_MULT = config.finish_multipliers || {};
+  const COLOR_MULT = config.color_multipliers || {};
+  const STRUCTURAL_MULT = config.structural_multipliers || {};
+  const FIXED_FEES = config.fixed_fees || {};
+  const MOULD_PRICING = config.mould_pricing || {};
+  const QTY_DISCOUNTS = config.quantity_discounts || {};
+  const GEN_CONFIG = config.general_config || {};
 
-  unitPrice = Math.round(unitPrice);
+  // 1. Base Element Cost
+  const typeConfig = BASE_RATES[projectType] || BASE_RATES['Custom Project'] || { rate: 200, unit: 'sqm', baseMoldComplexity: 'High', minSize: 1 };
+  const baseRate = typeConfig.rate;
+  let materialCost = baseRate * area;
 
-  // Calculate Mold Fee
-  let moldFee = 0;
+  // Apply Quantity Discount
+  let qtyDiscountMult = 1.0;
+  if (area > 250) qtyDiscountMult = QTY_DISCOUNTS.tier5_250plus || 0.80;
+  else if (area > 100) qtyDiscountMult = QTY_DISCOUNTS.tier4_100to250 || 0.85;
+  else if (area > 50) qtyDiscountMult = QTY_DISCOUNTS.tier3_50to100 || 0.90;
+  else if (area > 20) qtyDiscountMult = QTY_DISCOUNTS.tier2_20to50 || 0.95;
+  else qtyDiscountMult = QTY_DISCOUNTS.tier1_upTo20 || 1.0;
+  
+  materialCost *= qtyDiscountMult;
+
+  // 2. Adjustments (Finish, Color, Structural, Add-ons)
+  const finishMult = FINISH_MULT[finish] || 1.0;
+  const colorMult = COLOR_MULT[color] || 1.0;
+  const structuralMult = STRUCTURAL_MULT[structuralSupport] || 1.0;
+  
+  let addonMult = 1.0;
+  if (waterproofing === 'Yes') addonMult += 0.05;
+  if (fireResistance === 'Yes') addonMult += 0.08;
+  if (acoustic === 'Yes') addonMult += 0.04;
+  if (loadBearing === 'Yes') addonMult += 0.15;
+  if (priority === 'Urgent') addonMult += 0.20;
+
+  const adjustedUnitRate = (baseRate * finishMult * colorMult * structuralMult * addonMult * qtyDiscountMult);
+  const totalAdjustedMaterialCost = adjustedUnitRate * area;
+  
+  const finishAdjustmentValue = (totalAdjustedMaterialCost - materialCost) * (finishMult - 1); // Simplification for display
+  const colorAdjustmentValue = (totalAdjustedMaterialCost - materialCost) * (colorMult - 1);
+  const structuralAdjustmentValue = (totalAdjustedMaterialCost - materialCost) * (structuralMult - 1);
+  const complexityAdjustmentValue = totalAdjustedMaterialCost - materialCost - finishAdjustmentValue - colorAdjustmentValue - structuralAdjustmentValue;
+
+  // 3. Mould Setup Fee
+  let mouldFee = 0;
   if (area > 0) {
-    let baseMoldFee = 2500;
-    if (typeConfig.baseMoldComplexity === 'Medium') baseMoldFee = 4000;
-    if (typeConfig.baseMoldComplexity === 'High') baseMoldFee = 8000;
-    if (typeConfig.baseMoldComplexity === 'Very High') baseMoldFee = 15000;
-    if (typeConfig.baseMoldComplexity === 'Extreme') baseMoldFee = 25000;
+    const complexity = typeConfig.baseMoldComplexity || 'Medium';
+    let baseMouldPrice = MOULD_PRICING[complexity] || MOULD_PRICING['Standard'] || 2500;
     
-    moldFee = baseMoldFee + (Math.sqrt(area) * 100);
+    mouldFee = baseMouldPrice * uniqueMouldCount;
+    if (mouldsReused === 'Yes') {
+      const reuseDiscount = MOULD_PRICING.reusableDiscount || 0.3;
+      mouldFee *= (1 - reuseDiscount);
+    }
   }
-  moldFee = Math.round(moldFee);
-
-  // Calculate Engineering
+  
+  // 4. Engineering & Shop Drawings
   let engineeringFee = 0;
   if (engineeringRequired === 'Yes' && area > 0) {
-    engineeringFee = FIXED_FEES.engineeringBase + (area * FIXED_FEES.engineeringPerUnit);
+    engineeringFee = (FIXED_FEES.engineeringBase || 1500) + (area * (FIXED_FEES.engineeringPerSqm || 5));
+    if (drawingsAvailable === 'No') {
+      engineeringFee += (FIXED_FEES.threeDModellingFee || 1000) + (FIXED_FEES.shopDrawingFee || 500);
+    }
+    if (loadBearing === 'Yes') {
+      engineeringFee += (FIXED_FEES.structuralCalcsFee || 800);
+    }
   }
 
-  // Calculate Installation
+  // 5. Installation
   let installationFee = 0;
   if (installationRequired === 'Yes' && area > 0) {
-    let installRate = FIXED_FEES.installBaseRate; 
-    if (structuralSupport === 'Steel Stud') installRate = FIXED_FEES.installSteelStudRate;
-    installationFee = Math.round(area * installRate);
+    let installRate = FIXED_FEES.installPerSqm || 45;
+    let installBase = FIXED_FEES.installBaseRate || 50;
+    installationFee = installBase + (area * installRate);
+    
+    if (structuralSupport === 'Aluminium Frame' || structuralSupport === 'Steel Stud') {
+      installationFee *= (FIXED_FEES.scaffoldingMultiplier || 1.2);
+    }
   }
 
-  // Calculate Logistics
+  // 6. Logistics
   let logisticsFee = 0;
   if (area > 0) {
-    logisticsFee = Math.round(area * FIXED_FEES.logisticsPerUnit);
-    if (logisticsFee < FIXED_FEES.logisticsMinimum) logisticsFee = FIXED_FEES.logisticsMinimum;
+    logisticsFee = (area * (FIXED_FEES.logisticsPerSqm || 15));
+    const minLog = FIXED_FEES.logisticsMinimum || 500;
+    if (logisticsFee < minLog) logisticsFee = minLog;
+    // Assume large elements require crane
+    if (area > 50) logisticsFee += (FIXED_FEES.craneRequirement || 1200);
   }
 
-  // Build the items array format expected by the QuotePDFTemplate
+  // 7. General Overheads
+  const profitMargin = GEN_CONFIG.profitMargin || 0.20;
+  const contingency = GEN_CONFIG.contingency || 0.05;
+  const taxRate = GEN_CONFIG.taxRate || 0.0;
+  
+  const subtotalRaw = totalAdjustedMaterialCost + mouldFee + engineeringFee + installationFee + logisticsFee;
+  const subtotalWithMargin = subtotalRaw * (1 + profitMargin) * (1 + contingency);
+  
+  let finalSubtotal = Math.max(subtotalWithMargin, GEN_CONFIG.minQuotationValue || 1000);
+  const taxAmount = finalSubtotal * taxRate;
+  const grandTotal = finalSubtotal + taxAmount;
+
+  // Build the breakdown for the UI and PDF
+  const costBreakdown = {
+    materialCost: Math.round(materialCost),
+    finishAdjustment: Math.round(finishAdjustmentValue),
+    colorAdjustment: Math.round(colorAdjustmentValue),
+    structuralAdjustment: Math.round(structuralAdjustmentValue),
+    complexityAdjustment: Math.round(complexityAdjustmentValue),
+    mouldFee: Math.round(mouldFee),
+    engineeringFee: Math.round(engineeringFee),
+    installationFee: Math.round(installationFee),
+    logisticsFee: Math.round(logisticsFee),
+    subtotalRaw: Math.round(subtotalRaw),
+    marginAndContingency: Math.round(subtotalWithMargin - subtotalRaw),
+    taxAmount: Math.round(taxAmount),
+    grandTotal: Math.round(grandTotal),
+    currency: GEN_CONFIG.currency || 'USD'
+  };
+
+  // Build the items array format expected by the QuotePDFTemplate V2
   const items = [
     {
-      category: safeProjectType,
+      category: projectType,
       length: '-',
       width: '-',
       depth: '15',
@@ -130,19 +175,18 @@ export function generateEstimate(data, pricingConfig) {
       moldComplexity: typeConfig.baseMoldComplexity,
       texture: finish,
       pigment: color,
-      moldFee: moldFee || 0, // Fallback to 0 if NaN
-      qty: area || 0, // Fallback to 0 if NaN
-      metricType: actualMetricType,
-      unitPrice: unitPrice || 0 // Fallback to 0 if NaN
+      moldFee: Math.round(mouldFee),
+      qty: area,
+      metricType: typeConfig.unit || metricType,
+      unitPrice: Math.round(adjustedUnitRate * (1 + profitMargin) * (1 + contingency)) // Bake margin into unit price for PDF presentation
     }
   ];
 
   return {
     items,
-    engineeringFee: engineeringFee || 0,
-    logisticsFee: logisticsFee || 0,
-    installationFee: installationFee || 0,
-    taxPercentage: 0,
-    currency: 'USD'
+    costBreakdown,
+    taxPercentage: (taxRate * 100).toFixed(1),
+    currency: GEN_CONFIG.currency || 'USD',
+    validityDays: GEN_CONFIG.validityDays || 30
   };
 }
