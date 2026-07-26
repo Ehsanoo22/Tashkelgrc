@@ -511,6 +511,29 @@ export default function ProjectEstimator({ t, lang }) {
             </p>
           </div>
 
+          {/* Eye-catching Confirmation Message */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.6 }}
+            className="bg-brand-dark text-white rounded-3xl p-6 md:p-8 text-center relative overflow-hidden shadow-2xl shadow-brand-dark/20"
+          >
+            <motion.div 
+              animate={{ opacity: [0.3, 0.6, 0.3], scale: [1, 1.2, 1] }} 
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-brand-warm rounded-full blur-[80px] pointer-events-none"
+            />
+            <div className="relative z-10 flex flex-col items-center">
+              <span className="flex items-center justify-center w-12 h-12 bg-white/10 rounded-full mb-4">
+                <CheckCircle2 className="text-brand-warm w-6 h-6" />
+              </span>
+              <h4 className="text-xl md:text-2xl font-bold mb-2">Estimate Received Successfully</h4>
+              <p className="text-stone-300 text-sm md:text-base max-w-md mx-auto leading-relaxed">
+                Our engineering team has received your request. We will review your project parameters and contact you shortly to discuss the next steps.
+              </p>
+            </div>
+          </motion.div>
+
           {/* Timeframes */}
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-white border border-stone-200 p-5 rounded-2xl flex items-center gap-4">
