@@ -177,7 +177,7 @@ export function generateEstimate(data, config) {
       pigment: color,
       moldFee: Math.round(mouldFee),
       qty: area,
-      metricType: typeConfig.unit || metricType,
+      metricType: metricType || typeConfig.unit,
       unitPrice: Math.round(adjustedUnitRate * (1 + profitMargin) * (1 + contingency)) // Bake margin into unit price for PDF presentation
     }
   ];

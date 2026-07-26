@@ -487,77 +487,85 @@ export default function ProjectEstimator({ t, lang }) {
     const { quoteData, breakdown, mfgDays, instDays } = estimateResult;
     
     return (
-      <motion.div key="step7" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col h-full py-4 relative">
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircle2 className="w-8 h-8 text-green-500" />
+      <motion.div key="step7" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col h-full relative">
+        <div className="flex justify-between items-center mb-6 border-b border-stone-100 pb-4">
+          <div>
+            <h3 className="text-3xl font-bold text-brand-dark flex items-center gap-3">
+              <CheckCircle2 className="text-green-500 w-8 h-8" />
+              Proposal Generated
+            </h3>
+            <p className="text-stone-500 font-medium tracking-wide mt-1">Ref: {quoteData.id}</p>
           </div>
-          <h3 className="text-4xl font-bold text-brand-dark">Proposal Generated</h3>
-          <p className="text-stone-500 mt-2">Ref: {quoteData.id}</p>
+          <div className="flex gap-3">
+            <PDFDownloadLink
+              document={<QuotePDFTemplate quoteData={quoteData} />}
+              fileName={`Tashkel_Proposal_${quoteData.id}.pdf`}
+              className="flex items-center gap-2 px-6 py-2.5 bg-brand-dark text-white rounded-lg font-bold hover:bg-stone-800 transition-colors text-sm shadow-md"
+            >
+              {({ loading }) => (<>{loading ? 'Preparing...' : <><Download size={16} /> Download PDF</>}</>)}
+            </PDFDownloadLink>
+            <a href="mailto:info@tashkelgfrc.com" className="flex items-center gap-2 px-6 py-2.5 bg-white border border-stone-200 text-stone-600 rounded-lg font-bold hover:bg-stone-50 transition-colors text-sm shadow-sm">
+              <Mail size={16}/> Contact Sales
+            </a>
+          </div>
         </div>
         
-        <div className="w-full max-w-2xl mx-auto space-y-6 pb-20 max-h-[60vh] overflow-y-auto custom-scrollbar pr-4">
+        <div className="flex-1 overflow-hidden grid grid-cols-1 lg:grid-cols-2 gap-6 pb-6">
           
-          {/* Main Investment Box */}
-          <div className="bg-stone-50 border border-stone-200 rounded-3xl p-8 shadow-sm">
-            <p className="text-stone-500 text-sm font-semibold tracking-widest uppercase mb-2">Estimated Investment Range</p>
-            <div className="flex items-end gap-2 mb-4">
-              <h4 className="text-4xl md:text-5xl font-bold text-brand-warm">${(breakdown.grandTotal * 0.9).toLocaleString(undefined, { maximumFractionDigits: 0 })}</h4>
-              <span className="text-2xl font-bold text-stone-400 mb-1"> - </span>
-              <h4 className="text-4xl md:text-5xl font-bold text-brand-warm">${(breakdown.grandTotal * 1.1).toLocaleString(undefined, { maximumFractionDigits: 0 })}</h4>
-            </div>
-            <p className="text-xs text-stone-400 leading-relaxed italic">
-              * This is a budgetary estimate based on algorithmic assumptions. Final quotation requires detailed engineering review.
-            </p>
-          </div>
-
-          {/* Eye-catching Confirmation Message */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.6 }}
-            className="bg-brand-dark text-white rounded-3xl p-6 md:p-8 text-center relative overflow-hidden shadow-2xl shadow-brand-dark/20"
-          >
-            <motion.div 
-              animate={{ opacity: [0.3, 0.6, 0.3], scale: [1, 1.2, 1] }} 
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-brand-warm rounded-full blur-[80px] pointer-events-none"
-            />
-            <div className="relative z-10 flex flex-col items-center">
-              <span className="flex items-center justify-center w-12 h-12 bg-white/10 rounded-full mb-4">
-                <CheckCircle2 className="text-brand-warm w-6 h-6" />
-              </span>
-              <h4 className="text-xl md:text-2xl font-bold mb-2">Estimate Received Successfully</h4>
-              <p className="text-stone-300 text-sm md:text-base max-w-md mx-auto leading-relaxed">
-                Our engineering team has received your request. We will review your project parameters and contact you shortly to discuss the next steps.
+          {/* Left Column: Investment & Animation */}
+          <div className="space-y-4">
+            {/* Main Investment Box */}
+            <div className="bg-stone-50 border border-stone-200 rounded-2xl p-6 shadow-sm">
+              <p className="text-stone-500 text-xs font-bold tracking-widest uppercase mb-1">Estimated Investment Range</p>
+              <div className="flex items-end gap-2 mb-2">
+                <h4 className="text-3xl font-bold text-brand-warm">${(breakdown.grandTotal * 0.9).toLocaleString(undefined, { maximumFractionDigits: 0 })}</h4>
+                <span className="text-xl font-bold text-stone-400 mb-1"> - </span>
+                <h4 className="text-3xl font-bold text-brand-warm">${(breakdown.grandTotal * 1.1).toLocaleString(undefined, { maximumFractionDigits: 0 })}</h4>
+              </div>
+              <p className="text-[11px] text-stone-400 leading-tight italic">
+                * Budgetary estimate only. Final quotation requires detailed engineering review.
               </p>
             </div>
-          </motion.div>
 
-          {/* Timeframes */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white border border-stone-200 p-5 rounded-2xl flex items-center gap-4">
-              <div className="bg-stone-100 p-3 rounded-full"><Clock className="text-brand-dark w-6 h-6"/></div>
-              <div><p className="text-xs text-stone-500 font-semibold uppercase">Mfg. Duration</p><p className="font-bold text-lg">{mfgDays} Days</p></div>
-            </div>
-            {instDays > 0 && (
-              <div className="bg-white border border-stone-200 p-5 rounded-2xl flex items-center gap-4">
-                <div className="bg-stone-100 p-3 rounded-full"><Calendar className="text-brand-dark w-6 h-6"/></div>
-                <div><p className="text-xs text-stone-500 font-semibold uppercase">Installation</p><p className="font-bold text-lg">{instDays} Days</p></div>
+            {/* Timeframes */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-white border border-stone-200 p-4 rounded-xl flex items-center gap-3">
+                <div className="bg-stone-50 p-2 rounded-lg"><Clock className="text-brand-dark w-5 h-5"/></div>
+                <div><p className="text-[10px] text-stone-500 font-bold uppercase">Mfg. Time</p><p className="font-bold text-sm">{mfgDays} Days</p></div>
               </div>
-            )}
+              {instDays > 0 && (
+                <div className="bg-white border border-stone-200 p-4 rounded-xl flex items-center gap-3">
+                  <div className="bg-stone-50 p-2 rounded-lg"><Calendar className="text-brand-dark w-5 h-5"/></div>
+                  <div><p className="text-[10px] text-stone-500 font-bold uppercase">Install Time</p><p className="font-bold text-sm">{instDays} Days</p></div>
+                </div>
+              )}
+            </div>
+
+            {/* Eye-catching Confirmation Message */}
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+              className="bg-brand-dark text-white rounded-2xl p-5 text-center relative overflow-hidden shadow-lg"
+            >
+              <motion.div 
+                animate={{ opacity: [0.2, 0.5, 0.2] }} 
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute inset-0 bg-brand-warm/20 pointer-events-none"
+              />
+              <div className="relative z-10 flex flex-col items-center">
+                <h4 className="text-lg font-bold mb-1">Request Received</h4>
+                <p className="text-stone-300 text-xs leading-relaxed max-w-[90%]">
+                  Our engineering team will review your project parameters and contact you shortly.
+                </p>
+              </div>
+            </motion.div>
           </div>
 
-          {/* Breakdown Accordion */}
-          <div className="border border-stone-200 rounded-2xl overflow-hidden bg-white">
-            <button onClick={() => setShowBreakdown(!showBreakdown)} className="w-full flex items-center justify-between p-5 bg-stone-50 hover:bg-stone-100 transition-colors font-bold text-brand-dark">
-              <span>View Detailed Cost Breakdown</span>
-              {showBreakdown ? <ChevronUp size={20}/> : <ChevronDown size={20}/>}
-            </button>
-            <AnimatePresence>
-              {showBreakdown && (
-                <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} className="overflow-hidden">
-                  <div className="p-6 space-y-3 text-sm text-stone-600 border-t border-stone-200">
+          {/* Right Column: Breakdown */}
+          <div className="border border-stone-200 rounded-2xl overflow-hidden bg-white h-full flex flex-col">
+            <div className="w-full flex items-center p-4 bg-stone-50 font-bold text-brand-dark text-sm border-b border-stone-200">
+              Detailed Cost Breakdown
+            </div>
+            <div className="p-5 flex-1 overflow-y-auto custom-scrollbar space-y-2 text-xs text-stone-600">
                     <div className="flex justify-between"><p>Base Material Cost ({formData.estimatedArea} {formData.metricType})</p> <p className="font-medium">${breakdown.materialCost.toLocaleString()}</p></div>
                     {breakdown.finishAdjustment > 0 && <div className="flex justify-between text-stone-400"><p>+ Premium Finish ({formData.finish})</p> <p>${breakdown.finishAdjustment.toLocaleString()}</p></div>}
                     {breakdown.colorAdjustment > 0 && <div className="flex justify-between text-stone-400"><p>+ Custom Pigment ({formData.color})</p> <p>${breakdown.colorAdjustment.toLocaleString()}</p></div>}
@@ -566,28 +574,8 @@ export default function ProjectEstimator({ t, lang }) {
                     <div className="flex justify-between"><p>Engineering & 3D Modelling</p> <p className="font-medium">${breakdown.engineeringFee.toLocaleString()}</p></div>
                     <div className="flex justify-between"><p>Logistics & Delivery</p> <p className="font-medium">${breakdown.logisticsFee.toLocaleString()}</p></div>
                     <div className="flex justify-between"><p>Installation Services</p> <p className="font-medium">${breakdown.installationFee.toLocaleString()}</p></div>
-                    <div className="flex justify-between pt-3 mt-3 border-t-2 border-stone-200 font-bold text-brand-dark text-base"><p>Estimated AI Total</p> <p>${breakdown.grandTotal.toLocaleString()}</p></div>
                   </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
           </div>
-
-        </div>
-
-        {/* Actions Footer */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 bg-white border-t border-stone-100 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <PDFDownloadLink
-            document={<QuotePDFTemplate quoteData={quoteData} />}
-            fileName={`Tashkel_Proposal_${quoteData.id}.pdf`}
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-brand-dark text-white rounded-full font-bold hover:bg-stone-800 transition-colors shadow-lg shadow-brand-dark/20"
-          >
-            {({ loading }) => (<>{loading ? 'Preparing Document...' : <><Download size={18} /> Download Full Proposal</>}</>)}
-          </PDFDownloadLink>
-          
-          <a href="mailto:info@tashkelgfrc.com" className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-white border-2 border-brand-dark text-brand-dark rounded-full font-bold hover:bg-stone-50 transition-colors">
-            <Mail size={18}/> Contact Sales
-          </a>
         </div>
       </motion.div>
     );
