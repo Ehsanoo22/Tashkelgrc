@@ -5,6 +5,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import Login from './pages/admin/Login';
 import ProjectsGrid from './pages/ProjectsGrid';
 import ProjectDetail from './pages/ProjectDetail';
+import FAQPage from './pages/FAQPage';
 import RouteTransitionProvider from './components/RouteTransitionProvider';
 import { supabase } from './lib/supabase';
 
@@ -39,6 +40,7 @@ function App() {
       <Routes>
         <Route path="/projects" element={<ProjectsGrid lang={lang} setLang={setLang} />} />
         <Route path="/projects/:slug" element={<ProjectDetail lang={lang} setLang={setLang} />} />
+        <Route path="/faq" element={<FAQPage lang={lang} setLang={setLang} />} />
         <Route path="/*" element={<PublicSite lang={lang} setLang={setLang} />} />
         <Route path="/tashkeladmin/login" element={<Login />} />
         <Route path="/tashkeladmin/*" element={<AdminDashboard />} />
