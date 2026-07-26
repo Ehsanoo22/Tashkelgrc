@@ -1,0 +1,148 @@
+export const faqs_general = [
+  // General GFRC
+  {
+    id: "faq-gen-1",
+    question_en: "What is GFRC?",
+    question_ar: "ما هو الـ GFRC؟",
+    answer_en: "GFRC stands for Glass Fiber Reinforced Concrete. It is a specialized composite material consisting of Portland cement, fine aggregate, water, acrylic co-polymer, and alkali-resistant (AR) glass fibers. The glass fibers reinforce the concrete much like steel does in conventional concrete, but because glass fibers will not rust, the protective concrete cover thickness can be significantly reduced. This results in a material that is highly durable, easily molded into intricate shapes, and up to 80% lighter than traditional precast concrete. Learn more on our <a href='/about' className='text-brand-warm underline'>About page</a>.",
+    answer_ar: "GFRC تعني الخرسانة المسلحة بالألياف الزجاجية. إنها مادة مركبة متخصصة تتكون من أسمنت بورتلاند، وركام ناعم، وماء، وبوليمر أكريليك مشترك، وألياف زجاجية مقاومة للقلوية (AR). تعزز الألياف الزجاجية الخرسانة تماماً كما يفعل الفولاذ في الخرسانة التقليدية، ولكن لأن الألياف الزجاجية لا تصدأ، يمكن تقليل سماكة الغطاء الخرساني الواقي بشكل كبير. ينتج عن ذلك مادة متينة للغاية، يسهل تشكيلها بأشكال معقدة، وأخف وزناً بنسبة تصل إلى 80٪ من الخرسانة مسبقة الصب التقليدية. تعرف على المزيد في <a href='/about' className='text-brand-warm underline'>صفحة من نحن</a>.",
+    category: "General GFRC",
+    slug: "what-is-gfrc",
+    is_featured: false,
+    published: true,
+    last_updated: "2026-07-26",
+    order_index: 6
+  },
+  {
+    id: "faq-gen-2",
+    question_en: "What is GRC?",
+    question_ar: "ما هو الـ GRC؟",
+    answer_en: "GRC stands for Glassfibre Reinforced Concrete. It is exactly the same material as GFRC. The term 'GRC' is more commonly used in the Middle East, Europe, and Asia, while 'GFRC' is the standard acronym used in North America. Both terms refer to the identical high-performance architectural composite used for building facades, decorative elements, and mosque ornamentation.",
+    answer_ar: "GRC تعني الخرسانة المسلحة بالألياف الزجاجية. إنها تماماً نفس المادة مثل GFRC. يستخدم مصطلح 'GRC' بشكل أكثر شيوعاً في الشرق الأوسط وأوروبا وآسيا، بينما 'GFRC' هو الاختصار القياسي المستخدم في أمريكا الشمالية. يشير كلا المصطلحين إلى نفس المركب المعماري عالي الأداء المستخدم في واجهات المباني، والعناصر الزخرفية، وزخرفة المساجد.",
+    category: "General GFRC",
+    slug: "what-is-grc",
+    is_featured: false,
+    published: true,
+    last_updated: "2026-07-26",
+    order_index: 7
+  },
+  {
+    id: "faq-gen-3",
+    question_en: "What is the difference between GFRC and traditional precast concrete?",
+    question_ar: "ما هو الفرق بين الخرسانة المسلحة بالألياف الزجاجية (GFRC) والخرسانة مسبقة الصب التقليدية؟",
+    answer_en: "The primary difference lies in the reinforcement. Traditional precast concrete uses heavy steel rebar, requiring thick layers of concrete (usually 50mm+) to protect the steel from rusting. GFRC uses alkali-resistant glass fibers distributed throughout the mix. This completely eliminates the need for steel reinforcement, allowing GFRC panels to be cast as thin as 12-15mm. As a result, GFRC is dramatically lighter, puts less structural load on the building skeleton, and allows for far more intricate architectural detailing than bulky precast concrete.",
+    answer_ar: "يكمن الاختلاف الرئيسي في التسليح. تستخدم الخرسانة مسبقة الصب التقليدية حديد التسليح الثقيل، مما يتطلب طبقات سميكة من الخرسانة (عادة 50 مم +) لحماية الفولاذ من الصدأ. تستخدم الـ GFRC أليافاً زجاجية مقاومة للقلوية موزعة في جميع أنحاء الخليط. هذا يلغي تماماً الحاجة إلى التسليح بالفولاذ، مما يسمح بصب ألواح GFRC بسماكة تصل إلى 12-15 مم. ونتيجة لذلك، فإن GFRC أخف وزناً بشكل كبير، وتضع حملاً إنشائياً أقل على هيكل المبنى، وتسمح بتفاصيل معمارية أكثر تعقيداً بكثير من الخرسانة مسبقة الصب الضخمة.",
+    category: "General GFRC",
+    slug: "difference-between-gfrc-and-precast-concrete",
+    is_featured: true,
+    published: true,
+    last_updated: "2026-07-26",
+    order_index: 1
+  },
+  {
+    id: "faq-gen-4",
+    question_en: "What are the core advantages of using GFRC?",
+    question_ar: "ما هي المزايا الأساسية لاستخدام الـ GFRC؟",
+    answer_en: "The core advantages of GFRC include its exceptionally high strength-to-weight ratio, allowing for lightweight facade panels that reduce foundation and structural steel requirements. It is extremely durable, fire-resistant, and weatherproof, making it ideal for the Middle Eastern climate. Aesthetically, GFRC offers unparalleled design freedom—it can be molded into virtually any shape, mimicking natural stone, terra cotta, or wood, and can accurately reproduce the most intricate geometric patterns.",
+    answer_ar: "تشمل المزايا الأساسية لـ GFRC نسبة قوتها العالية جداً إلى وزنها، مما يسمح بألواح واجهات خفيفة الوزن تقلل من متطلبات الأساسات والصلب الإنشائي. إنها متينة للغاية، ومقاومة للحريق، ومقاومة للعوامل الجوية، مما يجعلها مثالية لمناخ الشرق الأوسط. من الناحية الجمالية، توفر GFRC حرية تصميم لا مثيل لها - يمكن تشكيلها في أي شكل تقريباً، وتقليد الحجر الطبيعي، أو الطين، أو الخشب، ويمكنها إعادة إنتاج الأنماط الهندسية الأكثر تعقيداً بدقة.",
+    category: "General GFRC",
+    slug: "advantages-of-gfrc",
+    is_featured: false,
+    published: true,
+    last_updated: "2026-07-26",
+    order_index: 8
+  },
+  {
+    id: "faq-gen-5",
+    question_en: "Why is GFRC becoming more popular in the Middle East?",
+    question_ar: "لماذا تزداد شعبية الـ GFRC في الشرق الأوسط؟",
+    answer_en: "GFRC is dominating the Middle Eastern architectural scene due to a combination of cultural design heritage and modern engineering demands. Culturally, it is the only structural material that can cost-effectively replicate the massive, intricate geometric screens (Mashrabiya) and muqarnas essential to Islamic architecture. Engineer-wise, its light weight drastically cuts down cooling costs (when used as a brise-soleil) and resists the harsh sun, high temperatures, and saline humidity common in the region without cracking or degrading.",
+    answer_ar: "تهيمن الـ GFRC على المشهد المعماري في الشرق الأوسط بسبب مزيج من التراث التصميمي الثقافي ومتطلبات الهندسة الحديثة. ثقافياً، إنها المادة الإنشائية الوحيدة التي يمكنها بتكلفة فعالة تكرار الشاشات الهندسية الضخمة والمعقدة (المشربية) والمقرنصات الأساسية في العمارة الإسلامية. هندسياً، يقلل وزنها الخفيف بشكل كبير من تكاليف التبريد (عند استخدامها ككاسر للشمس) وتقاوم أشعة الشمس القاسية، ودرجات الحرارة المرتفعة، والرطوبة الملحية الشائعة في المنطقة دون تشقق أو تدهور.",
+    category: "General GFRC",
+    slug: "why-is-gfrc-popular",
+    is_featured: false,
+    published: true,
+    last_updated: "2026-07-26",
+    order_index: 9
+  },
+
+  // Design & Architecture
+  {
+    id: "faq-des-1",
+    question_en: "Can GFRC be customized for complex Islamic geometric patterns and mosque architecture?",
+    question_ar: "هل يمكن تخصيص الـ GFRC للأنماط الهندسية الإسلامية المعقدة وعمارة المساجد؟",
+    answer_en: "Yes, absolutely. GFRC is widely considered the premier material for complex architectural details in mosque construction. Because the material is meticulously sprayed or cast into custom silicon or rubber molds, Tashkel can flawlessly reproduce intricate Islamic geometric patterns, traditional muqarnas, mashrabiya screens, and sweeping arches with millimeter precision. See some of our mosque architecture in our <a href='/projects' className='text-brand-warm underline'>Projects Gallery</a>.",
+    answer_ar: "نعم، بكل تأكيد. تعتبر GFRC على نطاق واسع المادة الأولى للتفاصيل المعمارية المعقدة في بناء المساجد. ولأن المادة تُصب أو تُرش بدقة في قوالب سيليكون أو مطاط مخصصة، يمكن لتشكيل إعادة إنتاج الأنماط الهندسية الإسلامية المعقدة، والمقرنصات التقليدية، وشاشات المشربية، والأقواس الواسعة بدقة ملليمترية خالية من العيوب. شاهد بعض مشاريع عمارة المساجد في <a href='/projects' className='text-brand-warm underline'>معرض مشاريعنا</a>.",
+    category: "Design & Architecture",
+    slug: "islamic-patterns-and-mosque-architecture",
+    is_featured: true,
+    published: true,
+    last_updated: "2026-07-26",
+    order_index: 2
+  },
+  {
+    id: "faq-des-2",
+    question_en: "Can GFRC replicate natural stone?",
+    question_ar: "هل يمكن لـ GFRC أن يحاكي الحجر الطبيعي؟",
+    answer_en: "Yes. Through the use of specialized aggregates, pigments, and advanced mold-making techniques, GFRC can perfectly mimic the look, texture, and feel of natural materials like limestone, sandstone, travertine, and even marble. The advantage is that you achieve the premium aesthetic of natural stone at a fraction of the weight, eliminating the need for massively over-engineered structural supports.",
+    answer_ar: "نعم. من خلال استخدام ركام متخصص، وأصباغ، وتقنيات متقدمة لصنع القوالب، يمكن لـ GFRC محاكاة مظهر، وملمس، وإحساس المواد الطبيعية تماماً مثل الحجر الجيري، والحجر الرملي، والترافرتين، وحتى الرخام. الميزة هي أنك تحصل على الجمالية الفاخرة للحجر الطبيعي بجزء بسيط من الوزن، مما يلغي الحاجة إلى دعائم إنشائية ضخمة ومكلفة.",
+    category: "Design & Architecture",
+    slug: "replicate-natural-stone",
+    is_featured: false,
+    published: true,
+    last_updated: "2026-07-26",
+    order_index: 10
+  },
+  {
+    id: "faq-des-3",
+    question_en: "Can GFRC be curved or contoured?",
+    question_ar: "هل يمكن تشكيل الـ GFRC بمنحنيات أو خطوط كنتورية؟",
+    answer_en: "GFRC is incredibly fluid before it cures. It can be sprayed onto complex, multi-dimensional curved molds to create sweeping domes, seamless cylindrical columns, fluid parametric facades, and undulating architectural ribbons. Unlike flat cladding panels (like ACP), GFRC imposes virtually no geometric limitations on the architect's vision.",
+    answer_ar: "الـ GFRC سائل بشكل لا يصدق قبل أن يجف. يمكن رشه على قوالب منحنية معقدة ومتعددة الأبعاد لإنشاء قباب واسعة، وأعمدة أسطوانية غير ملحومة، وواجهات بارامترية انسيابية، وشرائط معمارية متموجة. على عكس ألواح الكسوة المسطحة (مثل ACP)، لا تفرض GFRC أي قيود هندسية تقريباً على رؤية المهندس المعماري.",
+    category: "Design & Architecture",
+    slug: "curved-and-contoured-gfrc",
+    is_featured: false,
+    published: true,
+    last_updated: "2026-07-26",
+    order_index: 11
+  },
+  {
+    id: "faq-des-4",
+    question_en: "What finishes and textures are available for Tashkel GFRC?",
+    question_ar: "ما هي التشطيبات والأنسجة المتوفرة لـ GFRC من تشكيل؟",
+    answer_en: "Tashkel offers a limitless array of finishes. Our standard finishes include smooth (fair-face), acid-etched (which exposes the fine aggregate for a stone-like texture), sandblasted, and exposed aggregate. We also offer custom textured finishes matching wood grain, coral, or bespoke geometric reliefs. The finish is integrated directly into the concrete mix, ensuring it will not peel or flake over time.",
+    answer_ar: "تقدم تشكيل مجموعة لا حصر لها من التشطيبات. تشمل تشطيباتنا القياسية الناعم (الوجه العادل)، والمحفور بحمض (والذي يكشف الركام الناعم للحصول على نسيج يشبه الحجر)، والمضروب بالرمل، والركام المكشوف. كما نقدم تشطيبات ذات نسيج مخصص تحاكي حبيبات الخشب، أو المرجان، أو النقوش الهندسية الخاصة. يتم دمج التشطيب مباشرة في خليط الخرسانة، مما يضمن عدم تقشره أو تساقطه بمرور الوقت.",
+    category: "Design & Architecture",
+    slug: "available-finishes-and-textures",
+    is_featured: false,
+    published: true,
+    last_updated: "2026-07-26",
+    order_index: 12
+  },
+  {
+    id: "faq-des-5",
+    question_en: "Can architects provide their own unique molds or 3D models?",
+    question_ar: "هل يمكن للمهندسين المعماريين تقديم قوالبهم الخاصة أو نماذجهم ثلاثية الأبعاد؟",
+    answer_en: "Yes. We work closely with architects and designers during the concept phase. You can provide standard CAD drawings or advanced 3D models (Rhino, Revit, Maya). Our engineering team will then use CNC routers and 3D printing technologies to translate your digital model into precise physical master molds. There is no shape we cannot manufacture.",
+    answer_ar: "نعم. نحن نعمل عن كثب مع المهندسين المعماريين والمصممين خلال مرحلة المفهوم. يمكنك تقديم رسومات CAD قياسية أو نماذج ثلاثية الأبعاد متقدمة (Rhino, Revit, Maya). سيقوم فريق الهندسة لدينا بعد ذلك باستخدام أجهزة التوجيه CNC وتقنيات الطباعة ثلاثية الأبعاد لترجمة نموذجك الرقمي إلى قوالب رئيسية مادية دقيقة. لا يوجد شكل لا يمكننا تصنيعه.",
+    category: "Design & Architecture",
+    slug: "custom-architectural-molds",
+    is_featured: false,
+    published: true,
+    last_updated: "2026-07-26",
+    order_index: 13
+  },
+  {
+    id: "faq-des-6",
+    question_en: "Can GFRC be painted?",
+    question_ar: "هل يمكن طلاء الـ GFRC؟",
+    answer_en: "Yes, GFRC can be painted using highly durable exterior acrylic or silicate-based mineral paints. However, many of our clients prefer integrally colored GFRC, where UV-resistant mineral pigments are mixed directly into the concrete. Integrally colored GFRC requires less maintenance because if the surface is slightly chipped or scratched, the color remains consistent underneath, unlike a painted surface.",
+    answer_ar: "نعم، يمكن طلاء الـ GFRC باستخدام طلاء أكريليك خارجي متين للغاية أو دهانات معدنية تعتمد على السيليكات. ومع ذلك، يفضل العديد من عملائنا الـ GFRC الملون داخلياً، حيث يتم خلط أصباغ معدنية مقاومة للأشعة فوق البنفسجية مباشرة في الخرسانة. يتطلب الـ GFRC الملون داخلياً صيانة أقل لأنه إذا تشقق السطح أو خُدش قليلاً، فإن اللون يظل متناسقاً تحته، على عكس السطح المطلي.",
+    category: "Design & Architecture",
+    slug: "can-gfrc-be-painted",
+    is_featured: false,
+    published: true,
+    last_updated: "2026-07-26",
+    order_index: 14
+  }
+];

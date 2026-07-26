@@ -101,9 +101,10 @@ export default function FAQSection({ t, lang }) {
                       transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
                       className="overflow-hidden"
                     >
-                      <div className="pb-8 text-stone-400 text-lg leading-relaxed max-w-3xl">
-                        {isRtl ? faq.answer_ar : faq.answer_en}
-                      </div>
+                      <div 
+                        className="pb-8 text-stone-400 text-lg leading-relaxed max-w-3xl faq-answer-content"
+                        dangerouslySetInnerHTML={{ __html: isRtl ? faq.answer_ar : faq.answer_en }}
+                      />
                     </motion.div>
                   )}
                 </AnimatePresence>
