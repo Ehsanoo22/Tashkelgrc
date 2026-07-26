@@ -54,7 +54,7 @@ function App() {
         <Route path="/tashkeladmin/login" element={<Login />} />
         <Route path="/tashkeladmin/*" element={<AdminDashboard />} />
       </Routes>
-      <CookieConsent lang={lang} />
+      {!location.pathname.startsWith('/tashkeladmin') && <CookieConsent lang={lang} />}
     </RouteTransitionProvider>
   );
 }
