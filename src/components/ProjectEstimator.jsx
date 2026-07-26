@@ -38,6 +38,18 @@ export default function ProjectEstimator({ t, lang }) {
   const [loadingPhase, setLoadingPhase] = useState(0);
   const [estimateResult, setEstimateResult] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [pricingConfig, setPricingConfig] = useState(null);
+
+  useEffect(() => {
+    // Fetch live pricing configuration on mount
+    const fetchPricingConfig = async () => {
+      const { data, error } = await supabase.from('pricing_config').select('*').eq('id', 1).single();
+      if (!error && data) {
+        setPricingConfig(data);
+      }
+    };
+    fetchPricingConfig();
+  }, []);
   
   const fileInputRef = useRef(null);
 
@@ -123,17 +135,17 @@ export default function ProjectEstimator({ t, lang }) {
         }
       }
 
-      // 2. Generate Estimate locally using pricingEngine
+      // 2. Generate Estimate locally using pricingEngine with live config
       const calculation = generateEstimate({
         projectType: formData.projectType,
-        estimatedArea: Number(formData.estimatedArea),
+        estimatedArea: formData.estimatedArea, // Passes string so it can parse Arabic numerals
         metricType: formData.metricType,
         finish: formData.finish,
         color: formData.color,
         structuralSupport: formData.structuralSupport,
         installationRequired: formData.installationRequired,
         engineeringRequired: formData.engineeringRequired
-      });
+      }, pricingConfig);
 
       // Prepare final Quote Data for PDF
       const quoteDataForPDF = {
