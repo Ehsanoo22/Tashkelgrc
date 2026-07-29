@@ -73,7 +73,7 @@ export default function SocialButtons() {
 
         {/* WhatsApp */}
         <a
-          href="https://wa.me/00963933295100"
+          href="https://wa.me/963933295100"
           target="_blank"
           rel="noopener noreferrer"
           className="socialContainer containerFour"

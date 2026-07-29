@@ -2,8 +2,8 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 export default function FloatingWhatsApp() {
-  const phoneNumber = '00963933295100';
-  const whatsappUrl = `https://wa.me/${phoneNumber}`;
+  const phoneNumber = '+963 933 295 100';
+  const whatsappUrl = `https://wa.me/963933295100`;
 
   return (
     <motion.div

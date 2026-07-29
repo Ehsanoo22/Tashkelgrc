@@ -11,15 +11,15 @@ Font.register({
   ]
 });
 
-const styles = StyleSheet.create({
+  const styles = StyleSheet.create({
   page: { padding: 40, fontFamily: 'Helvetica', backgroundColor: '#ffffff', color: '#1c1917' },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', borderBottomWidth: 2, borderBottomColor: '#1c1917', paddingBottom: 20, marginBottom: 30 },
   logoSection: { flexDirection: 'column', width: '50%' },
   logoImage: { width: 140, marginBottom: 12 },
   companyName: { fontSize: 20, fontWeight: 'bold', letterSpacing: 1 },
   companyDetails: { fontSize: 9, color: '#57534e', marginTop: 2 },
-  quoteMeta: { textAlign: 'right' },
-  quoteTitle: { fontSize: 24, fontWeight: 'bold', color: '#d4af37', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 8 },
+  quoteMeta: { textAlign: 'right', width: '50%' },
+  quoteTitle: { fontSize: 18, fontWeight: 'bold', color: '#d4af37', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 },
   metaText: { fontSize: 10, color: '#57534e', marginBottom: 4, fontWeight: 'bold' },
   metaValue: { fontWeight: 'normal', color: '#1c1917' },
   
@@ -106,7 +106,7 @@ export default function QuotePDFTemplate({ quoteData }) {
             <Image src={`${window.location.origin}/assets/logo_new.png`} style={styles.logoImage} />
             <Text style={styles.companyName}>TASHKEL GFRC</Text>
             <Text style={styles.companyDetails}>Industrial City, Damascus, Syria</Text>
-            <Text style={styles.companyDetails}>+963 944 000 000 | info@tashkelgfrc.com</Text>
+            <Text style={styles.companyDetails}>+963 933 295 100 | info@tashkelgfrc.com</Text>
             <Text style={styles.companyDetails}>www.tashkelgfrc.com</Text>
           </View>
           <View style={styles.quoteMeta}>
