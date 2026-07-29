@@ -5,6 +5,7 @@ import { Save, Loader2, Globe, Search, RefreshCw, LayoutTemplate } from 'lucide-
 export default function SEOSettings() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [settingsId, setSettingsId] = useState(null);
   const [seo, setSeo] = useState({
     seo_title: '',
     seo_description: '',
@@ -19,10 +20,12 @@ export default function SEOSettings() {
     setLoading(true);
     const { data, error } = await supabase
       .from('site_settings')
-      .select('seo_title, seo_description, seo_keywords')
+      .select('id, seo_title, seo_description, seo_keywords')
+      .limit(1)
       .single();
     
     if (data && !error) {
+      setSettingsId(data.id);
       setSeo({
         seo_title: data.seo_title || '',
         seo_description: data.seo_description || '',
@@ -33,16 +36,21 @@ export default function SEOSettings() {
   };
 
   const handleSave = async () => {
+    if (!settingsId) {
+      alert("Settings ID not found. Cannot save.");
+      return;
+    }
     setSaving(true);
-    // Since site_settings typically has a single row (id = 1)
+    
     const { error } = await supabase
       .from('site_settings')
       .update(seo)
-      .eq('id', 1); // Assuming id 1 is the main settings row
+      .eq('id', settingsId);
       
     setSaving(false);
     if (error) {
-      alert("Failed to save SEO settings. Make sure you ran the alter_seo_settings.sql script.");
+      console.error(error);
+      alert("Failed to save SEO settings. " + error.message);
     } else {
       alert("SEO settings saved successfully! These will reflect dynamically on the main website.");
     }
