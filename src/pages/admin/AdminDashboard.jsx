@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Routes, Route, useNavigate, Link, useLocation } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
-import { LayoutDashboard, Image as ImageIcon, Settings, Users, LogOut, Calculator, FileText } from 'lucide-react';
+import { LayoutDashboard, Image as ImageIcon, Settings, Users, LogOut, Calculator, FileText, Kanban } from 'lucide-react';
 import LeadsView from './LeadsView';
+import LeadsKanban from './LeadsKanban';
 import SiteSettings from './SiteSettings';
 import GalleryManager from './GalleryManager';
 import AnalyticsView from './AnalyticsView';
@@ -53,7 +54,8 @@ export default function AdminDashboard() {
     {
       title: "Sales & CRM",
       items: [
-        { name: 'Leads', path: '/tashkeladmin/leads', icon: Users },
+        { name: 'Leads Pipeline', path: '/tashkeladmin/pipeline', icon: Kanban },
+        { name: 'Leads List', path: '/tashkeladmin/leads', icon: Users },
         { name: 'Quotations', path: '/tashkeladmin/quotes', icon: FileText },
       ]
     },
@@ -130,9 +132,10 @@ export default function AdminDashboard() {
 
         {/* Main Content Area */}
         <main className="flex-1 overflow-y-auto bg-stone-50 p-6 md:p-8 lg:p-10 custom-scrollbar">
-          <div className="max-w-7xl mx-auto">
+          <div className="max-w-7xl mx-auto h-full">
             <Routes>
               <Route path="/" element={<AnalyticsView />} />
+              <Route path="/pipeline" element={<LeadsKanban />} />
               <Route path="/leads" element={<LeadsView />} />
               <Route path="/quotes" element={<QuotationsManager />} />
               <Route path="/portfolio" element={<PortfolioManager />} />
