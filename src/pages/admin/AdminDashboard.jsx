@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Routes, Route, useNavigate, Link, useLocation } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
-import { LayoutDashboard, Image as ImageIcon, Settings, Users, LogOut, Calculator, FileText, Kanban } from 'lucide-react';
+import { LayoutDashboard, Image as ImageIcon, Settings, Users, LogOut, Calculator, FileText, Kanban, Globe } from 'lucide-react';
 import LeadsView from './LeadsView';
 import LeadsKanban from './LeadsKanban';
 import SiteSettings from './SiteSettings';
+import SEOSettings from './SEOSettings';
 import GalleryManager from './GalleryManager';
 import AnalyticsView from './AnalyticsView';
 import PortfolioManager from './PortfolioManager';
@@ -70,6 +71,7 @@ export default function AdminDashboard() {
       title: "Configuration",
       items: [
         { name: 'Pricing Engine', path: '/tashkeladmin/pricing', icon: Calculator },
+        { name: 'SEO Manager', path: '/tashkeladmin/seo', icon: Globe },
         { name: 'Settings', path: '/tashkeladmin/settings', icon: Settings },
       ]
     }
@@ -141,6 +143,7 @@ export default function AdminDashboard() {
               <Route path="/portfolio" element={<PortfolioManager />} />
               <Route path="/gallery" element={<GalleryManager />} />
               <Route path="/pricing" element={<PricingSettings />} />
+              <Route path="/seo" element={<SEOSettings />} />
               <Route path="/settings" element={<SiteSettings />} />
             </Routes>
           </div>

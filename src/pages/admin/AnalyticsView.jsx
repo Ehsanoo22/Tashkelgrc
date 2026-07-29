@@ -71,8 +71,9 @@ export default function AnalyticsView() {
 
       // Aggregate Stats
       const validQuotes = quotes || [];
-      const totalQuoteValue = validQuotes.reduce((acc, q) => acc + (q.breakdown?.grandTotal || 0), 0);
+      const activeLeads = (leads || []).filter(l => l.status !== 'Lost');
       const wonLeads = (leads || []).filter(l => l.status === 'Won').length;
+      const totalPipelineValue = activeLeads.reduce((acc, l) => acc + (Number(l.estimated_value) || 0), 0);
       const conversionRate = leads?.length ? (wonLeads / leads.length) * 100 : 0;
 
       setStats({
@@ -80,7 +81,7 @@ export default function AnalyticsView() {
         pageViews: events?.length || 0,
         leadsGenerated: leads?.length || 0,
         quotesGenerated: validQuotes.length,
-        totalQuoteValue,
+        totalQuoteValue: totalPipelineValue, // Using pipeline value instead of quote value
         conversionRate
       });
 
@@ -112,13 +113,13 @@ export default function AnalyticsView() {
       const sData = Object.keys(sourceMap).map(k => ({ name: k, count: sourceMap[k] }));
       setLeadSources(sData);
 
-      // Aggregate Quote Trends
-      const quoteMap = {};
-      validQuotes.forEach(q => {
-        const d = new Date(q.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-        quoteMap[d] = (quoteMap[d] || 0) + (q.breakdown?.grandTotal || 0);
+      // Aggregate Pipeline Trends (Active Leads)
+      const pipelineMap = {};
+      activeLeads.forEach(l => {
+        const d = new Date(l.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+        pipelineMap[d] = (pipelineMap[d] || 0) + (Number(l.estimated_value) || 0);
       });
-      const qData = Object.keys(quoteMap).map(k => ({ date: k, value: quoteMap[k] }));
+      const qData = Object.keys(pipelineMap).map(k => ({ date: k, value: pipelineMap[k] }));
       setQuoteTrends(qData);
 
     } catch (err) {
