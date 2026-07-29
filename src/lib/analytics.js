@@ -24,8 +24,8 @@ const getSessionId = async () => {
     sid = uuidv4();
     sessionStorage.setItem(SESSION_KEY, sid);
     
-    // Only track if consent is given
-    if (localStorage.getItem(COOKIE_CONSENT_KEY) === 'granted') {
+    // Only track if consent is not explicitly declined (implicit consent)
+    if (localStorage.getItem(COOKIE_CONSENT_KEY) !== 'declined') {
       try {
         const ua = navigator.userAgent;
         let deviceType = 'Desktop';
@@ -70,7 +70,7 @@ const getSessionId = async () => {
 
 // Log a page view
 export const logPageView = async (path) => {
-  if (localStorage.getItem(COOKIE_CONSENT_KEY) !== 'granted') return;
+  if (localStorage.getItem(COOKIE_CONSENT_KEY) === 'declined') return;
   
   try {
     const sid = await getSessionId();
@@ -86,7 +86,7 @@ export const logPageView = async (path) => {
 
 // Log a custom event (clicks, form submits, etc.)
 export const logEvent = async (eventType, elementId = null, metadata = {}) => {
-  if (localStorage.getItem(COOKIE_CONSENT_KEY) !== 'granted') return;
+  if (localStorage.getItem(COOKIE_CONSENT_KEY) === 'declined') return;
   
   try {
     const sid = await getSessionId();
