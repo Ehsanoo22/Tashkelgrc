@@ -12,6 +12,7 @@
   "dependencies": {
     "@react-pdf/renderer": "^4.5.1",
     "@supabase/supabase-js": "^2.110.8",
+    "@vercel/analytics": "^2.0.1",
     "dotenv": "^17.4.2",
     "framer-motion": "^12.42.2",
     "lucide-react": "^0.469.0",
