@@ -54,7 +54,7 @@ export default function PortalLogin() {
     // Update last_login_at
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-      await supabase.from('portal_clients').update({ last_login_at: new Date() }).eq('id', user.id);
+      await supabase.from('portal_clients').update({ last_login_at: new Date().toISOString() }).eq('id', user.id);
     }
 
     navigate(`/portal/${slug}/dashboard`);

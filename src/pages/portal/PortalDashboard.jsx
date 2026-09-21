@@ -130,6 +130,10 @@ export default function PortalDashboard() {
     }
 
     setClient(cData);
+    
+    // Always update last_login_at when they load the dashboard to ensure accuracy
+    await supabase.from('portal_clients').update({ last_login_at: new Date().toISOString() }).eq('id', session.user.id);
+
     if (!cData.has_completed_onboarding) {
       setShowOnboarding(true);
     }
