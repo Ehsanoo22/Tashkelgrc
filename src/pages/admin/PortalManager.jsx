@@ -395,11 +395,23 @@ export default function PortalManager() {
                   <h4 className="font-bold">{inv.title}</h4>
                   <p className="text-sm text-stone-500">${inv.amount} • Due: {inv.due_date || 'N/A'}</p>
                 </div>
-                <select value={inv.status} onChange={e => updateInvoiceStatus(inv.id, e.target.value)} className="border rounded-lg px-4 py-2 text-sm font-bold">
-                  <option value="unpaid">Unpaid</option>
-                  <option value="partial">Partial</option>
-                  <option value="paid">Paid</option>
-                </select>
+                <div className="flex items-center gap-3">
+                  <select value={inv.status} onChange={e => updateInvoiceStatus(inv.id, e.target.value)} className="border rounded-lg px-4 py-2 text-sm font-bold">
+                    <option value="unpaid">Unpaid</option>
+                    <option value="partial">Partial</option>
+                    <option value="paid">Paid</option>
+                  </select>
+                  <button 
+                    onClick={async () => {
+                      if(!window.confirm("Delete invoice?")) return;
+                      const { error } = await supabase.from('portal_invoices').delete().eq('id', inv.id);
+                      if(!error) setInvoices(invoices.filter(i => i.id !== inv.id));
+                    }}
+                    className="text-red-400 hover:text-red-600"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -426,10 +438,21 @@ export default function PortalManager() {
                   <h4 className="font-bold">{doc.title}</h4>
                   <p className="text-sm text-stone-500 uppercase tracking-wider">{doc.type}</p>
                 </div>
-                <div>
+                <div className="flex items-center gap-4">
                   {doc.status === 'approved' ? <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">Approved</span> :
                    doc.status === 'rejected' ? <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold">Rejected</span> :
                    <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-bold">Pending Review</span>}
+                  
+                  <button 
+                    onClick={async () => {
+                      if(!window.confirm("Delete document?")) return;
+                      const { error } = await supabase.from('portal_documents').delete().eq('id', doc.id);
+                      if(!error) setDocuments(documents.filter(d => d.id !== doc.id));
+                    }}
+                    className="text-red-400 hover:text-red-600"
+                  >
+                    <Trash2 size={18} />
+                  </button>
                 </div>
               </div>
             ))}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { Link } from 'react-router-dom';
-import { Users, Plus, ExternalLink, Activity } from 'lucide-react';
+import { Users, Plus, ExternalLink, Activity, Trash2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 export default function PortalsList() {
@@ -114,6 +114,18 @@ export default function PortalsList() {
                     >
                       Manage
                     </Link>
+                    <button 
+                      onClick={async () => {
+                        if (!window.confirm(`Delete client ${client.company_name}? This deletes all projects, invoices, and documents. Cannot be undone.`)) return;
+                        const { error } = await supabase.from('portal_clients').delete().eq('id', client.id);
+                        if (error) alert("Failed to delete client: " + error.message);
+                        else setClients(clients.filter(c => c.id !== client.id));
+                      }}
+                      className="text-red-400 hover:text-red-600 transition-colors inline-flex items-center"
+                      title="Delete Client"
+                    >
+                      <Trash2 size={18} />
+                    </button>
                   </td>
                 </tr>
               ))}
