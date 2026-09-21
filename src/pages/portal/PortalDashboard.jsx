@@ -141,6 +141,33 @@ export default function PortalDashboard() {
         .eq('project_id', pData.id)
         .order('created_at', { ascending: true });
       if (cData) setComments(cData);
+      
+      // Set up Realtime Subscriptions
+      const channel = supabase.channel(`portal_realtime_${pData.id}`)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'portal_milestones', filter: `project_id=eq.${pData.id}` }, (payload) => {
+          if (payload.eventType === 'UPDATE') {
+            setMilestones(prev => prev.map(m => m.id === payload.new.id ? payload.new : m));
+          } else if (payload.eventType === 'INSERT') {
+            setMilestones(prev => [...prev, payload.new].sort((a, b) => a.order_index - b.order_index));
+          } else if (payload.eventType === 'DELETE') {
+            setMilestones(prev => prev.filter(m => m.id !== payload.old.id));
+          }
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'portal_updates', filter: `project_id=eq.${pData.id}` }, (payload) => {
+          if (payload.eventType === 'INSERT') {
+            setUpdates(prev => [payload.new, ...prev].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
+          } else if (payload.eventType === 'DELETE') {
+            setUpdates(prev => prev.filter(u => u.id !== payload.old.id));
+          }
+        })
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'portal_comments', filter: `project_id=eq.${pData.id}` }, (payload) => {
+          setComments(prev => [...prev, payload.new].sort((a, b) => new Date(a.created_at) - new Date(b.created_at)));
+        })
+        .subscribe();
+        
+      return () => {
+        supabase.removeChannel(channel);
+      };
     }
     
     setLoading(false);

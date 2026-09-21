@@ -63,6 +63,17 @@ export default function PortalManager() {
         .eq('project_id', pData.id)
         .order('created_at', { ascending: true });
       if (commentsData) setComments(commentsData);
+
+      // Realtime comments listener
+      const channel = supabase.channel(`admin_realtime_${pData.id}`)
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'portal_comments', filter: `project_id=eq.${pData.id}` }, (payload) => {
+          setComments(prev => [...prev, payload.new].sort((a, b) => new Date(a.created_at) - new Date(b.created_at)));
+        })
+        .subscribe();
+        
+      return () => {
+        supabase.removeChannel(channel);
+      };
     }
     setLoading(false);
   };

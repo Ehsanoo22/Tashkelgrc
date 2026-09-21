@@ -1,1 +1,0 @@
-ALTER TABLE public.portfolio_cases DISABLE ROW LEVEL SECURITY;
