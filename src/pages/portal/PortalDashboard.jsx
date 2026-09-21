@@ -190,6 +190,9 @@ export default function PortalDashboard() {
         .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'portal_projects', filter: `id=eq.${pData.id}` }, (payload) => {
           setProject(payload.new);
         })
+        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'portal_logistics', filter: `project_id=eq.${pData.id}` }, (payload) => {
+          setLogistics(payload.new);
+        })
         .subscribe();
 
       const clientChannel = supabase.channel(`portal_realtime_client_${cData.id}`)
@@ -203,6 +206,15 @@ export default function PortalDashboard() {
     }
     
     setLoading(false);
+  };
+
+  const toggleReadinessItem = async (itemId) => {
+    if (!logistics || !logistics.site_readiness) return;
+    const updatedArray = logistics.site_readiness.map(item => 
+      item.id === itemId ? { ...item, completed: !item.completed } : item
+    );
+    setLogistics({ ...logistics, site_readiness: updatedArray });
+    await supabase.from('portal_logistics').update({ site_readiness: updatedArray }).eq('id', logistics.id);
   };
 
   const handleLogout = async () => {
@@ -634,6 +646,39 @@ export default function PortalDashboard() {
                         );
                       })}
                     </div>
+
+                    {logistics.site_readiness && logistics.site_readiness.length > 0 && (
+                      <div className="mt-10 pt-8 border-t border-stone-100">
+                        <h4 className="text-lg font-bold text-brand-dark mb-4 flex items-center gap-2">
+                          <CheckCircle2 className="text-brand-warm" size={20} /> Site Readiness Checklist
+                        </h4>
+                        <p className="text-sm text-stone-500 mb-6">
+                          Please confirm the site is ready to prevent delivery delays. All items must be checked before dispatch.
+                        </p>
+                        <div className="space-y-3">
+                          {logistics.site_readiness.map(item => (
+                            <label key={item.id} className={`flex items-start gap-4 p-4 rounded-2xl border cursor-pointer transition-all ${item.completed ? 'bg-green-50/50 border-green-200' : 'bg-stone-50 border-stone-200 hover:border-brand-warm'}`}>
+                              <div className="pt-0.5">
+                                <input 
+                                  type="checkbox" 
+                                  checked={item.completed}
+                                  onChange={() => toggleReadinessItem(item.id)}
+                                  className="w-5 h-5 rounded border-stone-300 text-brand-warm focus:ring-brand-warm cursor-pointer"
+                                />
+                              </div>
+                              <span className={`font-medium ${item.completed ? 'text-green-800 line-through opacity-70' : 'text-stone-700'}`}>
+                                {item.task}
+                              </span>
+                            </label>
+                          ))}
+                        </div>
+                        {logistics.site_readiness.every(i => i.completed) && (
+                          <div className="mt-6 bg-green-100 text-green-800 p-4 rounded-xl text-center font-bold flex justify-center items-center gap-2">
+                            <CheckCircle2 size={18} /> Site is fully ready for delivery
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )}
               </motion.div>

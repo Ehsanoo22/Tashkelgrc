@@ -86,6 +86,9 @@ export default function PortalManager() {
         .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'portal_projects', filter: `id=eq.${pData.id}` }, (payload) => {
           setProject(payload.new);
         })
+        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'portal_logistics', filter: `project_id=eq.${pData.id}` }, (payload) => {
+          setLogistics(payload.new);
+        })
         .subscribe();
     }
     setLoading(false);
@@ -211,6 +214,15 @@ export default function PortalManager() {
   };
 
   const updateLogisticsStep = async (id, status) => {
+    const stepToUpdate = logisticsSteps.find(s => s.id === id);
+    if (stepToUpdate && (stepToUpdate.step_name.includes('Dispatched') || stepToUpdate.step_name.includes('Delivery')) && (status === 'active' || status === 'completed')) {
+      if (logistics.site_readiness && !logistics.site_readiness.every(i => i.completed)) {
+         if (!window.confirm("WARNING: The client has NOT completed the Site Readiness checklist. Are you sure you want to dispatch this delivery?")) {
+           return;
+         }
+      }
+    }
+
     const payload = { status };
     if (status === 'completed') payload.completed_at = new Date().toISOString();
     const { error } = await supabase.from('portal_logistics_steps').update(payload).eq('id', id);
@@ -526,7 +538,7 @@ export default function PortalManager() {
              <button onClick={initLogistics} className="bg-brand-dark text-white px-6 py-3 rounded-xl font-bold">Initialize Tracker for Client</button>
            ) : (
              <div className="space-y-6">
-               <div className="grid grid-cols-2 gap-4">
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                  <div className="p-4 bg-stone-50 border rounded-xl flex items-end gap-2">
                    <div className="flex-1">
                      <p className="text-xs text-stone-500 font-bold uppercase mb-1">Tracking Number</p>
@@ -534,6 +546,27 @@ export default function PortalManager() {
                    </div>
                    <button onClick={updateTracking} className="bg-brand-dark text-white px-4 py-1.5 rounded-lg text-sm font-bold">Save</button>
                  </div>
+
+                 {logistics.site_readiness && logistics.site_readiness.length > 0 && (
+                   <div className="p-4 border rounded-xl flex flex-col justify-center bg-white shadow-sm">
+                      <p className="text-xs text-stone-500 font-bold uppercase mb-2 flex items-center justify-between">
+                        Site Readiness
+                        {logistics.site_readiness.every(i => i.completed) ? (
+                          <span className="text-green-600 flex items-center gap-1"><CheckCircle2 size={12} /> Client Approved</span>
+                        ) : (
+                          <span className="text-amber-600 flex items-center gap-1"><Clock size={12} /> Pending</span>
+                        )}
+                      </p>
+                      <div className="space-y-1.5 mt-2">
+                        {logistics.site_readiness.map(item => (
+                          <div key={item.id} className="flex justify-between items-center text-xs">
+                            <span className={item.completed ? 'text-stone-400 line-through' : 'text-stone-700 font-medium'}>{item.task}</span>
+                            {item.completed ? <CheckCircle2 size={12} className="text-green-500" /> : <div className="w-3 h-3 rounded border border-stone-300"></div>}
+                          </div>
+                        ))}
+                      </div>
+                   </div>
+                 )}
                </div>
 
                <div className="mt-8 border-t pt-8 space-y-4">
