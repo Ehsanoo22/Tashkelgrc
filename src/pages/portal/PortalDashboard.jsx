@@ -91,6 +91,14 @@ export default function PortalDashboard() {
   const [activeNoteTarget, setActiveNoteTarget] = useState(null);
   const [sendingNote, setSendingNote] = useState(false);
 
+  // Time & Location state
+  const [time, setTime] = useState(new Date());
+  useEffect(() => {
+    const timer = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+  const userLocation = Intl.DateTimeFormat().resolvedOptions().timeZone.replace('_', ' ').split('/').pop() || 'Local';
+
   useEffect(() => {
     checkAuthAndFetchData();
   }, []);
@@ -127,7 +135,7 @@ export default function PortalDashboard() {
         supabase.from('portal_comments').select('*').eq('project_id', pData.id).order('created_at', { ascending: true }),
         supabase.from('portal_documents').select('*').eq('project_id', pData.id).order('created_at', { ascending: false }),
         supabase.from('portal_invoices').select('*').eq('project_id', pData.id).order('created_at', { ascending: true }),
-        supabase.from('portal_logistics').select('*').eq('project_id', pData.id).single()
+        supabase.from('portal_logistics').select('*').eq('project_id', pData.id).maybeSingle()
       ]);
 
       if (mData.data) setMilestones(mData.data);
@@ -142,7 +150,6 @@ export default function PortalDashboard() {
         if (lsData) setLogisticsSteps(lsData);
       }
       
-      // Set up Realtime Subscriptions for V3
       const channel = supabase.channel(`portal_realtime_v3_${pData.id}`)
         .on('postgres_changes', { event: '*', schema: 'public', table: 'portal_milestones', filter: `project_id=eq.${pData.id}` }, (payload) => {
           if (payload.eventType === 'UPDATE') setMilestones(prev => prev.map(m => m.id === payload.new.id ? payload.new : m));
@@ -211,6 +218,11 @@ export default function PortalDashboard() {
   const progressPercent = milestones.length > 0 ? Math.round((completedMilestones / milestones.length) * 100) : 0;
   let daysToInstall = project?.target_installation_date ? differenceInDays(new Date(project.target_installation_date), new Date()) : null;
 
+  const totalContract = project?.total_contract_value || 0;
+  const amountPaid = project?.amount_paid || 0;
+  const balance = totalContract - amountPaid;
+  const financialProgress = totalContract > 0 ? Math.round((amountPaid / totalContract) * 100) : 0;
+
   const TABS = [
     { id: 'overview', icon: <Calendar size={20} />, label: 'Dashboard' },
     { id: 'documents', icon: <FileCheck size={20} />, label: 'Approvals' },
@@ -268,6 +280,15 @@ export default function PortalDashboard() {
 
         <main className="flex-1 p-6 md:p-10 max-w-7xl mx-auto w-full">
           
+          {/* Top Right Live Info Widget */}
+          <header className="hidden md:flex justify-end items-center mb-8 gap-4 text-stone-500 font-medium text-sm">
+             <div className="flex items-center gap-1.5"><MapPin size={16}/> {userLocation}</div>
+             <div className="w-1 h-1 bg-stone-300 rounded-full"></div>
+             <div className="flex items-center gap-1.5"><Calendar size={16}/> {format(time, 'EEEE, MMM do')}</div>
+             <div className="w-1 h-1 bg-stone-300 rounded-full"></div>
+             <div className="flex items-center gap-1.5"><Clock size={16}/> <span className="font-mono">{format(time, 'h:mm:ss a')}</span></div>
+          </header>
+
           <AnimatePresence mode="wait">
             {/* ----------------- OVERVIEW TAB ----------------- */}
             {activeTab === 'overview' && (
@@ -281,7 +302,7 @@ export default function PortalDashboard() {
                   <div className="bg-white rounded-3xl p-6 border border-stone-200 shadow-sm col-span-1 md:col-span-2 relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-brand-warm/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
                     <div className="relative z-10">
-                      <h3 className="text-stone-500 font-medium mb-4">Overall Progress</h3>
+                      <h3 className="text-stone-500 font-medium mb-4">Manufacturing Progress</h3>
                       <div className="text-5xl font-bold text-brand-dark mb-6">{progressPercent}%</div>
                       <div className="w-full bg-stone-100 h-3 rounded-full overflow-hidden">
                         <div className="h-full bg-brand-dark rounded-full transition-all duration-1000" style={{ width: `${progressPercent}%` }} />
@@ -321,7 +342,7 @@ export default function PortalDashboard() {
                                       <h4 className={`font-bold text-sm ${m.status === 'Not Started' ? 'text-stone-400' : 'text-brand-dark'}`}>{m.phase_name}</h4>
                                       <p className="text-xs text-stone-500 mt-1">{m.status}</p>
                                     </div>
-                                    <button onClick={() => setActiveNoteTarget(activeNoteTarget === m.id ? null : m.id)} className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold ${itemComments.length > 0 ? 'bg-brand-dark text-white' : 'bg-white border border-stone-200 text-stone-500 hover:bg-stone-50'}`}>
+                                    <button onClick={() => setActiveNoteTarget(activeNoteTarget === m.id ? null : m.id)} className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all ${itemComments.length > 0 ? 'bg-brand-dark text-white shadow-md' : 'bg-white border border-stone-200 text-stone-500 hover:bg-stone-50'}`}>
                                       <MessageCircle size={14} /> {itemComments.length > 0 ? itemComments.length : 'Note'}
                                     </button>
                                   </div>
@@ -354,7 +375,7 @@ export default function PortalDashboard() {
                                    <span className="text-blue-500 flex items-center gap-1"><FileText size={14} /> Note</span>}
                                   <span>• {formatDistanceToNow(new Date(update.created_at), { addSuffix: true })}</span>
                                 </div>
-                                <button onClick={() => setActiveNoteTarget(activeNoteTarget === update.id ? null : update.id)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold ${itemComments.length > 0 ? 'bg-brand-warm text-white' : 'bg-stone-50 border border-stone-200 text-stone-600 hover:bg-stone-100'}`}>
+                                <button onClick={() => setActiveNoteTarget(activeNoteTarget === update.id ? null : update.id)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold ${itemComments.length > 0 ? 'bg-brand-warm text-white shadow-md' : 'bg-stone-50 border border-stone-200 text-stone-600 hover:bg-stone-100'}`}>
                                   <MessageCircle size={14} /> {itemComments.length > 0 ? `${itemComments.length} Notes` : 'Note'}
                                 </button>
                               </div>
@@ -392,7 +413,7 @@ export default function PortalDashboard() {
                         ) : doc.status === 'rejected' ? (
                           <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold">Rejected</span>
                         ) : (
-                          <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-bold">Pending Review</span>
+                          <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1"><Clock size={14}/> Pending</span>
                         )}
                       </div>
                       <h3 className="font-bold text-brand-dark text-lg">{doc.title}</h3>
@@ -403,10 +424,65 @@ export default function PortalDashboard() {
                           View Document
                         </a>
                         {doc.status === 'pending' && (
-                          <button onClick={() => approveDocument(doc.id)} className="block w-full text-center bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl font-bold shadow-lg shadow-green-500/30 transition-all transform hover:scale-[1.02]">
+                          <button onClick={() => approveDocument(doc.id)} className="block w-full text-center bg-brand-dark hover:bg-black text-white py-3 rounded-xl font-bold shadow-lg transition-all transform hover:scale-[1.02]">
                             Approve Design
                           </button>
                         )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* ----------------- FINANCIALS TAB ----------------- */}
+            {activeTab === 'financials' && (
+              <motion.div key="financials" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+                <header className="mb-8">
+                  <h2 className="text-3xl font-bold text-brand-dark mb-2">Project Financials</h2>
+                  <p className="text-stone-500">Track your contract balance and view invoices.</p>
+                </header>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                  <div className="bg-white rounded-3xl p-6 border border-stone-200 shadow-sm col-span-1 md:col-span-2 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+                    <div className="relative z-10">
+                      <h3 className="text-stone-500 font-medium mb-4">Payment Progress</h3>
+                      <div className="text-5xl font-bold text-brand-dark mb-6">{financialProgress}%</div>
+                      <div className="w-full bg-stone-100 h-3 rounded-full overflow-hidden mb-4">
+                        <div className="h-full bg-green-500 rounded-full transition-all duration-1000" style={{ width: `${financialProgress}%` }} />
+                      </div>
+                      <div className="flex justify-between text-sm font-bold">
+                         <span className="text-green-600">Paid: ${amountPaid.toLocaleString()}</span>
+                         <span className="text-stone-400">Total: ${totalContract.toLocaleString()}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-stone-950 text-white rounded-3xl p-6 shadow-xl flex flex-col justify-center">
+                    <h3 className="text-stone-400 font-medium mb-4 flex items-center gap-2"><DollarSign size={18} /> Remaining Balance</h3>
+                    <div className="text-4xl font-bold text-white mb-2">${balance.toLocaleString()}</div>
+                    <p className="text-stone-400 text-sm">Please review unpaid invoices below.</p>
+                  </div>
+                </div>
+
+                <h3 className="text-xl font-bold text-brand-dark mb-6">Invoices</h3>
+                <div className="space-y-4">
+                  {invoices.length === 0 && <div className="p-12 text-center text-stone-400 bg-white border border-stone-200 border-dashed rounded-3xl">No invoices have been issued yet.</div>}
+                  {invoices.map(inv => (
+                    <div key={inv.id} className="flex justify-between items-center p-6 border border-stone-200 rounded-2xl bg-white shadow-sm hover:shadow-md transition-shadow">
+                      <div>
+                        <h4 className="font-bold text-lg text-brand-dark">{inv.title}</h4>
+                        <p className="text-stone-500 mt-1 flex items-center gap-2">
+                           <span className="font-bold text-brand-dark">${parseFloat(inv.amount).toLocaleString()}</span>
+                           <span className="w-1 h-1 bg-stone-300 rounded-full"></span>
+                           Due: {inv.due_date ? format(new Date(inv.due_date), 'MMM do, yyyy') : 'Upon receipt'}
+                        </p>
+                      </div>
+                      <div>
+                        {inv.status === 'paid' ? <span className="bg-green-100 text-green-700 px-4 py-1.5 rounded-full text-sm font-bold flex items-center gap-1"><CheckCircle2 size={16}/> Paid</span> :
+                         inv.status === 'partial' ? <span className="bg-amber-100 text-amber-700 px-4 py-1.5 rounded-full text-sm font-bold flex items-center gap-1"><Clock size={16}/> Partial</span> :
+                         <span className="bg-stone-100 text-stone-600 px-4 py-1.5 rounded-full text-sm font-bold">Unpaid</span>}
                       </div>
                     </div>
                   ))}
@@ -431,11 +507,11 @@ export default function PortalDashboard() {
                     <div className="flex items-center justify-between border-b border-stone-100 pb-6 mb-6">
                       <div>
                         <p className="text-sm font-bold text-stone-400 uppercase tracking-wider mb-1">Tracking ID</p>
-                        <p className="font-mono font-bold text-brand-dark">{logistics.tracking_number || 'PENDING'}</p>
+                        <p className="font-mono font-bold text-brand-dark text-xl">{logistics.tracking_number || 'PENDING'}</p>
                       </div>
                       <div className="text-right">
                         <p className="text-sm font-bold text-stone-400 uppercase tracking-wider mb-1">Status</p>
-                        <p className="font-bold text-brand-warm capitalize">{logistics.status.replace('_', ' ')}</p>
+                        <p className="font-bold text-brand-warm capitalize text-lg">{logistics.status.replace('_', ' ')}</p>
                       </div>
                     </div>
 
@@ -461,12 +537,30 @@ export default function PortalDashboard() {
               </motion.div>
             )}
 
-            {/* Other tabs omitted for brevity, but framework is perfectly established */}
-            {['financials', 'messages'].includes(activeTab) && (
-               <motion.div key={activeTab} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-                  <div className="p-12 text-center text-stone-400 bg-white border border-stone-200 border-dashed rounded-3xl">
-                    <h3 className="text-xl font-bold text-brand-dark mb-2 capitalize">{activeTab} Module</h3>
-                    <p>This module is currently being provisioned by your admin team.</p>
+            {/* ----------------- MESSAGES TAB ----------------- */}
+            {activeTab === 'messages' && (
+               <motion.div key="messages" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+                  <header className="mb-8">
+                    <h2 className="text-3xl font-bold text-brand-dark mb-2">Message Center</h2>
+                    <p className="text-stone-500">All your project notes and inquiries in one place.</p>
+                  </header>
+                  
+                  <div className="bg-white rounded-3xl p-6 border border-stone-200 shadow-sm max-w-4xl">
+                    {comments.length === 0 && <div className="text-center text-stone-400 py-12">You have no messages yet.</div>}
+                    <div className="space-y-4">
+                      {comments.map(c => (
+                        <div key={c.id} className={`p-4 rounded-2xl border flex flex-col ${c.sender_type === 'client' ? 'bg-brand-warm/10 border-brand-warm/20 ml-auto w-3/4' : 'bg-stone-50 border-stone-200 mr-auto w-3/4'}`}>
+                          <div className="flex justify-between items-center mb-2">
+                             <span className="font-bold text-xs uppercase opacity-75">{c.sender_type === 'client' ? 'You' : 'Project Manager'}</span>
+                             <span className="text-xs text-stone-500">{formatDistanceToNow(new Date(c.created_at), { addSuffix: true })}</span>
+                          </div>
+                          <p className="text-stone-800">{c.content}</p>
+                          <div className="mt-3 pt-3 border-t border-black/5 text-[10px] text-stone-500 font-bold uppercase tracking-wider">
+                            Attached to: {c.target_type}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                </motion.div>
             )}

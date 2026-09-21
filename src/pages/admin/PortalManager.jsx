@@ -16,6 +16,7 @@ export default function PortalManager() {
   const [updates, setUpdates] = useState([]);
   const [comments, setComments] = useState([]);
   const [documents, setDocuments] = useState([]);
+  const [invoices, setInvoices] = useState([]);
   const [logistics, setLogistics] = useState(null);
   const [logisticsSteps, setLogisticsSteps] = useState([]);
   
@@ -25,15 +26,21 @@ export default function PortalManager() {
   const [updateType, setUpdateType] = useState('note');
   const [updateFile, setUpdateFile] = useState(null);
   const [publishing, setPublishing] = useState(false);
-  const [newMilestoneName, setNewMilestoneName] = useState('');
   const [replyText, setReplyText] = useState('');
   const [activeCommentTarget, setActiveCommentTarget] = useState(null);
+  
+  const [trackingNum, setTrackingNum] = useState('');
 
   // Doc States
   const [docTitle, setDocTitle] = useState('');
   const [docType, setDocType] = useState('shop_drawing');
   const [docFile, setDocFile] = useState(null);
   const [uploadingDoc, setUploadingDoc] = useState(false);
+
+  // Financial States
+  const [invTitle, setInvTitle] = useState('');
+  const [invAmount, setInvAmount] = useState('');
+  const [invDate, setInvDate] = useState('');
 
   useEffect(() => {
     fetchData();
@@ -48,11 +55,12 @@ export default function PortalManager() {
     if (pData) {
       setProject(pData);
       
-      const [mData, uData, cmData, dData, lData] = await Promise.all([
+      const [mData, uData, cmData, dData, iData, lData] = await Promise.all([
         supabase.from('portal_milestones').select('*').eq('project_id', pData.id).order('order_index', { ascending: true }),
         supabase.from('portal_updates').select('*').eq('project_id', pData.id).order('created_at', { ascending: false }),
         supabase.from('portal_comments').select('*').eq('project_id', pData.id).order('created_at', { ascending: true }),
         supabase.from('portal_documents').select('*').eq('project_id', pData.id).order('created_at', { ascending: false }),
+        supabase.from('portal_invoices').select('*').eq('project_id', pData.id).order('created_at', { ascending: true }),
         supabase.from('portal_logistics').select('*').eq('project_id', pData.id).maybeSingle()
       ]);
 
@@ -60,16 +68,17 @@ export default function PortalManager() {
       if (uData.data) setUpdates(uData.data);
       if (cmData.data) setComments(cmData.data);
       if (dData.data) setDocuments(dData.data);
+      if (iData.data) setInvoices(iData.data);
       if (lData.data) {
         setLogistics(lData.data);
+        setTrackingNum(lData.data.tracking_number || '');
         const { data: lsData } = await supabase.from('portal_logistics_steps').select('*').eq('logistics_id', lData.data.id).order('order_index', { ascending: true });
         if (lsData) setLogisticsSteps(lsData);
       }
 
-      // Realtime listeners
       const channel = supabase.channel(`admin_realtime_${pData.id}`)
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'portal_comments', filter: `project_id=eq.${pData.id}` }, (payload) => {
-          if (payload.eventType === 'INSERT') setComments(prev => [...prev, payload.new].sort((a, b) => new Date(a.created_at) - new Date(b.created_at)));
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'portal_comments', filter: `project_id=eq.${pData.id}` }, (payload) => {
+          setComments(prev => [...prev, payload.new].sort((a, b) => new Date(a.created_at) - new Date(b.created_at)));
         })
         .on('postgres_changes', { event: '*', schema: 'public', table: 'portal_documents', filter: `project_id=eq.${pData.id}` }, (payload) => {
           if (payload.eventType === 'UPDATE') setDocuments(prev => prev.map(d => d.id === payload.new.id ? payload.new : d));
@@ -106,8 +115,9 @@ export default function PortalManager() {
 
   const sendReply = async (targetType, targetId) => {
     if (!replyText) return;
-    const { data } = await supabase.from('portal_comments').insert([{ project_id: project.id, target_type: targetType, target_id: targetId, sender_type: 'admin', content: replyText }]).select();
-    if (data) { setComments([...comments, data[0]]); setReplyText(''); setActiveCommentTarget(null); }
+    const { data, error } = await supabase.from('portal_comments').insert([{ project_id: project.id, target_type: targetType, target_id: targetId, sender_type: 'admin', content: replyText }]).select();
+    if (error) alert("Error sending reply: " + error.message);
+    if (data) { setComments([...comments, data[0]]); setReplyText(''); }
   };
 
   const uploadDocument = async () => {
@@ -128,12 +138,37 @@ export default function PortalManager() {
     finally { setUploadingDoc(false); }
   };
 
+  const createInvoice = async () => {
+    if (!invTitle || !invAmount) return alert('Title and Amount required');
+    const { data, error } = await supabase.from('portal_invoices').insert([{ project_id: project.id, title: invTitle, amount: parseFloat(invAmount), due_date: invDate || null }]).select();
+    if (error) alert("Error creating invoice: " + error.message);
+    if (data) { setInvoices([...invoices, data[0]]); setInvTitle(''); setInvAmount(''); setInvDate(''); }
+  };
+
+  const updateInvoiceStatus = async (id, status) => {
+    const { error } = await supabase.from('portal_invoices').update({ status }).eq('id', id);
+    if (!error) setInvoices(invoices.map(i => i.id === id ? { ...i, status } : i));
+  };
+
+  const saveProjectFinancials = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const total = parseFloat(formData.get('total')) || 0;
+    const paid = parseFloat(formData.get('paid')) || 0;
+    
+    const { error } = await supabase.from('portal_projects').update({ total_contract_value: total, amount_paid: paid }).eq('id', project.id);
+    if (error) alert("Error saving financials: " + error.message);
+    else {
+      setProject({ ...project, total_contract_value: total, amount_paid: paid });
+      alert("Financials updated!");
+    }
+  };
+
   const initLogistics = async () => {
     if (logistics) return;
     const { data, error } = await supabase.from('portal_logistics').insert([{ project_id: project.id }]).select();
     if (data) {
       setLogistics(data[0]);
-      // Create default steps
       const steps = [
         { logistics_id: data[0].id, step_name: 'Order Processed', status: 'completed', completed_at: new Date().toISOString(), order_index: 0 },
         { logistics_id: data[0].id, step_name: 'Quality Assurance Passed', status: 'active', order_index: 1 },
@@ -145,13 +180,21 @@ export default function PortalManager() {
     }
   };
 
+  const updateTracking = async () => {
+    if (!logistics) return;
+    const { error } = await supabase.from('portal_logistics').update({ tracking_number: trackingNum }).eq('id', logistics.id);
+    if (error) alert('Error updating tracking: ' + error.message);
+    else {
+      setLogistics({ ...logistics, tracking_number: trackingNum });
+      alert('Tracking updated');
+    }
+  };
+
   const updateLogisticsStep = async (id, status) => {
     const payload = { status };
     if (status === 'completed') payload.completed_at = new Date().toISOString();
     const { error } = await supabase.from('portal_logistics_steps').update(payload).eq('id', id);
-    if (!error) {
-      setLogisticsSteps(logisticsSteps.map(s => s.id === id ? { ...s, ...payload } : s));
-    }
+    if (!error) setLogisticsSteps(logisticsSteps.map(s => s.id === id ? { ...s, ...payload } : s));
   };
 
   if (loading) return <div className="p-8"><Loader2 className="animate-spin" /></div>;
@@ -172,17 +215,18 @@ export default function PortalManager() {
         </div>
       </div>
 
-      {/* Admin Tabs */}
-      <div className="flex gap-2 mb-8 bg-white p-2 rounded-2xl border border-stone-200 shadow-sm">
+      <div className="flex flex-wrap gap-2 mb-8 bg-white p-2 rounded-2xl border border-stone-200 shadow-sm">
         {[
-          { id: 'timeline', label: 'Timeline & Feed', icon: <Clock size={18} /> },
-          { id: 'documents', label: 'Approvals', icon: <FileCheck size={18} /> },
-          { id: 'logistics', label: 'Logistics Tracker', icon: <Truck size={18} /> }
+          { id: 'timeline', label: 'Timeline & Feed', icon: <Clock size={16} /> },
+          { id: 'messages', label: 'Messages', icon: <MessageCircle size={16} /> },
+          { id: 'documents', label: 'Approvals', icon: <FileCheck size={16} /> },
+          { id: 'financials', label: 'Financials', icon: <DollarSign size={16} /> },
+          { id: 'logistics', label: 'Logistics', icon: <Truck size={16} /> }
         ].map(tab => (
           <button 
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex-1 py-3 px-4 rounded-xl flex items-center justify-center gap-2 font-bold transition-colors ${activeTab === tab.id ? 'bg-brand-dark text-white' : 'text-stone-500 hover:bg-stone-100'}`}
+            className={`flex-1 min-w-[140px] py-3 px-4 rounded-xl flex items-center justify-center gap-2 text-sm font-bold transition-colors ${activeTab === tab.id ? 'bg-brand-dark text-white' : 'text-stone-500 hover:bg-stone-100'}`}
           >
             {tab.icon} {tab.label}
           </button>
@@ -191,7 +235,6 @@ export default function PortalManager() {
 
       {activeTab === 'timeline' && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Timeline Manager */}
           <div className="lg:col-span-5 space-y-6">
             <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-6">
               <h2 className="text-lg font-bold text-brand-dark mb-4 border-b border-stone-100 pb-2">Timeline Manager</h2>
@@ -205,11 +248,27 @@ export default function PortalManager() {
                         <select value={m.status} onChange={e => updateMilestoneStatus(m.id, e.target.value)} className="text-sm border rounded-lg p-2 flex-1">
                           <option>Not Started</option><option>In Progress</option><option>Completed</option>
                         </select>
-                        <button onClick={() => setActiveCommentTarget(activeCommentTarget === m.id ? null : m.id)} className={`px-3 rounded-lg border flex items-center gap-1 ${itemComments.length > 0 ? 'bg-brand-dark text-white' : 'bg-white'}`}>
+                        <button onClick={() => setActiveCommentTarget(activeCommentTarget === m.id ? null : m.id)} className={`px-3 rounded-lg border flex items-center gap-1 transition-colors ${itemComments.length > 0 ? 'bg-brand-dark text-white' : 'bg-white hover:bg-stone-100'}`}>
                           <MessageCircle size={16} /> {itemComments.length}
                         </button>
                       </div>
-                      {/* Comments UI hidden for brevity but works the same as V2 */}
+                      
+                      {activeCommentTarget === m.id && (
+                        <div className="bg-white rounded-lg border p-3 mt-2 space-y-3">
+                          <div className="max-h-40 overflow-y-auto space-y-2">
+                            {itemComments.map(c => (
+                              <div key={c.id} className={`p-2 rounded-lg text-sm ${c.sender_type === 'client' ? 'bg-brand-warm text-white' : 'bg-stone-100 text-stone-700'}`}>
+                                <span className="font-bold text-xs opacity-75 block">{c.sender_type === 'client' ? 'Client' : 'You'}</span>
+                                {c.content}
+                              </div>
+                            ))}
+                          </div>
+                          <div className="flex gap-2">
+                            <input type="text" value={replyText} onChange={e => setReplyText(e.target.value)} className="flex-1 border rounded-lg px-3 py-1.5 text-sm" placeholder="Reply..." />
+                            <button onClick={() => sendReply('milestone', m.id)} className="bg-brand-dark text-white p-2 rounded-lg"><Send size={14} /></button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -217,7 +276,6 @@ export default function PortalManager() {
             </div>
           </div>
           
-          {/* Broadcaster */}
           <div className="lg:col-span-7 space-y-6">
             <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-6">
               <h2 className="text-lg font-bold text-brand-dark mb-4 border-b border-stone-100 pb-2">Broadcast Update</h2>
@@ -225,6 +283,104 @@ export default function PortalManager() {
               <input type="file" onChange={e => setUpdateFile(e.target.files[0])} className="mb-4" />
               <button onClick={publishUpdate} disabled={publishing} className="w-full bg-brand-dark text-white py-3 rounded-xl font-bold">Publish</button>
             </div>
+
+            <div className="space-y-4">
+              <h2 className="text-lg font-bold text-brand-dark mb-4">Feed History</h2>
+              {updates.map(u => {
+                const itemComments = comments.filter(c => c.target_type === 'update' && c.target_id === u.id);
+                return (
+                  <div key={u.id} className="bg-white p-6 rounded-2xl border shadow-sm relative">
+                    <div className="absolute top-4 right-4">
+                      <button onClick={() => setActiveCommentTarget(activeCommentTarget === u.id ? null : u.id)} className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 ${itemComments.length > 0 ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-600'}`}>
+                        <MessageCircle size={14} /> {itemComments.length} Notes
+                      </button>
+                    </div>
+                    {u.media_url && <img src={u.media_url} alt="Media" className="max-h-48 rounded-xl object-cover mb-4" />}
+                    <p>{u.content}</p>
+                    
+                    {activeCommentTarget === u.id && (
+                      <div className="bg-stone-50 rounded-lg border p-4 mt-4 space-y-3">
+                        <div className="max-h-48 overflow-y-auto space-y-2">
+                          {itemComments.map(c => (
+                            <div key={c.id} className={`p-2 rounded-lg text-sm w-max max-w-[80%] ${c.sender_type === 'client' ? 'bg-brand-warm text-white' : 'bg-stone-200 text-stone-700'}`}>
+                              <span className="font-bold text-[10px] uppercase opacity-75 block">{c.sender_type}</span>
+                              {c.content}
+                            </div>
+                          ))}
+                        </div>
+                        <div className="flex gap-2">
+                          <input type="text" value={replyText} onChange={e => setReplyText(e.target.value)} className="flex-1 border rounded-lg px-3 py-1.5 text-sm" placeholder="Reply..." />
+                          <button onClick={() => sendReply('update', u.id)} className="bg-brand-dark text-white p-2 rounded-lg"><Send size={14} /></button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'messages' && (
+        <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-6 max-w-4xl">
+          <h2 className="text-xl font-bold text-brand-dark mb-6">Unified Inbox</h2>
+          {comments.length === 0 && <p className="text-stone-500">No messages yet.</p>}
+          <div className="space-y-4">
+            {comments.map(c => (
+              <div key={c.id} className={`p-4 rounded-xl border flex flex-col ${c.sender_type === 'client' ? 'bg-blue-50 border-blue-100' : 'bg-stone-50 border-stone-200'}`}>
+                <div className="flex justify-between items-center mb-2">
+                   <span className="font-bold text-sm uppercase">{c.sender_type === 'client' ? 'From: Client' : 'From: You'}</span>
+                   <span className="text-xs text-stone-500">{formatDistanceToNow(new Date(c.created_at), { addSuffix: true })}</span>
+                </div>
+                <p className="text-stone-700">{c.content}</p>
+                <div className="mt-2 text-xs text-stone-400">Attached to: {c.target_type}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'financials' && (
+        <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-6 max-w-4xl">
+          <h2 className="text-xl font-bold text-brand-dark mb-6">Project Financials</h2>
+          
+          <form onSubmit={saveProjectFinancials} className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6 bg-stone-50 rounded-2xl border border-stone-200 mb-10">
+            <div>
+              <label className="block text-xs font-bold text-stone-500 uppercase mb-1">Total Contract Value ($)</label>
+              <input name="total" type="number" defaultValue={project.total_contract_value || ''} className="w-full border rounded-xl px-4 py-2" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-stone-500 uppercase mb-1">Amount Paid ($)</label>
+              <input name="paid" type="number" defaultValue={project.amount_paid || ''} className="w-full border rounded-xl px-4 py-2" />
+            </div>
+            <div className="flex items-end">
+              <button type="submit" className="w-full bg-brand-dark text-white px-6 py-2 rounded-xl font-bold h-[42px]">Save Financials</button>
+            </div>
+          </form>
+
+          <h3 className="font-bold text-brand-dark mb-4 border-b pb-2">Invoices</h3>
+          <div className="flex gap-4 mb-6">
+            <input type="text" value={invTitle} onChange={e => setInvTitle(e.target.value)} placeholder="Invoice Title (e.g. 50% Deposit)" className="flex-1 border rounded-xl px-4 py-2" />
+            <input type="number" value={invAmount} onChange={e => setInvAmount(e.target.value)} placeholder="Amount" className="w-32 border rounded-xl px-4 py-2" />
+            <input type="date" value={invDate} onChange={e => setInvDate(e.target.value)} className="w-40 border rounded-xl px-4 py-2" />
+            <button onClick={createInvoice} className="bg-green-600 text-white px-6 rounded-xl font-bold">Add Invoice</button>
+          </div>
+
+          <div className="space-y-3">
+            {invoices.map(inv => (
+              <div key={inv.id} className="flex justify-between items-center p-4 border rounded-xl bg-white">
+                <div>
+                  <h4 className="font-bold">{inv.title}</h4>
+                  <p className="text-sm text-stone-500">${inv.amount} • Due: {inv.due_date || 'N/A'}</p>
+                </div>
+                <select value={inv.status} onChange={e => updateInvoiceStatus(inv.id, e.target.value)} className="border rounded-lg px-4 py-2 text-sm font-bold">
+                  <option value="unpaid">Unpaid</option>
+                  <option value="partial">Partial</option>
+                  <option value="paid">Paid</option>
+                </select>
+              </div>
+            ))}
           </div>
         </div>
       )}
@@ -268,9 +424,12 @@ export default function PortalManager() {
            ) : (
              <div className="space-y-6">
                <div className="grid grid-cols-2 gap-4">
-                 <div className="p-4 bg-stone-50 border rounded-xl">
-                   <p className="text-xs text-stone-500 font-bold uppercase mb-1">Tracking Number</p>
-                   <input type="text" defaultValue={logistics.tracking_number || ''} onBlur={e => supabase.from('portal_logistics').update({ tracking_number: e.target.value }).eq('id', logistics.id)} className="w-full bg-transparent border-b border-stone-300 focus:border-brand-dark outline-none font-bold text-lg" placeholder="e.g. TRK-99281" />
+                 <div className="p-4 bg-stone-50 border rounded-xl flex items-end gap-2">
+                   <div className="flex-1">
+                     <p className="text-xs text-stone-500 font-bold uppercase mb-1">Tracking Number</p>
+                     <input type="text" value={trackingNum} onChange={e => setTrackingNum(e.target.value)} className="w-full bg-transparent border-b border-stone-300 focus:border-brand-dark outline-none font-bold text-lg" placeholder="e.g. TRK-99281" />
+                   </div>
+                   <button onClick={updateTracking} className="bg-brand-dark text-white px-4 py-1.5 rounded-lg text-sm font-bold">Save</button>
                  </div>
                </div>
 
@@ -281,7 +440,7 @@ export default function PortalManager() {
                      <div className="flex-1">
                        <h4 className="font-bold">{step.step_name}</h4>
                      </div>
-                     <select value={step.status} onChange={e => updateLogisticsStep(step.id, e.target.value)} className="border rounded-lg px-4 py-2">
+                     <select value={step.status} onChange={e => updateLogisticsStep(step.id, e.target.value)} className="border rounded-lg px-4 py-2 font-bold text-sm">
                        <option value="pending">Pending</option>
                        <option value="active">Active (Pulsing)</option>
                        <option value="completed">Completed (Checkmark)</option>
