@@ -87,6 +87,7 @@ export default function PortalDashboard() {
   
   const [activeTab, setActiveTab] = useState('overview'); // overview, documents, financials, logistics, messages
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   const [activeNoteTarget, setActiveNoteTarget] = useState(null);
   const [sendingNote, setSendingNote] = useState(false);
@@ -102,6 +103,12 @@ export default function PortalDashboard() {
   useEffect(() => {
     checkAuthAndFetchData();
   }, []);
+
+  const completeOnboarding = async () => {
+    setShowOnboarding(false);
+    await supabase.from('portal_clients').update({ has_completed_onboarding: true }).eq('id', client.id);
+    setClient({ ...client, has_completed_onboarding: true });
+  };
 
   const checkAuthAndFetchData = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -123,6 +130,9 @@ export default function PortalDashboard() {
     }
 
     setClient(cData);
+    if (!cData.has_completed_onboarding) {
+      setShowOnboarding(true);
+    }
 
     const { data: pData } = await supabase.from('portal_projects').select('*').eq('client_id', session.user.id).single();
 
@@ -235,8 +245,45 @@ export default function PortalDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-stone-50 font-sans flex flex-col md:flex-row">
+    <div className="min-h-screen bg-stone-50 font-sans flex flex-col md:flex-row relative">
       
+      {/* Onboarding Overlay */}
+      <AnimatePresence>
+        {showOnboarding && (
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={{ opacity: 0 }} 
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+          >
+            <motion.div 
+              initial={{ scale: 0.9, y: 20 }} 
+              animate={{ scale: 1, y: 0 }} 
+              exit={{ scale: 0.9, y: 20 }}
+              className="bg-stone-900 border border-stone-800 p-8 rounded-3xl max-w-lg w-full text-center shadow-2xl relative overflow-hidden"
+            >
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-brand-warm/20 rounded-full blur-3xl -z-10 pointer-events-none"></div>
+              
+              <div className="w-16 h-16 bg-brand-warm/10 text-brand-warm rounded-full flex items-center justify-center mx-auto mb-6">
+                <CheckCircle2 size={32} />
+              </div>
+              
+              <h2 className="text-3xl font-bold text-white mb-4">Welcome to your Control Room</h2>
+              <p className="text-stone-400 mb-8 leading-relaxed">
+                This is your dedicated portal to track manufacturing progress, review and approve shop drawings, manage financials, and communicate directly with your project team in real-time.
+              </p>
+              
+              <button 
+                onClick={completeOnboarding}
+                className="bg-brand-warm text-white px-8 py-3 rounded-xl font-bold w-full hover:bg-amber-600 transition-colors shadow-lg shadow-brand-warm/20"
+              >
+                Let's Get Started
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Sidebar Navigation */}
       <aside className={`fixed md:sticky top-0 left-0 h-screen w-64 bg-stone-950 text-white flex flex-col z-50 transition-transform duration-300 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
         <div className="p-6 border-b border-stone-800 flex justify-between items-center">

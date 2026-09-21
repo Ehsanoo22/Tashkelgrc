@@ -91,15 +91,31 @@ export default function PortalProvisioning() {
       if (clientError) throw new Error(`Client Record Error: ${clientError.message}`);
 
       // 4. Create initial portal_projects record
-      const { error: projectError } = await supabase
+      const { data: projectData, error: projectError } = await supabase
         .from('portal_projects')
         .insert([{
           client_id: newUserId,
           name: formData.project_name,
           target_installation_date: formData.target_date || null
-        }]);
+        }]).select();
 
       if (projectError) throw new Error(`Project Record Error: ${projectError.message}`);
+
+      // 5. Create default milestones
+      if (projectData && projectData[0]) {
+        const projectId = projectData[0].id;
+        const defaultMilestones = [
+          { project_id: projectId, phase_name: 'Concept & Design Review', status: 'In Progress', order_index: 0 },
+          { project_id: projectId, phase_name: 'Engineering & Shop Drawings', status: 'Not Started', order_index: 1 },
+          { project_id: projectId, phase_name: 'Material Procurement', status: 'Not Started', order_index: 2 },
+          { project_id: projectId, phase_name: 'Manufacturing & Fabrication', status: 'Not Started', order_index: 3 },
+          { project_id: projectId, phase_name: 'Quality Assurance (QA/QC)', status: 'Not Started', order_index: 4 },
+          { project_id: projectId, phase_name: 'Shipping & Logistics', status: 'Not Started', order_index: 5 },
+          { project_id: projectId, phase_name: 'Site Installation', status: 'Not Started', order_index: 6 }
+        ];
+        
+        await supabase.from('portal_milestones').insert(defaultMilestones);
+      }
 
       alert("Client Portal successfully provisioned!");
       navigate('/tashkeladmin/portals');

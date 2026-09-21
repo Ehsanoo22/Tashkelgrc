@@ -259,6 +259,35 @@ export default function PortalManager() {
           <div className="lg:col-span-5 space-y-6">
             <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-6">
               <h2 className="text-lg font-bold text-brand-dark mb-4 border-b border-stone-100 pb-2">Timeline Manager</h2>
+              
+              <div className="flex gap-2 mb-6">
+                <input 
+                  type="text" 
+                  placeholder="New Phase Name (e.g. Design)" 
+                  className="flex-1 border rounded-xl px-4 py-2 text-sm" 
+                  id="newMilestoneInput"
+                />
+                <button 
+                  onClick={async () => {
+                    const input = document.getElementById('newMilestoneInput').value;
+                    if (!input) return;
+                    const { data, error } = await supabase.from('portal_milestones').insert([{
+                      project_id: project.id,
+                      phase_name: input,
+                      status: 'Not Started',
+                      order_index: milestones.length
+                    }]).select();
+                    if (!error && data) {
+                      setMilestones([...milestones, data[0]]);
+                      document.getElementById('newMilestoneInput').value = '';
+                    } else alert(error?.message || 'Error');
+                  }}
+                  className="bg-brand-dark text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2"
+                >
+                  <Plus size={16} /> Add Phase
+                </button>
+              </div>
+
               <div className="space-y-3 mb-6">
                 {milestones.map((m) => {
                   const itemComments = comments.filter(c => c.target_type === 'milestone' && c.target_id === m.id);
@@ -271,6 +300,16 @@ export default function PortalManager() {
                         </select>
                         <button onClick={() => setActiveCommentTarget(activeCommentTarget === m.id ? null : m.id)} className={`px-3 rounded-lg border flex items-center gap-1 transition-colors ${itemComments.length > 0 ? 'bg-brand-dark text-white' : 'bg-white hover:bg-stone-100'}`}>
                           <MessageCircle size={16} /> {itemComments.length}
+                        </button>
+                        <button 
+                          onClick={async () => {
+                            if(!window.confirm("Delete phase?")) return;
+                            const { error } = await supabase.from('portal_milestones').delete().eq('id', m.id);
+                            if(!error) setMilestones(milestones.filter(x => x.id !== m.id));
+                          }}
+                          className="px-3 rounded-lg border bg-white hover:bg-red-50 text-stone-400 hover:text-red-500 transition-colors"
+                        >
+                          <Trash2 size={16} />
                         </button>
                       </div>
                       
