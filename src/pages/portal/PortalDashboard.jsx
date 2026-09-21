@@ -167,10 +167,6 @@ export default function PortalDashboard() {
           else if (payload.eventType === 'DELETE') setInvoices(prev => prev.filter(i => i.id !== payload.old.id));
         })
         .subscribe();
-        
-      return () => {
-        supabase.removeChannel(channel);
-      };
     }
     
     setLoading(false);
