@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Routes, Route, useNavigate, Link, useLocation } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
-import { LayoutDashboard, Image as ImageIcon, Settings, Users, LogOut, Calculator, FileText, Kanban, Globe } from 'lucide-react';
+import { LayoutDashboard, Image as ImageIcon, Settings, Users, LogOut, Calculator, FileText, Kanban, Globe, Lock } from 'lucide-react';
 import LeadsView from './LeadsView';
 import LeadsKanban from './LeadsKanban';
 import SiteSettings from './SiteSettings';
@@ -10,7 +10,10 @@ import GalleryManager from './GalleryManager';
 import AnalyticsView from './AnalyticsView';
 import PortfolioManager from './PortfolioManager';
 import PricingSettings from './PricingSettings';
-import QuotationsManager from './QuotationsManager'; // Need to create this
+import QuotationsManager from './QuotationsManager';
+import PortalsList from './PortalsList';
+import PortalProvisioning from './PortalProvisioning';
+import PortalManager from './PortalManager'; 
 import AdminTopBar from '../../components/admin/AdminTopBar';
 
 export default function AdminDashboard() {
@@ -58,6 +61,7 @@ export default function AdminDashboard() {
         { name: 'Leads Pipeline', path: '/tashkeladmin/pipeline', icon: Kanban },
         { name: 'Leads List', path: '/tashkeladmin/leads', icon: Users },
         { name: 'Quotations', path: '/tashkeladmin/quotes', icon: FileText },
+        { name: 'Client Portals', path: '/tashkeladmin/portals', icon: Lock },
       ]
     },
     {
@@ -145,6 +149,9 @@ export default function AdminDashboard() {
               <Route path="/pricing" element={<PricingSettings />} />
               <Route path="/seo" element={<SEOSettings />} />
               <Route path="/settings" element={<SiteSettings />} />
+              <Route path="/portals" element={<PortalsList />} />
+              <Route path="/portals/new" element={<PortalProvisioning />} />
+              <Route path="/portals/:id" element={<PortalManager />} />
             </Routes>
           </div>
         </main>

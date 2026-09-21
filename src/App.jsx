@@ -7,6 +7,8 @@ import Login from './pages/admin/Login';
 import ProjectsGrid from './pages/ProjectsGrid';
 import ProjectDetail from './pages/ProjectDetail';
 import FAQPage from './pages/FAQPage';
+import PortalLogin from './pages/portal/PortalLogin';
+import PortalDashboard from './pages/portal/PortalDashboard';
 import RouteTransitionProvider from './components/RouteTransitionProvider';
 import { supabase } from './lib/supabase';
 import { logPageView } from './lib/analytics';
@@ -67,11 +69,13 @@ function App() {
           <Route path="/projects" element={<ProjectsGrid lang={lang} setLang={setLang} />} />
           <Route path="/projects/:slug" element={<ProjectDetail lang={lang} setLang={setLang} />} />
           <Route path="/faq" element={<FAQPage lang={lang} setLang={setLang} />} />
+          <Route path="/portal/:slug" element={<PortalLogin />} />
+          <Route path="/portal/:slug/dashboard" element={<PortalDashboard />} />
           <Route path="/*" element={<PublicSite lang={lang} setLang={setLang} />} />
           <Route path="/tashkeladmin/login" element={<Login />} />
           <Route path="/tashkeladmin/*" element={<AdminDashboard />} />
         </Routes>
-        {!location.pathname.startsWith('/tashkeladmin') && <CookieConsent lang={lang} />}
+        {(!location.pathname.startsWith('/tashkeladmin') && !location.pathname.startsWith('/portal')) && <CookieConsent lang={lang} />}
       </RouteTransitionProvider>
     </HelmetProvider>
   );
