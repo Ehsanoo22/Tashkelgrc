@@ -91,6 +91,8 @@ export default function PortalDashboard() {
 
   const [activeNoteTarget, setActiveNoteTarget] = useState(null);
   const [sendingNote, setSendingNote] = useState(false);
+  const [rejectDocId, setRejectDocId] = useState(null);
+  const [rejectReason, setRejectReason] = useState('');
 
   // Time & Location state
   const [time, setTime] = useState(new Date());
@@ -256,6 +258,26 @@ export default function PortalDashboard() {
     } else {
       alert("Error approving document: " + error.message);
     }
+  };
+
+  const submitRejection = async () => {
+    if (!rejectReason.trim()) return alert("Please provide a reason for rejection.");
+    
+    // Send feedback as a note
+    await supabase.from('portal_comments').insert([{
+      project_id: project.id,
+      target_type: 'document',
+      target_id: rejectDocId,
+      sender_type: 'client',
+      content: `REJECTED: ${rejectReason}`
+    }]);
+
+    // Update status to rejected
+    const { error } = await supabase.from('portal_documents').update({ status: 'rejected' }).eq('id', rejectDocId);
+    if (error) alert("Error rejecting document: " + error.message);
+    
+    setRejectDocId(null);
+    setRejectReason('');
   };
 
   if (loading) return <div className="min-h-screen bg-stone-900 flex items-center justify-center"><Loader2 className="animate-spin text-brand-warm w-8 h-8" /></div>;
@@ -545,10 +567,31 @@ export default function PortalDashboard() {
                         <a href={doc.file_url} target="_blank" rel="noopener noreferrer" className="block w-full text-center bg-stone-100 hover:bg-stone-200 text-brand-dark py-3 rounded-xl font-bold transition-colors">
                           View Document
                         </a>
-                        {doc.status === 'pending' && (
-                          <button onClick={() => approveDocument(doc.id)} className="block w-full text-center bg-brand-dark hover:bg-black text-white py-3 rounded-xl font-bold shadow-lg transition-all transform hover:scale-[1.02]">
-                            Approve Design
-                          </button>
+                        {doc.status === 'pending' && rejectDocId !== doc.id && (
+                          <div className="flex gap-3">
+                            <button onClick={() => setRejectDocId(doc.id)} className="flex-1 text-center bg-stone-100 hover:bg-red-50 text-red-600 hover:text-red-700 py-3 rounded-xl font-bold transition-colors">
+                              Reject
+                            </button>
+                            <button onClick={() => approveDocument(doc.id)} className="flex-[2] text-center bg-brand-dark hover:bg-black text-white py-3 rounded-xl font-bold shadow-lg transition-all transform hover:scale-[1.02]">
+                              Approve
+                            </button>
+                          </div>
+                        )}
+                        {rejectDocId === doc.id && (
+                          <div className="mt-4 p-4 border border-red-100 bg-red-50/50 rounded-2xl">
+                            <h4 className="font-bold text-red-800 mb-2 text-sm">Reason for Rejection</h4>
+                            <textarea 
+                              value={rejectReason}
+                              onChange={e => setRejectReason(e.target.value)}
+                              placeholder="What needs to be updated?..."
+                              className="w-full text-sm p-3 rounded-xl border border-red-200 focus:outline-none focus:border-red-400 mb-3"
+                              rows="3"
+                            ></textarea>
+                            <div className="flex gap-2">
+                              <button onClick={() => {setRejectDocId(null); setRejectReason('');}} className="flex-1 py-2 text-stone-500 font-bold hover:bg-stone-200 rounded-lg text-sm">Cancel</button>
+                              <button onClick={submitRejection} className="flex-1 py-2 bg-red-600 text-white font-bold hover:bg-red-700 rounded-lg text-sm">Submit Rejection</button>
+                            </div>
+                          </div>
                         )}
                       </div>
                     </div>

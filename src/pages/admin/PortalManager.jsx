@@ -34,6 +34,7 @@ export default function PortalManager() {
   // Doc States
   const [docTitle, setDocTitle] = useState('');
   const [docType, setDocType] = useState('shop_drawing');
+  const [customDocType, setCustomDocType] = useState('');
   const [docFile, setDocFile] = useState(null);
   const [uploadingDoc, setUploadingDoc] = useState(false);
 
@@ -135,11 +136,11 @@ export default function PortalManager() {
       const { error: uploadError } = await supabase.storage.from('portal_media').upload(fileName, docFile);
       if (uploadError) throw new Error(uploadError.message);
       const fileUrl = supabase.storage.from('portal_media').getPublicUrl(fileName).data.publicUrl;
-      
-      const { data, error } = await supabase.from('portal_documents').insert([{ project_id: project.id, title: docTitle, type: docType, file_url: fileUrl }]).select();
+      const finalDocType = docType === 'custom' ? customDocType || 'Document' : docType;
+      const { data, error } = await supabase.from('portal_documents').insert([{ project_id: project.id, title: docTitle, type: finalDocType, file_url: fileUrl }]).select();
       if (error) throw new Error(error.message);
       if (data) setDocuments([data[0], ...documents]);
-      setDocTitle(''); setDocFile(null); alert('Document sent to client for approval!');
+      setDocTitle(''); setDocFile(null); setCustomDocType(''); alert('Document sent to client for approval!');
     } catch (err) { alert('Failed: ' + err.message); }
     finally { setUploadingDoc(false); }
   };
@@ -494,9 +495,17 @@ export default function PortalManager() {
           <h2 className="text-xl font-bold text-brand-dark mb-6">Require Client Approval</h2>
           <div className="flex gap-4 mb-6">
             <input type="text" value={docTitle} onChange={e => setDocTitle(e.target.value)} placeholder="Document Title (e.g. Lobby Panels Shop Drawing)" className="flex-1 border rounded-xl px-4 py-2" />
-            <select value={docType} onChange={e => setDocType(e.target.value)} className="border rounded-xl px-4 py-2">
-              <option value="shop_drawing">Shop Drawing</option><option value="contract">Contract</option><option value="3d_render">3D Render</option>
-            </select>
+            <div className="flex gap-2">
+              <select value={docType} onChange={e => setDocType(e.target.value)} className="border rounded-xl px-4 py-2">
+                <option value="shop_drawing">Shop Drawing</option>
+                <option value="contract">Contract</option>
+                <option value="3d_render">3D Render</option>
+                <option value="custom">Custom...</option>
+              </select>
+              {docType === 'custom' && (
+                <input type="text" value={customDocType} onChange={e => setCustomDocType(e.target.value)} placeholder="Enter type..." className="w-32 border rounded-xl px-4 py-2" />
+              )}
+            </div>
             <input type="file" onChange={e => setDocFile(e.target.files[0])} className="w-48" />
             <button onClick={uploadDocument} disabled={uploadingDoc} className="bg-brand-dark text-white px-6 rounded-xl font-bold">{uploadingDoc ? 'Uploading...' : 'Send'}</button>
           </div>
