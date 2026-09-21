@@ -213,8 +213,16 @@ export default function PortalDashboard() {
     const updatedArray = logistics.site_readiness.map(item => 
       item.id === itemId ? { ...item, completed: !item.completed } : item
     );
+    
+    // Optimistic UI update
     setLogistics({ ...logistics, site_readiness: updatedArray });
-    await supabase.from('portal_logistics').update({ site_readiness: updatedArray }).eq('id', logistics.id);
+    
+    const { error } = await supabase.from('portal_logistics').update({ site_readiness: updatedArray }).eq('id', logistics.id);
+    if (error) {
+      alert("Failed to save checklist: " + error.message);
+      // Revert on error
+      setLogistics({ ...logistics });
+    }
   };
 
   const handleLogout = async () => {
