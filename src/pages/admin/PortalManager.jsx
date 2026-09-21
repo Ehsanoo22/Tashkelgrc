@@ -70,10 +70,6 @@ export default function PortalManager() {
           setComments(prev => [...prev, payload.new].sort((a, b) => new Date(a.created_at) - new Date(b.created_at)));
         })
         .subscribe();
-        
-      return () => {
-        supabase.removeChannel(channel);
-      };
     }
     setLoading(false);
   };
