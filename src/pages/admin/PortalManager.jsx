@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Plus, CheckCircle, Clock, Circle, Upload, Save, Loader2, Image as ImageIcon, FileText, Trash2, Edit2, MessageCircle, Send, FileCheck, Truck, DollarSign, Settings } from 'lucide-react';
+import { ArrowLeft, Plus, CheckCircle, CheckCircle2, Clock, Circle, Upload, Save, Loader2, Image as ImageIcon, FileText, Trash2, Edit2, MessageCircle, Send, FileCheck, Truck, DollarSign, Settings } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { format, formatDistanceToNow } from 'date-fns';
 
