@@ -229,9 +229,29 @@ export default function PortalManager() {
         <div className="flex items-center gap-4">
            {client.logo_url && <img src={client.logo_url} alt="Logo" className="w-16 h-16 rounded-full border border-stone-200" />}
            <div>
-             <h1 className="text-2xl font-bold text-brand-dark">{client.company_name}</h1>
-             <p className="text-stone-500">{project.name} • /portal/{client.slug}</p>
+             <h1 className="text-3xl font-bold text-brand-dark">{client.company_name}</h1>
+             <p className="text-stone-500 mt-2">{project?.name}</p>
            </div>
+        </div>
+        <div className="flex gap-4">
+          <button
+            onClick={async () => {
+              if(!window.confirm("Trigger onboarding tour for this client?")) return;
+              await supabase.from('portal_clients').update({ has_completed_onboarding: false }).eq('id', client.id);
+              alert("Onboarding triggered! The client will see it instantly.");
+            }}
+            className="text-stone-500 hover:text-brand-dark px-4 py-2 border rounded-full text-sm font-bold transition-colors"
+          >
+            Trigger Client Tour
+          </button>
+          <a 
+            href={`/portal/${client.slug}`} 
+            target="_blank" 
+            rel="noreferrer"
+            className="bg-brand-dark text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-stone-800 transition-colors flex items-center gap-2"
+          >
+            <Circle size={14} className="text-green-400 fill-current" /> Live View
+          </a>
         </div>
       </div>
 

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, LogOut, CheckCircle, Clock, Circle, Calendar, Image as ImageIcon, FileText, MessageCircle, Send, X, FileCheck, DollarSign, Truck, Menu, CheckCircle2, MapPin } from 'lucide-react';
 import { formatDistanceToNow, format, differenceInDays } from 'date-fns';
 import confetti from 'canvas-confetti';
+import Joyride, { STATUS } from 'react-joyride';
 
 // ----------------------------------------------------------------------
 // Innovative Notes / Chat Overlay Component
@@ -87,7 +88,29 @@ export default function PortalDashboard() {
   
   const [activeTab, setActiveTab] = useState('overview'); // overview, documents, financials, logistics, messages
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  const [{ run, steps }, setJoyrideState] = useState({
+    run: false,
+    steps: [
+      {
+        target: '#tour-progress',
+        content: 'Track the overall manufacturing progress of your project here in real-time.',
+        disableBeacon: true,
+      },
+      {
+        target: '#tour-timeline',
+        content: 'See exactly which phase we are in. Click the "Note" button on any phase to ask your Project Manager a question!',
+      },
+      {
+        target: '#tour-team',
+        content: 'Need help? Contact your dedicated team directly from here.',
+      },
+      {
+        target: '#tour-sidebar',
+        content: 'Navigate between your Approvals, Financials, Logistics, and Messages from this menu.',
+      }
+    ]
+  });
 
   const [activeNoteTarget, setActiveNoteTarget] = useState(null);
   const [sendingNote, setSendingNote] = useState(false);
@@ -104,10 +127,16 @@ export default function PortalDashboard() {
     checkAuthAndFetchData();
   }, []);
 
-  const completeOnboarding = async () => {
-    setShowOnboarding(false);
-    await supabase.from('portal_clients').update({ has_completed_onboarding: true }).eq('id', client.id);
-    setClient({ ...client, has_completed_onboarding: true });
+  const handleJoyrideCallback = async (data) => {
+    const { status } = data;
+    const finishedStatuses = [STATUS.FINISHED, STATUS.SKIPPED];
+    if (finishedStatuses.includes(status)) {
+      setJoyrideState(prev => ({ ...prev, run: false }));
+      if (client && !client.has_completed_onboarding) {
+        await supabase.from('portal_clients').update({ has_completed_onboarding: true }).eq('id', client.id);
+        setClient({ ...client, has_completed_onboarding: true });
+      }
+    }
   };
 
   const checkAuthAndFetchData = async () => {
@@ -131,7 +160,7 @@ export default function PortalDashboard() {
 
     setClient(cData);
     if (!cData.has_completed_onboarding) {
-      setShowOnboarding(true);
+      setJoyrideState(prev => ({ ...prev, run: true }));
     }
 
     const { data: pData } = await supabase.from('portal_projects').select('*').eq('client_id', session.user.id).single();
@@ -185,6 +214,15 @@ export default function PortalDashboard() {
         })
         .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'portal_projects', filter: `id=eq.${pData.id}` }, (payload) => {
           setProject(payload.new);
+        })
+        .subscribe();
+
+      const clientChannel = supabase.channel(`portal_realtime_client_${cData.id}`)
+        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'portal_clients', filter: `id=eq.${cData.id}` }, (payload) => {
+          setClient(payload.new);
+          if (payload.new.has_completed_onboarding === false) {
+            setJoyrideState(prev => ({ ...prev, run: true }));
+          }
         })
         .subscribe();
     }
@@ -246,43 +284,20 @@ export default function PortalDashboard() {
 
   return (
     <div className="min-h-screen bg-stone-50 font-sans flex flex-col md:flex-row relative">
-      
-      {/* Onboarding Overlay */}
-      <AnimatePresence>
-        {showOnboarding && (
-          <motion.div 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
-            exit={{ opacity: 0 }} 
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
-          >
-            <motion.div 
-              initial={{ scale: 0.9, y: 20 }} 
-              animate={{ scale: 1, y: 0 }} 
-              exit={{ scale: 0.9, y: 20 }}
-              className="bg-stone-900 border border-stone-800 p-8 rounded-3xl max-w-lg w-full text-center shadow-2xl relative overflow-hidden"
-            >
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-brand-warm/20 rounded-full blur-3xl -z-10 pointer-events-none"></div>
-              
-              <div className="w-16 h-16 bg-brand-warm/10 text-brand-warm rounded-full flex items-center justify-center mx-auto mb-6">
-                <CheckCircle2 size={32} />
-              </div>
-              
-              <h2 className="text-3xl font-bold text-white mb-4">Welcome to your Control Room</h2>
-              <p className="text-stone-400 mb-8 leading-relaxed">
-                This is your dedicated portal to track manufacturing progress, review and approve shop drawings, manage financials, and communicate directly with your project team in real-time.
-              </p>
-              
-              <button 
-                onClick={completeOnboarding}
-                className="bg-brand-warm text-white px-8 py-3 rounded-xl font-bold w-full hover:bg-amber-600 transition-colors shadow-lg shadow-brand-warm/20"
-              >
-                Let's Get Started
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <Joyride
+        steps={steps}
+        run={run}
+        continuous={true}
+        showProgress={true}
+        showSkipButton={true}
+        callback={handleJoyrideCallback}
+        styles={{
+          options: {
+            primaryColor: '#b48a40', // brand-warm
+            zIndex: 1000,
+          },
+        }}
+      />
 
       {/* Sidebar Navigation */}
       <aside className={`fixed md:sticky top-0 left-0 h-screen w-64 bg-stone-950 text-white flex flex-col z-50 transition-transform duration-300 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
@@ -297,7 +312,7 @@ export default function PortalDashboard() {
           <button className="md:hidden text-stone-400" onClick={() => setIsMobileMenuOpen(false)}><X size={20} /></button>
         </div>
         
-        <nav className="flex-1 p-4 space-y-2">
+        <nav id="tour-sidebar" className="flex-1 p-4 space-y-2">
           {TABS.map(tab => (
             <button
               key={tab.id}
@@ -349,7 +364,7 @@ export default function PortalDashboard() {
                 </header>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                  <div className="bg-white rounded-3xl p-6 border border-stone-200 shadow-sm col-span-1 md:col-span-2 relative overflow-hidden">
+                  <div id="tour-progress" className="bg-white rounded-3xl p-6 border border-stone-200 shadow-sm col-span-1 md:col-span-2 relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-brand-warm/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
                     <div className="relative z-10">
                       <h3 className="text-stone-500 font-medium mb-4">Manufacturing Progress</h3>
@@ -375,7 +390,7 @@ export default function PortalDashboard() {
 
                 {/* Team Contacts Widget */}
                 {(project?.pm_name || project?.engineer_name) && (
-                  <div className="mb-10">
+                  <div id="tour-team" className="mb-10">
                     <h3 className="text-lg font-bold text-brand-dark mb-4">Dedicated Project Team</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {project?.pm_name && (
@@ -413,7 +428,7 @@ export default function PortalDashboard() {
                 )}
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                  <div>
+                  <div id="tour-timeline">
                     <h3 className="text-lg font-bold text-brand-dark mb-6 flex items-center gap-2"><Clock size={20} className="text-brand-warm" /> Live Timeline</h3>
                     <div className="bg-white rounded-3xl p-6 shadow-sm border border-stone-200">
                       <div className="space-y-4 relative before:absolute before:inset-0 before:ml-4 before:-translate-x-px before:h-full before:w-0.5 before:bg-stone-100">
