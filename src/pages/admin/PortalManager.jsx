@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Plus, CheckCircle, Clock, Circle, Upload, Save, Loader2, Image as ImageIcon, FileText, Trash2, Edit2, MessageCircle, Send, FileCheck, Truck, DollarSign } from 'lucide-react';
+import { ArrowLeft, Plus, CheckCircle, Clock, Circle, Upload, Save, Loader2, Image as ImageIcon, FileText, Trash2, Edit2, MessageCircle, Send, FileCheck, Truck, DollarSign, Settings } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { format, formatDistanceToNow } from 'date-fns';
 
@@ -83,6 +83,9 @@ export default function PortalManager() {
         .on('postgres_changes', { event: '*', schema: 'public', table: 'portal_documents', filter: `project_id=eq.${pData.id}` }, (payload) => {
           if (payload.eventType === 'UPDATE') setDocuments(prev => prev.map(d => d.id === payload.new.id ? payload.new : d));
         })
+        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'portal_projects', filter: `id=eq.${pData.id}` }, (payload) => {
+          setProject(payload.new);
+        })
         .subscribe();
     }
     setLoading(false);
@@ -159,9 +162,26 @@ export default function PortalManager() {
     const { error } = await supabase.from('portal_projects').update({ total_contract_value: total, amount_paid: paid }).eq('id', project.id);
     if (error) alert("Error saving financials: " + error.message);
     else {
-      setProject({ ...project, total_contract_value: total, amount_paid: paid });
+      // realtime listener will update the state
       alert("Financials updated!");
     }
+  };
+
+  const saveTeamSettings = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const updates = {
+      pm_name: formData.get('pm_name'),
+      pm_email: formData.get('pm_email'),
+      pm_phone: formData.get('pm_phone'),
+      engineer_name: formData.get('engineer_name'),
+      engineer_email: formData.get('engineer_email'),
+      engineer_phone: formData.get('engineer_phone')
+    };
+    
+    const { error } = await supabase.from('portal_projects').update(updates).eq('id', project.id);
+    if (error) alert("Error saving team: " + error.message);
+    else alert("Team Contacts updated!");
   };
 
   const initLogistics = async () => {
@@ -221,7 +241,8 @@ export default function PortalManager() {
           { id: 'messages', label: 'Messages', icon: <MessageCircle size={16} /> },
           { id: 'documents', label: 'Approvals', icon: <FileCheck size={16} /> },
           { id: 'financials', label: 'Financials', icon: <DollarSign size={16} /> },
-          { id: 'logistics', label: 'Logistics', icon: <Truck size={16} /> }
+          { id: 'logistics', label: 'Logistics', icon: <Truck size={16} /> },
+          { id: 'settings', label: 'Team Settings', icon: <Settings size={16} /> }
         ].map(tab => (
           <button 
             key={tab.id}
@@ -450,6 +471,55 @@ export default function PortalManager() {
                </div>
              </div>
            )}
+        </div>
+      )}
+
+      {activeTab === 'settings' && (
+        <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-6 max-w-4xl">
+          <h2 className="text-xl font-bold text-brand-dark mb-6">Team Contacts</h2>
+          <p className="text-stone-500 mb-8">This information will be displayed on the Client's dashboard for quick contact.</p>
+          
+          <form onSubmit={saveTeamSettings} className="space-y-8">
+            <div className="bg-stone-50 p-6 rounded-2xl border border-stone-200">
+              <h3 className="font-bold text-brand-dark mb-4 border-b pb-2">Project Manager</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-stone-500 uppercase mb-1">Name</label>
+                  <input name="pm_name" type="text" defaultValue={project.pm_name || ''} className="w-full border rounded-xl px-4 py-2" placeholder="e.g. John Doe" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-stone-500 uppercase mb-1">Email</label>
+                  <input name="pm_email" type="email" defaultValue={project.pm_email || ''} className="w-full border rounded-xl px-4 py-2" placeholder="pm@tashkel.com" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-stone-500 uppercase mb-1">Phone</label>
+                  <input name="pm_phone" type="text" defaultValue={project.pm_phone || ''} className="w-full border rounded-xl px-4 py-2" placeholder="+1 234 567 8900" />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-stone-50 p-6 rounded-2xl border border-stone-200">
+              <h3 className="font-bold text-brand-dark mb-4 border-b pb-2">Lead Engineer</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-stone-500 uppercase mb-1">Name</label>
+                  <input name="engineer_name" type="text" defaultValue={project.engineer_name || ''} className="w-full border rounded-xl px-4 py-2" placeholder="e.g. Jane Smith" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-stone-500 uppercase mb-1">Email</label>
+                  <input name="engineer_email" type="email" defaultValue={project.engineer_email || ''} className="w-full border rounded-xl px-4 py-2" placeholder="eng@tashkel.com" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-stone-500 uppercase mb-1">Phone</label>
+                  <input name="engineer_phone" type="text" defaultValue={project.engineer_phone || ''} className="w-full border rounded-xl px-4 py-2" placeholder="+1 234 567 8900" />
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" className="bg-brand-dark text-white px-8 py-3 rounded-xl font-bold hover:bg-black transition-colors">
+              Save Team Contacts
+            </button>
+          </form>
         </div>
       )}
     </div>

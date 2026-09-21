@@ -173,6 +173,9 @@ export default function PortalDashboard() {
           else if (payload.eventType === 'INSERT') setInvoices(prev => [payload.new, ...prev].sort((a, b) => new Date(a.created_at) - new Date(b.created_at)));
           else if (payload.eventType === 'DELETE') setInvoices(prev => prev.filter(i => i.id !== payload.old.id));
         })
+        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'portal_projects', filter: `id=eq.${pData.id}` }, (payload) => {
+          setProject(payload.new);
+        })
         .subscribe();
     }
     
@@ -322,6 +325,45 @@ export default function PortalDashboard() {
                     )}
                   </div>
                 </div>
+
+                {/* Team Contacts Widget */}
+                {(project?.pm_name || project?.engineer_name) && (
+                  <div className="mb-10">
+                    <h3 className="text-lg font-bold text-brand-dark mb-4">Dedicated Project Team</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {project?.pm_name && (
+                        <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm flex items-center justify-between">
+                          <div>
+                            <p className="text-[10px] font-bold uppercase tracking-wider text-stone-500 mb-1">Project Manager</p>
+                            <p className="font-bold text-lg text-brand-dark">{project.pm_name}</p>
+                            <p className="text-sm text-stone-500 mt-1">{project.pm_email}</p>
+                            {project.pm_phone && <p className="text-sm text-stone-500">{project.pm_phone}</p>}
+                          </div>
+                          {project.pm_email && (
+                            <a href={`mailto:${project.pm_email}`} className="bg-brand-warm text-white w-12 h-12 flex items-center justify-center rounded-full hover:bg-amber-600 transition-colors shadow-lg">
+                              <Send size={18} />
+                            </a>
+                          )}
+                        </div>
+                      )}
+                      {project?.engineer_name && (
+                        <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm flex items-center justify-between">
+                          <div>
+                            <p className="text-[10px] font-bold uppercase tracking-wider text-stone-500 mb-1">Lead Engineer</p>
+                            <p className="font-bold text-lg text-brand-dark">{project.engineer_name}</p>
+                            <p className="text-sm text-stone-500 mt-1">{project.engineer_email}</p>
+                            {project.engineer_phone && <p className="text-sm text-stone-500">{project.engineer_phone}</p>}
+                          </div>
+                          {project.engineer_email && (
+                            <a href={`mailto:${project.engineer_email}`} className="bg-brand-dark text-white w-12 h-12 flex items-center justify-center rounded-full hover:bg-black transition-colors shadow-lg">
+                              <Send size={18} />
+                            </a>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                   <div>
