@@ -16,47 +16,34 @@ export default function ERPOverview() {
     teamOnline: 0
   });
 
-  const [liveLeads, setLiveLeads] = useState([]);
+  const [liveVisitors, setLiveVisitors] = useState({});
   const [notification, setNotification] = useState(null);
 
   useEffect(() => {
-    // Fetch initial leads (last 5)
-    const fetchLeads = async () => {
-      const { data } = await supabase
-        .from('leads')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(5);
-      
-      if (data) setLiveLeads(data);
-    };
+    // 1. Subscribe to Live Visitors (Presence on Contact Page)
+    const presenceChannel = supabase.channel('form_presence');
+    
+    presenceChannel.on('presence', { event: 'sync' }, () => {
+      const state = presenceChannel.presenceState();
+      setLiveVisitors(state);
+    }).subscribe();
 
-    fetchLeads();
-
-    // Subscribe to real-time inserts on the 'leads' table
+    // 2. Subscribe to real-time inserts on the 'leads' table for notifications
     const leadsSubscription = supabase
       .channel('public:leads')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'leads' }, payload => {
         const newLead = payload.new;
-        
-        // Add to list
-        setLiveLeads(prev => [newLead, ...prev].slice(0, 5));
-        
-        // Show notification
         setNotification(newLead);
-        
-        // Play a soft chime sound if the browser allows it
         try {
-          const audio = new Audio('/assets/notification.mp3'); // Fallback if exists, otherwise silent
+          const audio = new Audio('/assets/notification.mp3');
           audio.play().catch(() => {});
         } catch(e) {}
-        
-        // Hide notification after 8 seconds
         setTimeout(() => setNotification(null), 8000);
       })
       .subscribe();
 
     return () => {
+      supabase.removeChannel(presenceChannel);
       supabase.removeChannel(leadsSubscription);
     };
   }, []);
@@ -174,11 +161,11 @@ export default function ERPOverview() {
           </div>
         </div>
 
-        {/* Live Inquiries Feed */}
+        {/* Live Visitors Feed */}
         <div className="xl:col-span-1 flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold text-brand-dark flex items-center gap-2">
-              Live Inquiries
+              Live Visitors on Form
               <span className="relative flex h-3 w-3 ml-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-warm opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-brand-warm"></span>
@@ -187,24 +174,26 @@ export default function ERPOverview() {
           </div>
           
           <div className="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden flex-1 flex flex-col">
-            {liveLeads.length === 0 ? (
+            {Object.keys(liveVisitors).length === 0 ? (
               <div className="flex-1 flex flex-col items-center justify-center p-8 text-stone-400">
                 <Activity size={32} className="mb-2 opacity-50" />
-                <p>Waiting for incoming leads...</p>
+                <p>No active users on the contact page.</p>
               </div>
             ) : (
               <div className="divide-y divide-stone-100 overflow-y-auto max-h-[500px]">
                 <AnimatePresence initial={false}>
-                  {liveLeads.map((lead) => {
-                    const isDesignAssist = lead.project_type?.includes('Design-Assist');
-                    const isSample = lead.project_type?.includes('Sample');
+                  {Object.entries(liveVisitors).map(([visitorId, stateArray]) => {
+                    const latestState = stateArray[0];
+                    const isDesignAssist = latestState.inquiryType === 'design_assist';
+                    const isSample = latestState.inquiryType === 'sample';
                     const LeadIcon = isDesignAssist ? Briefcase : (isSample ? Globe2 : Building2);
 
                     return (
                       <motion.div 
-                        key={lead.id}
-                        initial={{ opacity: 0, height: 0, backgroundColor: '#fef3c7' }}
-                        animate={{ opacity: 1, height: 'auto', backgroundColor: '#ffffff' }}
+                        key={visitorId}
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
                         transition={{ duration: 0.5 }}
                         className="p-5 hover:bg-stone-50 transition-colors"
                       >
@@ -214,22 +203,17 @@ export default function ERPOverview() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between gap-2 mb-1">
-                              <h4 className="font-bold text-brand-dark truncate">{lead.full_name}</h4>
+                              <h4 className="font-bold text-brand-dark truncate">
+                                {latestState.startedTyping ? 'Typing an Inquiry...' : 'Browsing Contact Page'}
+                              </h4>
                               <span className="text-xs text-stone-400 whitespace-nowrap">
-                                {new Date(lead.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                Active now
                               </span>
                             </div>
                             <p className="text-xs font-medium text-stone-500 mb-2 truncate">
-                              {lead.company || 'No Company'} • {lead.country || 'Unknown Location'}
+                              Phase: {latestState.phase === 0 ? 'Triage' : latestState.phase === 1 ? 'Filling Form' : 'Submitted'} 
+                              {latestState.inquiryType && ` • ${latestState.inquiryType.replace('_', ' ')}`}
                             </p>
-                            <p className="text-sm text-stone-700 bg-stone-100 px-3 py-2 rounded-lg line-clamp-2">
-                              {lead.design_preferences?.message || lead.project_type}
-                            </p>
-                            
-                            <div className="flex items-center gap-3 mt-3">
-                              <a href={`mailto:${lead.email}`} className="text-xs font-bold text-brand-warm hover:underline">Reply Email</a>
-                              <a href={`tel:${lead.phone}`} className="text-xs font-bold text-stone-500 hover:text-stone-800">Call Phone</a>
-                            </div>
                           </div>
                         </div>
                       </motion.div>
@@ -239,8 +223,8 @@ export default function ERPOverview() {
               </div>
             )}
             
-            <button className="w-full py-4 text-sm font-bold text-stone-500 hover:text-brand-dark hover:bg-stone-50 border-t border-stone-100 transition-colors flex items-center justify-center gap-2">
-              View All CRM Leads <ChevronRight size={16} />
+            <button onClick={() => navigate('/tashkeladmin/leads')} className="w-full py-4 text-sm font-bold text-stone-500 hover:text-brand-dark hover:bg-stone-50 border-t border-stone-100 transition-colors flex items-center justify-center gap-2">
+              Manage Submitted Leads <ChevronRight size={16} />
             </button>
           </div>
         </div>

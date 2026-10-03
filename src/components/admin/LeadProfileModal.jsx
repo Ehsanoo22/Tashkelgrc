@@ -51,30 +51,32 @@ export default function LeadProfileModal({ selectedLead, onClose, onDeleteLead, 
 
             {/* Column 2: Design & Tech Specs */}
             <div className="space-y-6">
-              {/* Design Preferences */}
+              {/* Design Preferences / Extra Info */}
               <div className="bg-white rounded-3xl p-6 border border-stone-200 shadow-sm">
-                <h3 className="text-sm font-bold text-brand-dark uppercase tracking-wider mb-4 border-b border-stone-100 pb-2 flex items-center gap-2"><Settings2 size={16}/> Aesthetics & Structure</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-stone-50 p-3 rounded-xl"><p className="text-xs text-stone-400 font-semibold">Finish</p><p className="font-bold text-brand-dark">{selectedLead.design_preferences?.finish}</p></div>
-                  <div className="bg-stone-50 p-3 rounded-xl"><p className="text-xs text-stone-400 font-semibold">Color</p><p className="font-bold text-brand-dark">{selectedLead.design_preferences?.color}</p></div>
-                  <div className="bg-stone-50 p-3 rounded-xl"><p className="text-xs text-stone-400 font-semibold">Structural</p><p className="font-bold text-brand-dark">{selectedLead.design_preferences?.structuralSupport}</p></div>
-                  <div className="bg-stone-50 p-3 rounded-xl"><p className="text-xs text-stone-400 font-semibold">Thickness</p><p className="font-bold text-brand-dark">{selectedLead.design_preferences?.panelThickness || 'Standard'}</p></div>
+                <h3 className="text-sm font-bold text-brand-dark uppercase tracking-wider mb-4 border-b border-stone-100 pb-2 flex items-center gap-2"><Settings2 size={16}/> Inquiry Details</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {selectedLead.design_preferences && Object.entries(selectedLead.design_preferences).map(([key, value]) => {
+                    if (!value || typeof value !== 'string') return null;
+                    if (key === 'message') return null; // We handle message in Project Context
+                    return (
+                      <div key={key} className="bg-stone-50 p-3 rounded-xl">
+                        <p className="text-xs text-stone-400 font-semibold capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
+                        <p className="font-bold text-brand-dark">{value}</p>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
-              {/* Requirements Matrix */}
-              <div className="bg-white rounded-3xl p-6 border border-stone-200 shadow-sm">
-                <h3 className="text-sm font-bold text-brand-dark uppercase tracking-wider mb-4 border-b border-stone-100 pb-2 flex items-center gap-2"><Info size={16}/> Requirements Matrix</h3>
-                <ul className="space-y-2 text-sm">
-                  <li className="flex justify-between items-center"><span className="text-stone-600">Installation Required</span> <span className="font-bold">{selectedLead.design_preferences?.installationRequired}</span></li>
-                  <li className="flex justify-between items-center"><span className="text-stone-600">Shop Drawings Required</span> <span className="font-bold">{selectedLead.design_preferences?.engineeringRequired}</span></li>
-                  <li className="flex justify-between items-center"><span className="text-stone-600">Drawings Available</span> <span className="font-bold">{selectedLead.design_preferences?.drawingsAvailable || 'No'}</span></li>
-                  <li className="flex justify-between items-center"><span className="text-stone-600">Unique Mould Designs</span> <span className="font-bold">{selectedLead.design_preferences?.uniqueDesigns || '1'}</span></li>
-                  <li className="flex justify-between items-center"><span className="text-stone-600">Waterproofing</span> <span className="font-bold">{selectedLead.design_preferences?.waterproofing || 'No'}</span></li>
-                  <li className="flex justify-between items-center"><span className="text-stone-600">Fire Resistance</span> <span className="font-bold">{selectedLead.design_preferences?.fireResistance || 'No'}</span></li>
-                  <li className="flex justify-between items-center"><span className="text-stone-600">Load Bearing</span> <span className="font-bold">{selectedLead.design_preferences?.loadBearing || 'No'}</span></li>
-                </ul>
-              </div>
+              {/* Message / Brief */}
+              {selectedLead.design_preferences?.message && (
+                <div className="bg-white rounded-3xl p-6 border border-stone-200 shadow-sm mt-6">
+                  <h3 className="text-sm font-bold text-brand-dark uppercase tracking-wider mb-4 border-b border-stone-100 pb-2 flex items-center gap-2"><Info size={16}/> Message / Project Brief</h3>
+                  <p className="text-sm text-stone-700 bg-stone-50 p-4 rounded-xl leading-relaxed whitespace-pre-wrap border border-stone-100">
+                    {selectedLead.design_preferences.message}
+                  </p>
+                </div>
+              )}
 
               {/* Uploads */}
               {selectedLead.files && selectedLead.files.length > 0 && (

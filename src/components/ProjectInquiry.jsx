@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowRight, UploadCloud, X, File, CheckCircle2, Building2, 
@@ -30,7 +30,7 @@ export default function ProjectInquiry({ t, lang }) {
   const isRtl = lang === 'ar';
   const fileInputRef = useRef(null);
 
-  const [phase, setPhase] = useState(0); // 0 = intent, 1 = form, 2 = success
+  const [phase, setPhase] = useState(0);
   const [inquiryType, setInquiryType] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -39,6 +39,33 @@ export default function ProjectInquiry({ t, lang }) {
     location: '', application: '', message: '', files: []
   });
 
+  // Unique ID for this visitor session
+  const [visitorId] = useState(() => 'visitor_' + Math.random().toString(36).substring(2, 9));
+
+  // Sync visitor state to Supabase Presence
+  useEffect(() => {
+    const channel = supabase.channel('form_presence', {
+      config: { presence: { key: visitorId } }
+    });
+
+    channel.on('presence', { event: 'sync' }, () => {
+      // console.log('Presence synced');
+    }).subscribe(async (status) => {
+      if (status === 'SUBSCRIBED') {
+        await channel.track({
+          phase,
+          inquiryType,
+          startedTyping: form.name.length > 0 || form.company.length > 0 || form.email.length > 0,
+          timestamp: new Date().toISOString()
+        });
+      }
+    });
+
+    return () => {
+      channel.untrack();
+      supabase.removeChannel(channel);
+    };
+  }, [phase, inquiryType, form.name, form.company, form.email, visitorId]);
   const update = (key, val) => setForm(prev => ({ ...prev, [key]: val }));
 
   const handleFileChange = (e) => {

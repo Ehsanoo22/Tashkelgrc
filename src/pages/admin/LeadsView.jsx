@@ -91,7 +91,7 @@ export default function LeadsView() {
                       <div className="text-xs truncate max-w-[200px]">{lead.estimated_dimensions}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-brand-warm">
-                      ${lead.estimated_value?.toLocaleString()}
+                      {lead.estimated_value ? `$${lead.estimated_value.toLocaleString()}` : '-'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex items-center justify-end gap-4">
                       <button onClick={() => setSelectedLead(lead)} className="text-stone-600 hover:text-brand-dark transition-colors font-bold bg-stone-100 px-4 py-2 rounded-lg">View Profile</button>
