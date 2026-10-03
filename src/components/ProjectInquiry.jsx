@@ -100,6 +100,7 @@ export default function ProjectInquiry({ t, lang }) {
       // 2. Save to Leads table
       const { error: insertError } = await supabase.from('leads').insert([{
         project_type: form.application || inquiryType,
+        estimated_dimensions: 'Not Specified', // Required column in legacy DB schema
         full_name: form.name,
         email: form.email,
         phone: form.phone,
@@ -118,16 +119,17 @@ export default function ProjectInquiry({ t, lang }) {
       if (insertError) throw insertError;
 
       // 3. Log Activity
-      await supabase.from('activity_logs').insert([{
+      const { error: activityError } = await supabase.from('activity_logs').insert([{
         type: 'New Inquiry',
         description: `${form.name} (${form.company || 'N/A'}) submitted a ${inquiryType} inquiry.`,
         metadata: { email: form.email, phone: form.phone }
       }]);
+      if (activityError) console.error("Activity log error (ignored):", activityError);
 
       setPhase(2);
     } catch (err) {
       console.error(err);
-      alert('Something went wrong. Please try again or contact us directly.');
+      alert(`Submission Error: ${err.message || 'Something went wrong.'} Please contact us directly.`);
     } finally {
       setIsSubmitting(false);
     }
