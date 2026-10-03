@@ -156,22 +156,22 @@ export default function ProjectInquiry({ t, lang }) {
             <div className="space-y-6 border-t border-white/10 pt-8">
               <h3 className="text-xs font-bold text-white/30 uppercase tracking-widest">{isRtl ? 'أو تواصل مباشرة' : 'Or Reach Us Directly'}</h3>
               
-              <a href="mailto:projects@tashkelgrc.com" className="group flex items-center gap-4 text-white/60 hover:text-brand-warm transition-colors">
+              <a href="mailto:ms.amini@hotmail.com" className="group flex items-center gap-4 text-white/60 hover:text-brand-warm transition-colors">
                 <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center group-hover:border-brand-warm/40 transition-colors">
                   <Mail size={16} />
                 </div>
                 <div>
-                  <div className="text-sm font-bold text-white/80 group-hover:text-brand-warm transition-colors">projects@tashkelgrc.com</div>
+                  <div className="text-sm font-bold text-white/80 group-hover:text-brand-warm transition-colors">ms.amini@hotmail.com</div>
                   <div className="text-xs text-white/30">{isRtl ? 'استفسارات المشاريع' : 'Project Inquiries'}</div>
                 </div>
               </a>
 
-              <a href="tel:+97144571234" className="group flex items-center gap-4 text-white/60 hover:text-brand-warm transition-colors">
+              <a href="tel:0996890013" className="group flex items-center gap-4 text-white/60 hover:text-brand-warm transition-colors">
                 <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center group-hover:border-brand-warm/40 transition-colors">
                   <Phone size={16} />
                 </div>
                 <div>
-                  <div className="text-sm font-bold text-white/80 group-hover:text-brand-warm transition-colors">+971 4 457 1234</div>
+                  <div className="text-sm font-bold text-white/80 group-hover:text-brand-warm transition-colors">0996890013</div>
                   <div className="text-xs text-white/30">{isRtl ? 'خط المصنع المباشر' : 'Factory Direct Line'}</div>
                 </div>
               </a>
@@ -181,8 +181,8 @@ export default function ProjectInquiry({ t, lang }) {
                   <MapPin size={16} />
                 </div>
                 <div>
-                  <div className="text-sm font-bold text-white/80">Dubai Industrial City</div>
-                  <div className="text-xs text-white/30">{isRtl ? 'الإمارات العربية المتحدة' : 'United Arab Emirates'}</div>
+                  <div className="text-sm font-bold text-white/80">Damascus</div>
+                  <div className="text-xs text-white/30">{isRtl ? 'سوريا' : 'Syria'}</div>
                 </div>
               </div>
             </div>
