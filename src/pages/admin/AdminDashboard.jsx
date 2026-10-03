@@ -20,6 +20,8 @@ import PortalProvisioning from './PortalProvisioning';
 import PortalManager from './PortalManager'; 
 import AdminTopBar from '../../components/admin/AdminTopBar';
 import ERPOverview from './ERPOverview'; // New Home Dashboard
+import TeamManager from './TeamManager';
+import AttendanceManager from './AttendanceManager';
 
 export default function AdminDashboard() {
   const [session, setSession] = useState(null);
@@ -171,8 +173,8 @@ export default function AdminDashboard() {
               <Route path="/production" element={<div className="p-8 text-center text-stone-500">Production Board (Building soon...)</div>} />
               <Route path="/pieces" element={<div className="p-8 text-center text-stone-500">Pieces Tracker (Building soon...)</div>} />
               <Route path="/qa" element={<div className="p-8 text-center text-stone-500">QA & Issues (Building soon...)</div>} />
-              <Route path="/team" element={<div className="p-8 text-center text-stone-500">Team Roster (Building soon...)</div>} />
-              <Route path="/attendance" element={<div className="p-8 text-center text-stone-500">Attendance Tracker (Building soon...)</div>} />
+              <Route path="/team" element={<TeamManager />} />
+              <Route path="/attendance" element={<AttendanceManager />} />
             </Routes>
           </div>
         </main>
