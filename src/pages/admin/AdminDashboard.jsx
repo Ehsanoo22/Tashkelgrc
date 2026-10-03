@@ -13,8 +13,6 @@ import SEOSettings from './SEOSettings';
 import GalleryManager from './GalleryManager';
 import AnalyticsView from './AnalyticsView';
 import PortfolioManager from './PortfolioManager';
-import PricingSettings from './PricingSettings';
-import QuotationsManager from './QuotationsManager';
 import PortalsList from './PortalsList';
 import PortalProvisioning from './PortalProvisioning';
 import PortalManager from './PortalManager'; 
@@ -76,7 +74,6 @@ export default function AdminDashboard() {
       items: [
         { name: 'Leads Pipeline', path: '/tashkeladmin/pipeline', icon: Kanban },
         { name: 'Leads List', path: '/tashkeladmin/leads', icon: Users },
-        { name: 'Quotations', path: '/tashkeladmin/quotes', icon: FileText },
         { name: 'Client Portals', path: '/tashkeladmin/portals', icon: Lock },
       ]
     },
@@ -93,7 +90,6 @@ export default function AdminDashboard() {
         { name: 'Web Analytics', path: '/tashkeladmin/analytics', icon: Activity },
         { name: 'Portfolio', path: '/tashkeladmin/portfolio', icon: ImageIcon },
         { name: 'Gallery', path: '/tashkeladmin/gallery', icon: ImageIcon },
-        { name: 'Pricing Engine', path: '/tashkeladmin/pricing', icon: Calculator },
         { name: 'Settings', path: '/tashkeladmin/settings', icon: Settings },
       ]
     }
@@ -162,10 +158,8 @@ export default function AdminDashboard() {
               <Route path="/analytics" element={<AnalyticsView />} />
               <Route path="/pipeline" element={<LeadsKanban />} />
               <Route path="/leads" element={<LeadsView />} />
-              <Route path="/quotes" element={<QuotationsManager />} />
               <Route path="/portfolio" element={<PortfolioManager />} />
               <Route path="/gallery" element={<GalleryManager />} />
-              <Route path="/pricing" element={<PricingSettings />} />
               <Route path="/seo" element={<SEOSettings />} />
               <Route path="/settings" element={<SiteSettings />} />
               <Route path="/portals" element={<PortalsList />} />

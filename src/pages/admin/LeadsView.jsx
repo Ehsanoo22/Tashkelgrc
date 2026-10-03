@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
-import QuoteBuilder from '../../components/admin/QuoteBuilder';
 import LeadProfileModal from '../../components/admin/LeadProfileModal';
 
 import { Trash2, Loader2 } from 'lucide-react';
@@ -8,7 +7,6 @@ import { Trash2, Loader2 } from 'lucide-react';
 export default function LeadsView() {
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedLeadForQuote, setSelectedLeadForQuote] = useState(null);
   const [selectedLead, setSelectedLead] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
 
@@ -106,8 +104,6 @@ export default function LeadsView() {
           </table>
         </div>
       </div>
-
-      {selectedLeadForQuote && <QuoteBuilder lead={selectedLeadForQuote} onClose={() => setSelectedLeadForQuote(null)} />}
 
       <LeadProfileModal 
         selectedLead={selectedLead}

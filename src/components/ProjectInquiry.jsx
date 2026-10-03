@@ -98,7 +98,7 @@ export default function ProjectInquiry({ t, lang }) {
       }
 
       // 2. Save to Leads table
-      await supabase.from('leads').insert([{
+      const { error: insertError } = await supabase.from('leads').insert([{
         project_type: form.application || inquiryType,
         full_name: form.name,
         email: form.email,
@@ -115,11 +115,12 @@ export default function ProjectInquiry({ t, lang }) {
         },
         files: uploadedFileUrls
       }]);
+      if (insertError) throw insertError;
 
       // 3. Log Activity
       await supabase.from('activity_logs').insert([{
         type: 'New Inquiry',
-        description: `${form.name} (${form.company || 'N/A'}) submitted a ${inquiryType} inquiry for ${form.application || 'General'}.`,
+        description: `${form.name} (${form.company || 'N/A'}) submitted a ${inquiryType} inquiry.`,
         metadata: { email: form.email, phone: form.phone }
       }]);
 
