@@ -91,6 +91,7 @@ export default function AdminDashboard() {
       items: [
         { name: 'Web Analytics', path: '/tashkeladmin/analytics', icon: Activity },
         { name: 'Portfolio', path: '/tashkeladmin/portfolio', icon: ImageIcon },
+        { name: 'Gallery', path: '/tashkeladmin/gallery', icon: ImageIcon },
         { name: 'Pricing Engine', path: '/tashkeladmin/pricing', icon: Calculator },
         { name: 'Settings', path: '/tashkeladmin/settings', icon: Settings },
       ]
