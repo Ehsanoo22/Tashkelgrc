@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Routes, Route, useNavigate, Link, useLocation } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
-import { LayoutDashboard, Image as ImageIcon, Settings, Users, LogOut, Calculator, FileText, Kanban, Globe, Lock } from 'lucide-react';
+import { 
+  LayoutDashboard, Image as ImageIcon, Settings, Users, LogOut, Calculator, 
+  FileText, Kanban, Globe, Lock, Factory, ClipboardCheck, UserPlus, 
+  CalendarClock, Package, AlertTriangle, Activity 
+} from 'lucide-react';
 import LeadsView from './LeadsView';
 import LeadsKanban from './LeadsKanban';
 import SiteSettings from './SiteSettings';
@@ -15,6 +19,7 @@ import PortalsList from './PortalsList';
 import PortalProvisioning from './PortalProvisioning';
 import PortalManager from './PortalManager'; 
 import AdminTopBar from '../../components/admin/AdminTopBar';
+import ERPOverview from './ERPOverview'; // New Home Dashboard
 
 export default function AdminDashboard() {
   const [session, setSession] = useState(null);
@@ -50,13 +55,21 @@ export default function AdminDashboard() {
 
   const navGroups = [
     {
-      title: "Overview",
+      title: "Command Center",
       items: [
-        { name: 'Analytics', path: '/tashkeladmin', icon: LayoutDashboard },
+        { name: 'Dashboard', path: '/tashkeladmin', icon: LayoutDashboard },
       ]
     },
     {
-      title: "Sales & CRM",
+      title: "Operations (ERP)",
+      items: [
+        { name: 'Production Board', path: '/tashkeladmin/production', icon: Factory },
+        { name: 'Piece Tracking', path: '/tashkeladmin/pieces', icon: Package },
+        { name: 'QA & Issues', path: '/tashkeladmin/qa', icon: ClipboardCheck },
+      ]
+    },
+    {
+      title: "CRM & Sales",
       items: [
         { name: 'Leads Pipeline', path: '/tashkeladmin/pipeline', icon: Kanban },
         { name: 'Leads List', path: '/tashkeladmin/leads', icon: Users },
@@ -65,17 +78,18 @@ export default function AdminDashboard() {
       ]
     },
     {
-      title: "Content",
+      title: "HR & Team",
       items: [
-        { name: 'Portfolio', path: '/tashkeladmin/portfolio', icon: ImageIcon },
-        { name: 'Gallery', path: '/tashkeladmin/gallery', icon: ImageIcon },
+        { name: 'Team Roster', path: '/tashkeladmin/team', icon: UserPlus },
+        { name: 'Attendance', path: '/tashkeladmin/attendance', icon: CalendarClock },
       ]
     },
     {
-      title: "Configuration",
+      title: "System & Config",
       items: [
+        { name: 'Web Analytics', path: '/tashkeladmin/analytics', icon: Activity },
+        { name: 'Portfolio', path: '/tashkeladmin/portfolio', icon: ImageIcon },
         { name: 'Pricing Engine', path: '/tashkeladmin/pricing', icon: Calculator },
-        { name: 'SEO Manager', path: '/tashkeladmin/seo', icon: Globe },
         { name: 'Settings', path: '/tashkeladmin/settings', icon: Settings },
       ]
     }
@@ -140,7 +154,8 @@ export default function AdminDashboard() {
         <main className="flex-1 overflow-y-auto bg-stone-50 p-6 md:p-8 lg:p-10 custom-scrollbar">
           <div className="max-w-7xl mx-auto h-full">
             <Routes>
-              <Route path="/" element={<AnalyticsView />} />
+              <Route path="/" element={<ERPOverview />} />
+              <Route path="/analytics" element={<AnalyticsView />} />
               <Route path="/pipeline" element={<LeadsKanban />} />
               <Route path="/leads" element={<LeadsView />} />
               <Route path="/quotes" element={<QuotationsManager />} />
@@ -152,6 +167,12 @@ export default function AdminDashboard() {
               <Route path="/portals" element={<PortalsList />} />
               <Route path="/portals/new" element={<PortalProvisioning />} />
               <Route path="/portals/:id" element={<PortalManager />} />
+              {/* New ERP Routes placeholders - to be built next */}
+              <Route path="/production" element={<div className="p-8 text-center text-stone-500">Production Board (Building soon...)</div>} />
+              <Route path="/pieces" element={<div className="p-8 text-center text-stone-500">Pieces Tracker (Building soon...)</div>} />
+              <Route path="/qa" element={<div className="p-8 text-center text-stone-500">QA & Issues (Building soon...)</div>} />
+              <Route path="/team" element={<div className="p-8 text-center text-stone-500">Team Roster (Building soon...)</div>} />
+              <Route path="/attendance" element={<div className="p-8 text-center text-stone-500">Attendance Tracker (Building soon...)</div>} />
             </Routes>
           </div>
         </main>
