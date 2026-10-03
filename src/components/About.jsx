@@ -1,109 +1,140 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
 export default function About({ t, lang }) {
   const isRtl = lang === 'ar';
+  const containerRef = useRef(null);
+  
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
+
+  const imgY = useTransform(scrollYProgress, [0, 1], ["-10%", "10%"]);
+  const imgScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.1, 1, 1.05]);
+  const textY = useTransform(scrollYProgress, [0, 1], ["10%", "-5%"]);
+
+  // Staggered text animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
+    }
+  };
+
+  const services = [
+    lang === 'en' ? 'Shop Drawings' : 'مخططات تنفيذية',
+    lang === 'en' ? 'Mold Fabrication' : 'تصنيع القوالب',
+    lang === 'en' ? 'GFRC Production' : 'إنتاج GFRC',
+    lang === 'en' ? 'Crane Installation' : 'تركيب بالرافعات',
+    lang === 'en' ? 'Islamic Ornaments' : 'زخارف إسلامية',
+    lang === 'en' ? 'Custom Facades' : 'واجهات مخصصة',
+  ];
 
   return (
-    <section id="about" className="bg-brand-dark text-white py-24 md:py-32">
-      <div className="max-w-7xl mx-auto px-6 md:px-10">
-        <div className={`grid md:grid-cols-2 gap-16 items-center`}>
+    <section 
+      id="about" 
+      ref={containerRef}
+      className="relative bg-[#050505] text-white py-32 md:py-48 overflow-hidden"
+    >
+      {/* Decorative Background Elements */}
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-20">
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-brand-warm rounded-full blur-[150px] translate-x-1/3 -translate-y-1/3" />
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-white rounded-full blur-[120px] -translate-x-1/3 translate-y-1/3 opacity-10" />
+      </div>
 
-          {/* Left: Image Column */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true, margin: '-80px' }}
-            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-            className="relative"
-          >
-            <div className="relative overflow-hidden">
-              <img
+      <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
+        <div className="flex flex-col lg:flex-row gap-20 lg:gap-24 items-center">
+
+          {/* Left: Premium Parallax Image */}
+          <div className="w-full lg:w-5/12 relative">
+            <motion.div 
+              className="relative aspect-[3/4] md:aspect-[4/5] overflow-hidden rounded-2xl shadow-2xl shadow-black/50"
+              style={{ scale: imgScale }}
+            >
+              <motion.img
+                style={{ y: imgY }}
                 src="/assets/madana_main.jpg"
-                alt="Tashkel GFRC team at work"
-                className="w-full h-[400px] md:h-[520px] object-cover"
+                alt="Tashkel GFRC Ethos"
+                className="absolute inset-0 w-full h-[120%] object-cover"
               />
-              {/* Accent corner decoration */}
-              <div className={`absolute ${isRtl ? 'bottom-0 left-0 border-r-2 border-t-2' : 'bottom-0 right-0 border-l-2 border-t-2'} border-brand-warm w-16 h-16`} />
-            </div>
-            
-            {/* Floating quote */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: 0.5 }}
-              className={`absolute -bottom-6 ${isRtl ? '-left-4 md:-left-8' : '-right-4 md:-right-8'} bg-brand-warm px-6 py-4 max-w-xs`}
-            >
-              <p className="text-white text-sm font-semibold italic leading-snug">"{t.about.tagline}"</p>
+              <div className="absolute inset-0 bg-black/20" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
             </motion.div>
-          </motion.div>
 
-          {/* Right: Text Column */}
-          <div className="md:pt-8">
-            <motion.p
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="section-label mb-5 text-stone-400"
+            {/* Floating Tagline Card */}
+            <motion.div
+              initial={{ opacity: 0, x: isRtl ? -30 : 30, y: 30 }}
+              whileInView={{ opacity: 1, x: 0, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 1, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              className={`absolute -bottom-10 ${isRtl ? '-left-6 md:-left-12' : '-right-6 md:-right-12'} bg-brand-warm p-8 md:p-10 shadow-xl max-w-[280px] md:max-w-[320px] backdrop-blur-md rounded-tl-3xl rounded-br-3xl`}
             >
-              {t.about.label}
-            </motion.p>
+              <p className="text-[#050505] text-lg md:text-xl font-bold leading-tight italic">
+                "{t.about.tagline}"
+              </p>
+            </motion.div>
+          </div>
 
-            <motion.h2
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="text-4xl md:text-6xl font-bold tracking-tight text-white whitespace-pre-line mb-8"
+          {/* Right: Scrolling Text Content */}
+          <motion.div 
+            style={{ y: textY }}
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            className="w-full lg:w-7/12 pt-16 lg:pt-0"
+          >
+            <motion.div variants={itemVariants} className="flex items-center gap-4 mb-8">
+              <div className="w-12 h-px bg-brand-warm" />
+              <p className="text-brand-warm font-bold tracking-widest uppercase text-sm">
+                {t.about.label}
+              </p>
+            </motion.div>
+
+            <motion.h2 
+              variants={itemVariants}
+              className="text-4xl md:text-5xl lg:text-7xl font-bold tracking-tighter text-white whitespace-pre-line mb-10 leading-[1.1]"
             >
               {t.about.title}
             </motion.h2>
 
-            <motion.p
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-stone-400 leading-relaxed mb-6 font-light"
-            >
-              {t.about.body1}
-            </motion.p>
+            <motion.div variants={itemVariants} className="space-y-8 text-stone-400 text-lg md:text-xl font-light leading-relaxed max-w-2xl">
+              <p>{t.about.body1}</p>
+              <p>{t.about.body2}</p>
+            </motion.div>
 
-            <motion.p
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="text-stone-400 leading-relaxed mb-10 font-light"
+            {/* Services Grid with Hover Effects */}
+            <motion.div 
+              variants={itemVariants}
+              className="grid grid-cols-2 sm:grid-cols-3 gap-6 mt-16 pt-12 border-t border-white/10"
             >
-              {t.about.body2}
-            </motion.p>
-
-            {/* Services list */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="grid grid-cols-2 gap-3"
-            >
-              {[
-                lang === 'en' ? 'Shop Drawings' : 'مخططات تنفيذية',
-                lang === 'en' ? 'Mold Fabrication' : 'تصنيع القوالب',
-                lang === 'en' ? 'GFRC Production' : 'إنتاج GFRC',
-                lang === 'en' ? 'Crane Installation' : 'تركيب بالرافعات',
-                lang === 'en' ? 'Islamic Ornaments' : 'زخارف إسلامية',
-                lang === 'en' ? 'Custom Facades' : 'واجهات مخصصة',
-              ].map((service, i) => (
-                <div key={i} className="flex items-center gap-2 text-sm text-stone-300">
-                  <div className="w-1.5 h-1.5 rounded-full bg-brand-warm flex-shrink-0" />
-                  {service}
+              {services.map((service, i) => (
+                <div key={i} className="group flex flex-col gap-3">
+                  <div className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center group-hover:border-brand-warm group-hover:bg-brand-warm/10 transition-all duration-300">
+                    <div className="w-1.5 h-1.5 rounded-full bg-brand-warm group-hover:scale-150 transition-transform duration-300" />
+                  </div>
+                  <span className="text-sm font-medium text-stone-300 group-hover:text-white transition-colors duration-300">
+                    {service}
+                  </span>
                 </div>
               ))}
             </motion.div>
-          </div>
+
+          </motion.div>
         </div>
       </div>
     </section>

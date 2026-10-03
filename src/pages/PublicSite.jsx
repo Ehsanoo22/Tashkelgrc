@@ -45,9 +45,9 @@ export default function PublicSite({ lang, setLang }) {
       <Navbar lang={lang} setLang={setLang} t={t} />
       <Hero t={t} lang={lang} />
       <NewsBanner lang={lang} />
+      <WorkGallery t={t} lang={lang} />
       <ProcessSection t={t} lang={lang} />
       <GFRCSection t={t} lang={lang} />
-      <WorkGallery t={t} lang={lang} />
       <About t={t} lang={lang} />
       <Testimonials t={t} lang={lang} />
       <FAQSection t={t} lang={lang} />
