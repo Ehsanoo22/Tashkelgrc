@@ -281,7 +281,7 @@ export default function PiecesManager() {
               <div className="bg-white p-4 rounded-2xl border-4 border-brand-dark mb-4">
                 {/* Generates URL to the scanner route, passing the piece ID */}
                 <QRCodeSVG 
-                  value={`${window.location.origin}/tashkeladmin/scanner/${printPiece.id}`} 
+                  value={`${window.location.origin}/scanner/${printPiece.id}`} 
                   size={200}
                   level="H"
                   includeMargin={false}

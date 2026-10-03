@@ -23,7 +23,6 @@ import ERPOverview from './ERPOverview'; // New Home Dashboard
 import TeamManager from './TeamManager';
 import AttendanceManager from './AttendanceManager';
 import PiecesManager from './PiecesManager';
-import PieceScanner from './PieceScanner';
 
 export default function AdminDashboard() {
   const [session, setSession] = useState(null);
@@ -175,7 +174,6 @@ export default function AdminDashboard() {
               {/* New ERP Routes placeholders - to be built next */}
               <Route path="/production" element={<PiecesManager />} />
               <Route path="/pieces" element={<PiecesManager />} />
-              <Route path="/scanner/:id" element={<PieceScanner />} />
               <Route path="/qa" element={<div className="p-8 text-center text-stone-500">QA & Issues (Building soon...)</div>} />
               <Route path="/team" element={<TeamManager />} />
               <Route path="/attendance" element={<AttendanceManager />} />
