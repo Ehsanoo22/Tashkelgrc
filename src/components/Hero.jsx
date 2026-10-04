@@ -76,7 +76,7 @@ export default function Hero({ t, lang }) {
       {/* Content Composition */}
       <motion.div 
         style={{ opacity }}
-        className="relative z-10 w-full max-w-[1400px] mx-auto px-6 md:px-12 pb-16 md:pb-24 grid grid-cols-1 lg:grid-cols-12 gap-8 items-end"
+        className="relative z-10 w-full max-w-[1400px] mx-auto px-6 md:px-12 pb-32 md:pb-24 grid grid-cols-1 lg:grid-cols-12 gap-8 items-end"
       >
         {/* Left/Main Column */}
         <div className="lg:col-span-8 flex flex-col">
@@ -85,22 +85,22 @@ export default function Hero({ t, lang }) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 2.2, ease: [0.16, 1, 0.3, 1] }}
-            className="flex items-center gap-4 mb-6 md:mb-10"
+            className="flex items-center gap-4 mb-4 md:mb-10"
           >
             <div className="w-8 h-px bg-white/40" />
-            <p className="text-white/70 text-xs md:text-sm font-medium tracking-[0.2em] uppercase">
+            <p className="text-white/70 text-[10px] md:text-sm font-medium tracking-[0.2em] uppercase">
               {t.hero.label}
             </p>
           </motion.div>
 
-          <div className="flex flex-col mb-8">
+          <div className="flex flex-col mb-6 md:mb-8">
             {t.hero.title.split('\n').map((line, i) => (
               <div key={i} className="overflow-hidden py-1">
                 <motion.h1
                   initial={{ y: '100%' }}
                   animate={{ y: '0%' }}
                   transition={{ duration: 1.1, delay: 2.4 + (i * 0.15), ease: [0.16, 1, 0.3, 1] }}
-                  className="text-white text-5xl sm:text-7xl md:text-[6rem] lg:text-[7.5rem] font-bold tracking-tighter leading-[0.95]"
+                  className="text-white text-4xl min-[400px]:text-5xl sm:text-7xl md:text-[6rem] lg:text-[7.5rem] font-bold tracking-tighter leading-[1.05] sm:leading-[0.95]"
                 >
                   {line}
                 </motion.h1>
