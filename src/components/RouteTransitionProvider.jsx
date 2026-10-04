@@ -18,11 +18,11 @@ export default function RouteTransitionProvider({ children, enableLoader }) {
     }
 
     if (isInitialLoad) {
-      // Clear initial load animation after 1.5 seconds for a majestic entrance
+      // Cinematic initial entrance sequence (~2.4s)
       const initialTimer = setTimeout(() => {
         setIsNavigating(false);
         setIsInitialLoad(false);
-      }, 1500);
+      }, 2400);
       return () => clearTimeout(initialTimer);
     }
 
@@ -30,18 +30,17 @@ export default function RouteTransitionProvider({ children, enableLoader }) {
     if (location.pathname !== displayLocation.pathname) {
       setIsNavigating(true);
       
-      // Wait for the loader to completely fade in (800ms) before switching routes
+      // Fast, sleek architectural transition for subsequent pages (350ms in, 350ms out = 700ms total)
       const transitionTimer = setTimeout(() => {
         setDisplayLocation(location);
         window.scrollTo(0, 0); // Ensure the new page starts at the top
         
-        // Wait another 500ms so the user sees the logo, then trigger the slide-up exit
         const exitTimer = setTimeout(() => {
           setIsNavigating(false);
-        }, 500);
+        }, 350);
 
         return () => clearTimeout(exitTimer);
-      }, 800);
+      }, 350);
 
       return () => clearTimeout(transitionTimer);
     }
@@ -57,7 +56,7 @@ export default function RouteTransitionProvider({ children, enableLoader }) {
 
   return (
     <>
-      <PageLoader isVisible={isNavigating} />
+      <PageLoader isVisible={isNavigating} isInitial={isInitialLoad} />
       {wrappedChildren || children}
     </>
   );

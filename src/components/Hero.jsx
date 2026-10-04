@@ -84,7 +84,7 @@ export default function Hero({ t, lang }) {
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.8, delay: 2.2, ease: [0.16, 1, 0.3, 1] }}
             className="flex items-center gap-4 mb-6 md:mb-10"
           >
             <div className="w-8 h-px bg-white/40" />
@@ -99,7 +99,7 @@ export default function Hero({ t, lang }) {
                 <motion.h1
                   initial={{ y: '100%' }}
                   animate={{ y: '0%' }}
-                  transition={{ duration: 1.2, delay: 0.8 + (i * 0.15), ease: [0.16, 1, 0.3, 1] }}
+                  transition={{ duration: 1.1, delay: 2.4 + (i * 0.15), ease: [0.16, 1, 0.3, 1] }}
                   className="text-white text-5xl sm:text-7xl md:text-[6rem] lg:text-[7.5rem] font-bold tracking-tighter leading-[0.95]"
                 >
                   {line}
@@ -111,7 +111,7 @@ export default function Hero({ t, lang }) {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 1.2, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.9, delay: 2.7, ease: [0.16, 1, 0.3, 1] }}
             className="max-w-xl"
           >
             <p className="text-white/90 text-lg md:text-xl font-medium tracking-wide mb-3">
@@ -135,7 +135,7 @@ export default function Hero({ t, lang }) {
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 1.5 }}
+          transition={{ duration: 0.8, delay: 2.9 }}
           className="hidden lg:flex lg:col-span-4 justify-end pb-2"
         >
           <div className="flex flex-col items-end text-right">
@@ -149,7 +149,7 @@ export default function Hero({ t, lang }) {
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 1.8 }}
+        transition={{ duration: 0.8, delay: 3.0 }}
         className="absolute bottom-0 left-0 w-full px-6 md:px-12 flex justify-between items-end pb-6 z-20 pointer-events-none"
       >
         <div className="w-full border-b border-white/10 absolute bottom-0 left-0" />
