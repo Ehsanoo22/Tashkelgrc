@@ -1,93 +1,179 @@
-import React, { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { Waves } from './Waves';
-
-// Replace with a high-res architectural 3D render loop or video
-const VIDEO_URL = "https://cdn.pixabay.com/video/2020/07/31/46121-446700854_large.mp4";
+import React, { useRef, useState, useEffect } from 'react';
+import { motion, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion';
+import { ArrowRight, ArrowDown } from 'lucide-react';
 
 export default function Hero({ t, lang }) {
   const heroRef = useRef(null);
-  const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
-  
-  // Parallax out effect
-  const y = useTransform(scrollYProgress, [0, 1], ['0%', '20%']);
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-
   const isRtl = lang === 'ar';
 
+  // 1. Scroll Effects
+  const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
+  const y = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
+  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+
+  // 2. Mouse Parallax Effect
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  // Smooth out the mouse values
+  const smoothX = useSpring(mouseX, { stiffness: 50, damping: 20 });
+  const smoothY = useSpring(mouseY, { stiffness: 50, damping: 20 });
+
+  // Map mouse values to slight translations (-10px to 10px)
+  const imageX = useTransform(smoothX, [-0.5, 0.5], ['-1%', '1%']);
+  const imageY = useTransform(smoothY, [-0.5, 0.5], ['-1%', '1%']);
+
+  const handleMouseMove = (e) => {
+    const { clientX, clientY } = e;
+    const { innerWidth, innerHeight } = window;
+    // Normalize coordinates between -0.5 and 0.5
+    mouseX.set(clientX / innerWidth - 0.5);
+    mouseY.set(clientY / innerHeight - 0.5);
+  };
+
+  // State to trigger the slow zoom once mounted
+  const [isLoaded, setIsLoaded] = useState(false);
+  useEffect(() => {
+    setIsLoaded(true);
+  }, []);
+
   return (
-    <section ref={heroRef} className="relative h-[100dvh] w-full bg-black overflow-hidden flex items-center justify-center">
-      
-      {/* Waves Interactive Background */}
-      <motion.div style={{ y }} className="absolute inset-0 w-full h-full pointer-events-auto">
-        <Waves 
-            strokeColor="rgba(255, 255, 255, 0.15)"
-            backgroundColor="#000000"
-            pointerSize={0} 
-        />
-        {/* Subtle Vignette overlay to keep text readable */}
-        <div className="absolute inset-0 bg-radial-gradient from-transparent via-transparent to-black/80 pointer-events-none" />
+    <section 
+      ref={heroRef} 
+      onMouseMove={handleMouseMove}
+      className={`relative h-[100dvh] w-full bg-[#050505] overflow-hidden flex flex-col justify-end ${isRtl ? 'font-arabic' : 'font-sans'}`}
+      dir={isRtl ? 'rtl' : 'ltr'}
+    >
+      {/* 
+        Background Visual:
+        - Absolute position, full screen.
+        - Mouse parallax (imageX, imageY)
+        - Slow cinematic scale down (scale 1.1 -> 1.0)
+        - Scroll parallax (y)
+      */}
+      <motion.div 
+        style={{ y, x: imageX, y: imageY }}
+        className="absolute inset-0 w-[105%] h-[105%] -left-[2.5%] -top-[2.5%] pointer-events-none"
+      >
+        <motion.div
+          initial={{ scale: 1.15 }}
+          animate={{ scale: isLoaded ? 1.0 : 1.15 }}
+          transition={{ duration: 15, ease: "easeOut" }}
+          className="w-full h-full"
+        >
+          <img 
+            src="/assets/wave_arch_facade.jpg" 
+            alt="Tashkel Architectural Facade" 
+            className="w-full h-full object-cover opacity-90"
+          />
+        </motion.div>
+        
+        {/* Architectural Vignette/Gradient Overlays for text readability & depth */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-transparent opacity-80" />
+        <div className={`absolute inset-0 bg-gradient-to-${isRtl ? 'l' : 'r'} from-[#050505]/90 via-[#050505]/30 to-transparent opacity-70`} />
       </motion.div>
 
-      {/* Content */}
+      {/* Content Composition */}
       <motion.div 
-        style={{ opacity, y }}
-        className="relative z-10 text-center px-6 flex flex-col items-center w-full max-w-5xl mt-24 md:mt-32"
+        style={{ opacity }}
+        className="relative z-10 w-full max-w-[1400px] mx-auto px-6 md:px-12 pb-16 md:pb-24 grid grid-cols-1 lg:grid-cols-12 gap-8 items-end"
       >
-        {/* Text Masking Animation */}
-        <div className="flex flex-col items-center mb-6 w-full">
-          {t.hero.title.split('\n').map((line, i) => (
-            <div key={i} className="overflow-hidden pb-2">
-              <motion.h1
-                initial={{ y: '100%' }}
-                animate={{ y: '0%' }}
-                transition={{ duration: 1.2, delay: 3.0 + (i * 0.15), ease: [0.32, 0.72, 0, 1] }}
-                className="text-white text-5xl sm:text-7xl md:text-[6rem] font-bold tracking-tighter leading-none"
-              >
-                {line}
-              </motion.h1>
-            </div>
-          ))}
+        {/* Left/Main Column */}
+        <div className="lg:col-span-8 flex flex-col">
+          
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            className="flex items-center gap-4 mb-6 md:mb-10"
+          >
+            <div className="w-8 h-px bg-white/40" />
+            <p className="text-white/70 text-xs md:text-sm font-medium tracking-[0.2em] uppercase">
+              {t.hero.label}
+            </p>
+          </motion.div>
+
+          <div className="flex flex-col mb-8">
+            {t.hero.title.split('\n').map((line, i) => (
+              <div key={i} className="overflow-hidden py-1">
+                <motion.h1
+                  initial={{ y: '100%' }}
+                  animate={{ y: '0%' }}
+                  transition={{ duration: 1.2, delay: 0.8 + (i * 0.15), ease: [0.16, 1, 0.3, 1] }}
+                  className="text-white text-5xl sm:text-7xl md:text-[6rem] lg:text-[7.5rem] font-bold tracking-tighter leading-[0.95]"
+                >
+                  {line}
+                </motion.h1>
+              </div>
+            ))}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 1.2, ease: [0.16, 1, 0.3, 1] }}
+            className="max-w-xl"
+          >
+            <p className="text-white/90 text-lg md:text-xl font-medium tracking-wide mb-3">
+              {t.hero.seoSubheading}
+            </p>
+            <p className="text-white/60 text-base md:text-lg font-light leading-relaxed mb-10">
+              {t.hero.subtitle}
+            </p>
+            
+            <a 
+              href="#contact" 
+              className="inline-flex items-center gap-3 text-white text-sm font-semibold tracking-widest uppercase hover:text-brand-warm transition-colors duration-300 group"
+            >
+              {t.hero.ctaPrimary}
+              <ArrowRight size={18} className={`transition-transform duration-300 group-hover:${isRtl ? '-translate-x-2' : 'translate-x-2'}`} />
+            </a>
+          </motion.div>
         </div>
 
-        <motion.p 
+        {/* Right Column / Project Index (Hidden on mobile) */}
+        <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 3.2 }}
-          className="text-white/60 text-xs font-semibold tracking-[0.2em] uppercase mb-8"
+          transition={{ duration: 1, delay: 1.5 }}
+          className="hidden lg:flex lg:col-span-4 justify-end pb-2"
         >
-          {t.hero.label}
-        </motion.p>
-
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 3.5, ease: [0.32, 0.72, 0, 1] }}
-          className="text-white/90 text-lg md:text-xl font-medium max-w-3xl leading-relaxed mb-2 tracking-wide"
-        >
-          {t.hero.seoSubheading}
-        </motion.h2>
-
-        <motion.p 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 3.8, ease: [0.32, 0.72, 0, 1] }}
-          className="text-white/60 text-base md:text-lg font-light max-w-2xl leading-relaxed mb-12"
-        >
-          {t.hero.subtitle}
-        </motion.p>
-
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 4.2, ease: [0.32, 0.72, 0, 1] }}
-          className="flex gap-6 items-center"
-        >
-          <a href="#work" className="btn-cinematic hover-target">
-            {t.hero.ctaPrimary}
-          </a>
+          <div className="flex flex-col items-end text-right">
+            <span className="text-white/40 text-sm font-medium tracking-widest mb-2">INDEX</span>
+            <span className="text-white text-3xl font-light tracking-tight">01 <span className="text-white/20">/ 04</span></span>
+          </div>
         </motion.div>
       </motion.div>
+
+      {/* Bottom Architectural Border & Scroll Cue */}
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1, delay: 1.8 }}
+        className="absolute bottom-0 left-0 w-full px-6 md:px-12 flex justify-between items-end pb-6 z-20 pointer-events-none"
+      >
+        <div className="w-full border-b border-white/10 absolute bottom-0 left-0" />
+        
+        <div className="flex flex-col items-start gap-4">
+          <div className="h-16 w-px bg-white/20 relative overflow-hidden">
+            <motion.div
+              animate={{ y: ['-100%', '100%'] }}
+              transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
+              className="absolute inset-0 w-full h-full bg-white/80"
+            />
+          </div>
+          <p className="text-white/40 text-[10px] font-semibold tracking-[0.3em] uppercase pb-2">
+            {t.hero.scrollHint}
+          </p>
+        </div>
+        
+        <div className="hidden md:block pb-2">
+          <p className="text-white/40 text-[10px] font-semibold tracking-[0.3em] uppercase">
+            TASHKEL GFRC © {new Date().getFullYear()}
+          </p>
+        </div>
+      </motion.div>
+
     </section>
   );
 }

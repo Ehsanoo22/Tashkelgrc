@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ArrowRight } from 'lucide-react';
 
 export default function Navbar({ lang, setLang, t, theme = 'dark' }) {
   const { scrollY } = useScroll();
@@ -43,20 +43,14 @@ export default function Navbar({ lang, setLang, t, theme = 'dark' }) {
           className={`relative pointer-events-auto flex items-center justify-between px-6 md:px-8 py-3 rounded-full transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)]
             ${isScrolled ? 'nav-pill w-full max-w-[95%] lg:w-[950px]' : 'bg-transparent w-full md:w-[95%]'}`}
         >
-          {/* Animated Border Accent on Load */}
-          <motion.div
-            className="absolute inset-0 rounded-full border border-white/60 pointer-events-none"
-            initial={{ opacity: 0, scale: 1.05 }}
-            animate={{ opacity: [0, 1, 0], scale: [1.05, 1, 1.05] }}
-            transition={{ duration: 2.5, delay: 2.0, ease: "easeInOut", repeat: 1 }}
-          />
+
 
           {/* Logo */}
           <a href="/" className="flex-shrink-0 hover-target z-10" style={{ textDecoration: 'none' }}>
             <img
               src="/assets/logo_new.png"
               alt="Tashkel"
-              className="h-10 md:h-14 w-auto object-contain transition-transform duration-500 hover:scale-105"
+              className="h-7 md:h-10 w-auto object-contain transition-transform duration-500 hover:scale-105"
               style={{ filter: (isScrolled || theme === 'light') ? 'none' : 'brightness(0) invert(1)' }}
             />
           </a>
@@ -78,23 +72,23 @@ export default function Navbar({ lang, setLang, t, theme = 'dark' }) {
           </div>
 
           {/* Desktop Actions */}
-          <div className="hidden md:flex items-center gap-6 z-10">
+          <div className="hidden md:flex items-center gap-6 lg:gap-8 z-10">
             <motion.button
               onClick={() => setLang(lang === 'en' ? 'ar' : 'en')}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className={`text-sm font-bold tracking-widest uppercase transition-colors duration-300
-                ${(isScrolled || theme === 'light') ? 'text-brand-dark hover:text-brand-warm' : 'text-white hover:text-brand-warm'}`}
+              className={`text-xs font-semibold tracking-[0.15em] uppercase transition-colors duration-300
+                ${(isScrolled || theme === 'light') ? 'text-brand-dark hover:text-brand-warm' : 'text-white/80 hover:text-white'}`}
             >
               {t.nav.toggleLang}
             </motion.button>
             <motion.a 
               href="/#contact" 
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="hidden md:inline-flex btn-cinematic px-6 py-2 text-xs"
+              className={`group flex items-center gap-2 text-xs font-semibold tracking-[0.15em] uppercase transition-colors duration-300
+                ${(isScrolled || theme === 'light') ? 'text-brand-dark hover:text-brand-warm' : 'text-white hover:text-brand-warm'}`}
             >
               {t.nav.cta}
+              <ArrowRight size={14} className={`transition-transform duration-300 group-hover:${isRtl ? '-translate-x-1' : 'translate-x-1'}`} />
             </motion.a>
           </div>
 
@@ -158,9 +152,10 @@ export default function Navbar({ lang, setLang, t, theme = 'dark' }) {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3, duration: 0.5 }}
-                className="mt-4 px-10 py-5 w-full bg-white text-brand-dark font-bold rounded-2xl text-sm uppercase tracking-widest shadow-[0_0_40px_rgba(255,255,255,0.2)] active:scale-95 transition-transform"
+                className="mt-4 flex items-center justify-center gap-4 w-full text-white hover:text-brand-warm transition-colors pb-6"
               >
-                {t.nav.cta}
+                <span className="text-3xl font-bold tracking-tight">{t.nav.cta}</span>
+                <ArrowRight size={28} className={isRtl ? 'rotate-180' : ''} />
               </motion.a>
             </div>
           </motion.div>
