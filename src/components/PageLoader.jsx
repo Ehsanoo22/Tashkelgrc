@@ -139,7 +139,7 @@ export default function PageLoader({ isVisible, isInitial = true }) {
                     <line x1="70" y1="34" x2="170" y2="34" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" strokeDasharray="2 2" />
                     <line x1="60" y1="58" x2="180" y2="58" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" strokeDasharray="2 2" />
                     <line x1="40" y1="125" x2="200" y2="125" stroke="rgba(255,255,255,0.2)" strokeWidth="0.75" />
-                  </g>
+                  </motion.g>
 
                   {/* Tower 1 (Left Monolith Construction Lines) */}
                   <motion.path
