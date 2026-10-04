@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion';
-import { ArrowRight, ArrowDown } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 export default function Hero({ t, lang }) {
   const heroRef = useRef(null);
@@ -52,7 +52,7 @@ export default function Hero({ t, lang }) {
         - Scroll parallax (y)
       */}
       <motion.div 
-        style={{ y, x: imageX, y: imageY }}
+        style={{ y, x: imageX }}
         className="absolute inset-0 w-[105%] h-[105%] -left-[2.5%] -top-[2.5%] pointer-events-none"
       >
         <motion.div
