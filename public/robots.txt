@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /tashkeladmin/
+Disallow: /portal/
+Disallow: /scanner/
 
 Sitemap: https://www.tashkelgfrc.com/sitemap.xml

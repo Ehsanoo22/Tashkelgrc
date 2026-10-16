@@ -48,9 +48,12 @@ export default function GFRCSection({ t, lang }) {
 
         {/* Dynamic Text Points */}
         <div className="w-full md:w-1/2 flex flex-col justify-center h-1/2 md:h-full">
-          <p className="text-white/50 text-xs font-semibold tracking-[0.2em] uppercase mb-12">
+          <p className="text-white/50 text-xs font-semibold tracking-[0.2em] uppercase mb-3">
             {t.gfrc.label}
           </p>
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-white mb-8">
+            {t.gfrc.title}
+          </h2>
 
           <div className="relative h-64 w-full">
             {/* Point 1 */}

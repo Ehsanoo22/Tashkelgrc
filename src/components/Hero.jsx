@@ -93,20 +93,25 @@ export default function Hero({ t, lang }) {
             </p>
           </motion.div>
 
-          <div className="flex flex-col mb-6 md:mb-8">
+          <h1 className="flex flex-col mb-6 md:mb-8">
+            <span className="sr-only">
+              {isRtl 
+                ? 'تشكيل | عمارة وتصميم واجهات المباني في دمشق، سوريا - GFRC & GRC'
+                : 'Tashkel | Syrian Architectural Design & Building Facades in Damascus - GFRC & GRC'}
+            </span>
             {t.hero.title.split('\n').map((line, i) => (
-              <div key={i} className="overflow-hidden py-1">
-                <motion.h1
+              <span key={i} className="block overflow-hidden py-1" aria-hidden="true">
+                <motion.span
                   initial={{ y: '100%' }}
                   animate={{ y: '0%' }}
                   transition={{ duration: 1.1, delay: 2.4 + (i * 0.15), ease: [0.16, 1, 0.3, 1] }}
-                  className="text-white text-4xl min-[400px]:text-5xl sm:text-7xl md:text-[6rem] lg:text-[7.5rem] font-bold tracking-tighter leading-[1.05] sm:leading-[0.95]"
+                  className="block text-white text-4xl min-[400px]:text-5xl sm:text-7xl md:text-[6rem] lg:text-[7.5rem] font-bold tracking-tighter leading-[1.05] sm:leading-[0.95]"
                 >
                   {line}
-                </motion.h1>
-              </div>
+                </motion.span>
+              </span>
             ))}
-          </div>
+          </h1>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}

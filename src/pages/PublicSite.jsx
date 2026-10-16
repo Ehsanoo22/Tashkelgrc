@@ -19,7 +19,6 @@ import { supabase } from '../lib/supabase';
 export default function PublicSite({ lang, setLang }) {
   const t = translations[lang];
   const [isMaintenance, setIsMaintenance] = useState(false);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function checkMaintenance() {
@@ -27,14 +26,9 @@ export default function PublicSite({ lang, setLang }) {
       if (data && data.maintenance_mode) {
         setIsMaintenance(true);
       }
-      setLoading(false);
     }
     checkMaintenance();
   }, []);
-
-  if (loading) {
-    return <div className="min-h-screen bg-brand-dark"></div>;
-  }
 
   if (isMaintenance) {
     return <MaintenanceMode lang={lang} setLang={setLang} />;
