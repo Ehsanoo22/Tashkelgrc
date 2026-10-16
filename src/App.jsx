@@ -14,6 +14,7 @@ import RouteTransitionProvider from './components/RouteTransitionProvider';
 import { supabase } from './lib/supabase';
 import { logPageView } from './lib/analytics';
 import CookieConsent from './components/shared/CookieConsent';
+import NotFoundPage from './pages/NotFoundPage';
 import { useLocation } from 'react-router-dom';
 
 function App() {
@@ -56,6 +57,9 @@ function App() {
 
   return (
     <HelmetProvider>
+      <Helmet>
+        <link rel="canonical" href={`https://www.tashkelgfrc.com${location.pathname === '/' ? '' : location.pathname.replace(/\/$/, '')}`} />
+      </Helmet>
       {seo && (
         <Helmet>
           {seo.title && <title>{seo.title}</title>}
@@ -67,15 +71,16 @@ function App() {
       )}
       <RouteTransitionProvider enableLoader={enableLoader}>
         <Routes>
+          <Route path="/" element={<PublicSite lang={lang} setLang={setLang} />} />
           <Route path="/projects" element={<ProjectsGrid lang={lang} setLang={setLang} />} />
           <Route path="/projects/:slug" element={<ProjectDetail lang={lang} setLang={setLang} />} />
           <Route path="/faq" element={<FAQPage lang={lang} setLang={setLang} />} />
           <Route path="/portal/:slug" element={<PortalLogin />} />
           <Route path="/portal/:slug/dashboard" element={<PortalDashboard />} />
           <Route path="/scanner/:id" element={<PieceScanner />} />
-          <Route path="/*" element={<PublicSite lang={lang} setLang={setLang} />} />
           <Route path="/tashkeladmin/login" element={<Login />} />
           <Route path="/tashkeladmin/*" element={<AdminDashboard />} />
+          <Route path="*" element={<NotFoundPage lang={lang} setLang={setLang} />} />
         </Routes>
         {(!location.pathname.startsWith('/tashkeladmin') && !location.pathname.startsWith('/portal') && !location.pathname.startsWith('/scanner')) && <CookieConsent lang={lang} />}
       </RouteTransitionProvider>

@@ -62,8 +62,10 @@ export default function Hero({ t, lang }) {
           className="w-full h-full"
         >
           <img 
-            src="/assets/wave_arch_facade.jpg" 
+            src="/assets/wave_arch_facade.webp" 
             alt="Tashkel Architectural Facade" 
+            fetchPriority="high"
+            decoding="sync"
             className="w-full h-full object-cover opacity-90"
           />
         </motion.div>

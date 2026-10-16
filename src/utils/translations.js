@@ -61,8 +61,8 @@ export const translations = {
           location: "Grand Mosque, Syria",
           category: "Ornamental",
           tags: ["GFRC Lattice", "Islamic Geometry", "Facade"],
-          image: "/assets/madana_main.jpg",
-          detail: "/assets/madana_detail.jpg",
+          image: "/assets/madana_main.webp",
+          detail: "/assets/madana_detail.webp",
           description: "High-precision Islamic geometric lattice screens installed on towering minarets, combining traditional design with modern GFRC durability."
         },
         {
@@ -71,8 +71,8 @@ export const translations = {
           location: "Cultural Center",
           category: "Cladding",
           tags: ["Arched Facade", "Custom Molds"],
-          image: "/assets/cornice_main.jpg",
-          detail: "/assets/cornice_detail.jpg",
+          image: "/assets/cornice_main.webp",
+          detail: "/assets/cornice_detail.webp",
           description: "A full facade system featuring precision-cast pointed arches and intricate arabesque reliefs in white GFRC."
         },
         {
@@ -81,8 +81,8 @@ export const translations = {
           location: "Corporate Headquarters",
           category: "Facades",
           tags: ["Wavy Arches", "Integrated Lighting"],
-          image: "/assets/wave_arch_facade.jpg",
-          detail: "/assets/wave_arch_facade.jpg",
+          image: "/assets/wave_arch_facade.webp",
+          detail: "/assets/wave_arch_facade.webp",
           description: "A breathtaking contemporary facade featuring illuminated, undulating GFRC waves that seamlessly form grand archways."
         },
         {
@@ -91,8 +91,8 @@ export const translations = {
           location: "Damascus, Syria",
           category: "Cladding",
           tags: ["Arch Details", "Smooth Finish"],
-          image: "/assets/mosque_facade.jpg",
-          detail: "/assets/mosque_facade.jpg",
+          image: "/assets/mosque_facade.webp",
+          detail: "/assets/mosque_facade.webp",
           description: "A serene white GFRC facade featuring pointed arches and sleek cornice lines, built to endure harsh weather conditions."
         },
         {
@@ -101,8 +101,8 @@ export const translations = {
           location: "Tashkel Workshop",
           category: "Ornamental",
           tags: ["Relief Carving", "Custom Molds"],
-          image: "/assets/arabesque_border.jpg",
-          detail: "/assets/arabesque_border.jpg",
+          image: "/assets/arabesque_border.webp",
+          detail: "/assets/arabesque_border.webp",
           description: "Intricate floral relief border panels mid-production, showcasing our millimeter-perfect CNC mold accuracy."
         },
         {
@@ -111,8 +111,8 @@ export const translations = {
           location: "Tashkel Workshop",
           category: "Lattice",
           tags: ["Islamic Star", "Mashrabiya"],
-          image: "/assets/star_lattice.jpg",
-          detail: "/assets/star_lattice.jpg",
+          image: "/assets/star_lattice.webp",
+          detail: "/assets/star_lattice.webp",
           description: "Heavy-duty GFRC geometric lattice ready for installation, designed to provide shade while maintaining structural integrity."
         }
       ]
@@ -258,8 +258,8 @@ export const translations = {
           location: "الجامع الكبير، سوريا",
           category: "زخرفية",
           tags: ["شبكات GFRC", "هندسة إسلامية"],
-          image: "/assets/madana_main.jpg",
-          detail: "/assets/madana_detail.jpg",
+          image: "/assets/madana_main.webp",
+          detail: "/assets/madana_detail.webp",
           description: "شبكات هندسية إسلامية فائقة الدقة مثبتة على مآذن شاهقة، تجمع بين التصميم التقليدي ومتانة GFRC الحديثة."
         },
         {
@@ -268,8 +268,8 @@ export const translations = {
           location: "مركز ثقافي",
           category: "إكساء",
           tags: ["واجهة مقوسة", "قوالب مخصصة"],
-          image: "/assets/cornice_main.jpg",
-          detail: "/assets/cornice_detail.jpg",
+          image: "/assets/cornice_main.webp",
+          detail: "/assets/cornice_detail.webp",
           description: "نظام واجهة متكامل يضم أقواساً مدببة مصبوبة بدقة ونقوش أرابيسك معقدة بالـ GFRC الأبيض."
         },
         {
@@ -278,8 +278,8 @@ export const translations = {
           location: "مقر الشركة",
           category: "واجهات",
           tags: ["أقواس مموجة", "إضاءة مدمجة"],
-          image: "/assets/wave_arch_facade.jpg",
-          detail: "/assets/wave_arch_facade.jpg",
+          image: "/assets/wave_arch_facade.webp",
+          detail: "/assets/wave_arch_facade.webp",
           description: "واجهة عصرية خلابة تتميز بأمواج GFRC المضيئة والمتماوجة التي تشكل بوابات مقوسة ضخمة بسلاسة."
         },
         {
@@ -288,8 +288,8 @@ export const translations = {
           location: "دمشق، سوريا",
           category: "إكساء",
           tags: ["أقواس دقيقة", "تشطيب ناعم"],
-          image: "/assets/mosque_facade.jpg",
-          detail: "/assets/mosque_facade.jpg",
+          image: "/assets/mosque_facade.webp",
+          detail: "/assets/mosque_facade.webp",
           description: "واجهة بيضاء هادئة من GFRC تتميز بأقواس مدببة وخطوط كرانيش أنيقة، مصممة لتحمل أقسى الظروف الجوية."
         },
         {
@@ -298,8 +298,8 @@ export const translations = {
           location: "ورشة تشكّل",
           category: "زخرفية",
           tags: ["نقش بارز", "قوالب مخصصة"],
-          image: "/assets/arabesque_border.jpg",
-          detail: "/assets/arabesque_border.jpg",
+          image: "/assets/arabesque_border.webp",
+          detail: "/assets/arabesque_border.webp",
           description: "ألواح إطار نباتي بارز معقدة أثناء الإنتاج، تبرز الدقة المليمترية لقوالب CNC الخاصة بنا."
         },
         {
@@ -308,8 +308,8 @@ export const translations = {
           location: "ورشة تشكّل",
           category: "شبكات",
           tags: ["نجمة إسلامية", "مشربية"],
-          image: "/assets/star_lattice.jpg",
-          detail: "/assets/star_lattice.jpg",
+          image: "/assets/star_lattice.webp",
+          detail: "/assets/star_lattice.webp",
           description: "شبكة هندسية ثقيلة من GFRC جاهزة للتركيب، مصممة لتوفير الظل مع الحفاظ على القوة الهيكلية."
         }
       ]

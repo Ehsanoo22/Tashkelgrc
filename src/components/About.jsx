@@ -67,8 +67,10 @@ export default function About({ t, lang }) {
             >
               <motion.img
                 style={{ y: imgY }}
-                src="/assets/madana_main.jpg"
+                src="/assets/madana_main.webp"
                 alt="Tashkel GFRC Ethos"
+                loading="lazy"
+                decoding="async"
                 className="absolute inset-0 w-full h-[120%] object-cover"
               />
               <div className="absolute inset-0 bg-black/20" />

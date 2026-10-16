@@ -13,8 +13,12 @@ export default function Footer({ t, lang }) {
           {/* Logo & Manifesto */}
           <div className="lg:w-1/2">
             <img 
-              src="/assets/logo.png" 
-              alt="Tashkel Logo" 
+              src="/assets/logo.webp" 
+              alt="Tashkel GFRC Logo" 
+              width="160"
+              height="125"
+              loading="lazy"
+              decoding="async"
               className="h-10 md:h-12 w-auto object-contain mb-8 filter brightness-0 invert opacity-90"
             />
             <p className="text-white/40 text-lg md:text-xl font-light leading-relaxed max-w-md">

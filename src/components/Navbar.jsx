@@ -48,8 +48,10 @@ export default function Navbar({ lang, setLang, t, theme = 'dark' }) {
           {/* Logo */}
           <a href="/" className="flex-shrink-0 hover-target z-10" style={{ textDecoration: 'none' }}>
             <img
-              src="/assets/logo_new.png"
-              alt="Tashkel"
+              src="/assets/logo_new.webp"
+              alt="Tashkel GFRC"
+              width="160"
+              height="125"
               className="h-7 md:h-10 w-auto object-contain transition-transform duration-500 hover:scale-105"
               style={{ filter: (isScrolled || theme === 'light') ? 'none' : 'brightness(0) invert(1)' }}
             />
